@@ -15,10 +15,12 @@
 #include "jexcept.hpp"
 #include "jthread.hpp"
 
+#include "nbcd.hpp"
 #include "deftype.hpp"
 
 #include <vector>
 #include <map>
+#include <stack>
 #include <boost/algorithm/string.hpp>
 
 
@@ -42,7 +44,7 @@
     pb->moduleName = "octave";
     pb->ECL = NULL;
     pb->flags = PLUGIN_IMPLICIT_MODULE;
-    pb->description = "ECL plugin library for BLAH BLAH BLAH\n";
+    pb->description = "ECL plugin library for OCTAVE\n";
     return true;
 }
 
@@ -55,7 +57,6 @@ static void UNSUPPORTED(const char *feature)
 
 namespace octaveembed {
 
-
 static octave::interpreter*  globalState=nullptr;
 static int status;
 MODULE_INIT(INIT_PRIORITY_STANDARD)
@@ -64,42 +65,52 @@ MODULE_INIT(INIT_PRIORITY_STANDARD)
    status = globalState->execute();
    return true;
 }
+
 MODULE_EXIT()
 {
 }
+
 class OctaveObjectAccessor
 {
 public:
-   OctaveObjectAccessor()
-   : inSet(false),inDataSet(false),idx(0),top(-1)
+   OctaveObjectAccessor(bool _inDataSet)
+   : inSet(false),inDataSet(_inDataSet),idx(0),top(0)
    {
-
    }
+
 protected:
    void pushResult(octave_value _result)
    {
-      list.prepend(_result);
-      top++;
+      list.push(_result);
    }
+
    octave_value popResult()
    {
-      if(top < list.length())
-         return list(top);
       octave_value empty_result;
+      if(list.empty())
+      {
+         return empty_result;
+      }
+
+      empty_result = list.top();
+      list.pop();
       return empty_result;
    }
+
    void pushIdx()
    {
       idxStack.append(idx);
       idx=0;
    }
+
    void popIdx()
    {
      idx = idxStack.popGet();
      if(!inDataSet)
      setSize = 0;
    }
-   octave_value_list list;
+
+   std::stack<octave_value> list;
    bool inSet;
    bool inDataSet;
    int setSize;
@@ -107,22 +118,16 @@ protected:
    IntArray idxStack;
 private:
    int top;
+};
 
-};  
 class OctaveRowBuilder : public OctaveObjectAccessor, public CInterfaceOf<IFieldSource>
 {
 public:
-   OctaveRowBuilder(octave_value __result, const RtlFieldInfo *__outerRow)
-   :outerRow(__outerRow),row(__result)
+   OctaveRowBuilder(octave_value __result, const RtlFieldInfo *__outerRow,bool _inDataset)
+   :OctaveObjectAccessor(_inDataset),outerRow(__outerRow),row(__result)
    {
-      keyName = row.map_keys();
-      value = row.map_value();
-      for(size_t i =0;i<keyName.numel();i++)
-      {
-         Cell c = value.getfield(keyName.elem(i));
-         stack.append(c.checkelem(0));
-      }
    }
+
    ~OctaveRowBuilder()
    {
       //stack.clear();
@@ -134,16 +139,20 @@ public:
       {
          return vectorSet.elem(idx++);
       }
+
       if(inDataSet)
       {
-         return brow.elem(idx++);
+         return vectorSet.elem(idx++);
       }
+
       result = getResult(field);
       if(result.islogical())
       {
          return result.bool_value();
       }
+
    }
+
    virtual void getDataResult(const RtlFieldInfo *field, size32_t &len, void * &result){}
    virtual double getRealResult(const RtlFieldInfo *field)
    {
@@ -151,44 +160,53 @@ public:
       {
          return vectorSet.elem(idx++);
       }
+
       if(inDataSet)
       {
-         return frow.elem(idx++);
+         return vectorSet.elem(idx++);
       }
+
       result = getResult(field);
       if(result.is_double_type())
          return result.double_value();
       if(result.is_single_type())
          return result.float_value();
    }
+
    virtual __int64 getSignedResult(const RtlFieldInfo *field)
    {  
       if(inSet)
       {
          return vectorSet.elem(idx++);
       }
+
       if(inDataSet)
       {
-         return frow.elem(idx++);
+         return vectorSet.elem(idx++);
       }
+
       result = getResult(field);
       if(result.isinteger())
          return result.int_value();
    }
+
    virtual unsigned __int64 getUnsignedResult(const RtlFieldInfo *field)
    {
       if(inSet)
       {
          return vectorSet.elem(idx++);
       }
+
       if(inDataSet)
       {
-         return frow.elem(idx++);
+         return vectorSet.elem(idx++);
       }
+
       result = getResult(field);
       if(result.isinteger())
          return result.uint_value();
    }
+
    virtual void getStringResult(const RtlFieldInfo *field, size32_t &len, char * &__result)
    {
       if(inSet)
@@ -200,6 +218,7 @@ public:
       }
       else
       {
+         std::cout << field->name;
          result = getResult(field);
          if(result.is_string())
          {
@@ -207,9 +226,9 @@ public:
             unsigned slen = src.length();
             rtlStrToStrX(len, __result, slen, src.c_str());
          }
-      }
-      
+      } 
    }
+
    virtual void getUTF8Result(const RtlFieldInfo *field, size32_t &chars, char * &__result)
    {
       if(inSet)
@@ -231,12 +250,15 @@ public:
          }
       }
    }
+
    virtual void getUnicodeResult(const RtlFieldInfo *field, size32_t &chars, UChar * &result) {}
    virtual void getDecimalResult(const RtlFieldInfo *field, Decimal &value){}
 
     //The following are used process the structured fields
    virtual void processBeginSet(const RtlFieldInfo * field, bool &isAll)
    {
+      if(inDataSet)
+         return;
       result = getResult(field);
       if(!result.isempty())
       {
@@ -275,34 +297,36 @@ public:
          if(result.is_real_matrix())
          {
             inDataSet = true ;
-            mat = result.float_matrix_value();
+            mat = result.matrix_value();
             setSize = mat.rows();
             pushIdx();
          }
          else if(result.is_bool_matrix())
          {
             inDataSet = true;
-            bmat = result.bool_matrix_value();
-            setSize = bmat.rows();
+            mat = result.matrix_value();
+            setSize = mat.rows();
             pushIdx();
          }
       }
 
    }
-   virtual void processBeginRow(const RtlFieldInfo * field) {
+   virtual void processBeginRow(const RtlFieldInfo * field) 
+   {
+      std::cout << "process Begin Row\n";
       std::string fieldName(field->name);
       if(inDataSet)
-      {
-         if (!mat.isempty())
-            frow = mat.row(idx++);
-         if (!bmat.isempty())
-            brow = bmat.column(idx++);
+      {  
          pushIdx();
          return;
       }
+
       if(fieldName.compare("<row>") == 0)
       {  
-         initializeStruct();
+         if(row.isstruct())
+            initializeStruct();
+         else
+            rtlFail(0,"OctaveEmbed: Type Mismatch");
       }
       else
       {
@@ -314,47 +338,71 @@ public:
             initializeStruct();
          }
       }     
-      
    }
+
    virtual bool processNextSet(const RtlFieldInfo * field) 
    {
-      if(vectorSet.isempty() && cm.isempty())
+      if(vectorSet.isempty())
+      {
+         return false;
+      }
+
+      if(vectorSet.isempty() && cm.isempty()&& mat.isempty())
          return false;
       if(idx<setSize)
          return true;
       return false;
    }
+
    virtual bool processNextRow(const RtlFieldInfo * field)
    {
-      if(mat.isempty() && bmat.isempty())
+      if(mat.isempty())
          return false;
       if(idx < setSize)
+      {  if (!mat.isempty())
+            vectorSet = mat.row(idx++).as_row();
          return true;
+      }
+
       return false;   
    }
+
    virtual void processEndSet(const RtlFieldInfo * field) 
    { 
-      std::cout << "process end set\n";
       if(inSet == true)
          popIdx();
       inSet = false;
    }
-   virtual void processEndDataset(const RtlFieldInfo * field) {
+
+   virtual void processEndDataset(const RtlFieldInfo * field)
+   {
       if(inDataSet == true)
          popIdx();
       inDataSet = false;
    }
+
    virtual void processEndRow(const RtlFieldInfo * field)
    {
       std::string fieldName(field->name);
       if(inDataSet)
+      {
          popIdx();
-      if(fieldName.compare("<row>") != 0 && inSet)
+         return;
+      }
+
+      if(fieldName.compare("<row>") != 0)
       {
          row = popResult();
          initializeStruct();
       }
    }
+
+   void initializeRow(Array<double> _vectorSet)
+   {
+      vectorSet = _vectorSet;
+      setSize = vectorSet.numel();
+   }
+
 protected:
    void initializeStruct()
    {
@@ -363,10 +411,12 @@ protected:
       value = row.map_value();
       for(size_t i =0;i<keyName.numel();i++)
       {
+         std::cout << keyName.elem(i) << "   ";
          Cell c = value.getfield(keyName.elem(i));
          stack.append(c.checkelem(0));
       }
    }
+
    octave_value getResult(const RtlFieldInfo * field)
    {
       Cell c = value.getfield(field->name);
@@ -374,6 +424,7 @@ protected:
          rtlFail(0,"OctaveEmbed : Field name Mismatch");
       return c.checkelem(0);
    }
+
    octave_value row;
    octave_value result;
    octave_value_list stack;
@@ -381,23 +432,288 @@ protected:
    string_vector keyName;
    octave_map value;
    Array<double> vectorSet;
-   FloatMatrix mat;
-   FloatRowVector frow;
-   boolMatrix bmat;
+   Matrix mat;
    Array<bool> brow;
    charMatrix cm;
 };
 
-static size32_t getRowResult(octave_value row, ARowBuilder &builder)
+static size32_t getRowResult(octave_value row, ARowBuilder &builder,bool inDataSet,Array<double> * vector)
 {
    if(row.isempty())
       rtlFail(0, "Null Object Returned");
    const RtlTypeInfo *typeInfo = builder.queryAllocator()->queryOutputMeta()->queryTypeInfo();
    assertex(typeInfo);
-   RtlFieldStrInfo dummyField("<row>", NULL, typeInfo);
-   OctaveRowBuilder ORowBuilder(row, &dummyField);
+   RtlFieldStrInfo dummyField("<row>", NULL, typeInfo);      
+   OctaveRowBuilder ORowBuilder(row, &dummyField,inDataSet);
+   if(inDataSet)
+      ORowBuilder.initializeRow(*vector);
    return typeInfo->build(builder, 0, &dummyField, ORowBuilder);
 }
+
+class OctaveRowStream : public  CInterfaceOf<IRowStream>
+{
+public:
+   OctaveRowStream(octave_value result, IEngineRowAllocator *_resultAllocator)
+   : dataSet(result),resultAllocator(_resultAllocator),rowIdx(-1)
+   {
+      if (dataSet.isempty())
+         rtlFail(0,"OctaveEmbed: Result empty");
+      if(!dataSet.is_matrix_type())
+         rtlFail(0,"OctaveEmbed: Type Mismatch");
+      mat = dataSet.matrix_value();
+   }
+
+   virtual const void *nextRow()
+   {
+      rowIdx++;
+      if(rowIdx >= mat.rows())
+      {
+         stop();
+         return NULL;
+      }
+
+      Array<double> vectorSet = mat.row(rowIdx).as_row();
+      RtlDynamicRowBuilder rowBuilder(resultAllocator);
+      size32_t len = octaveembed::getRowResult(dataSet, rowBuilder,true,&vectorSet);
+      return rowBuilder.finalizeRowClear(len);
+   }
+
+   virtual void stop()
+   {
+      resultAllocator.clear();
+   }
+
+protected:
+   octave_value dataSet;
+   Matrix mat;
+   Linked<IEngineRowAllocator> resultAllocator;
+   unsigned rowIdx;
+};
+
+class OctaveObjectBuilder : public CInterfaceOf<IFieldProcessor>
+{
+public:
+   OctaveObjectBuilder(const RtlFieldInfo *__outerRow,std::string __varname)
+   :outerRow(__outerRow),varname(__varname),setParam(""),inSet(false),inDataSet(false)
+   {
+   }
+
+   virtual void processString(unsigned len, const char *value, const RtlFieldInfo * field){}
+   virtual void processBool(bool value, const RtlFieldInfo * field)
+   {
+      if(inDataSet)
+      {
+         if(value)
+            setParam += " true ";
+         else
+            setParam += " false ";
+         return;
+      }
+
+      if(inSet)
+      {
+         if (value)
+            setParam += " true;";
+         else
+            setParam += " false;";
+         return;
+      }
+
+      std::string name = varname+"."+field->name;
+      if(value)
+         params[name] = "true";
+      else
+         params[name] = "false";         
+   }
+
+   virtual void processData(unsigned len, const void *value, const RtlFieldInfo * field){}
+   virtual void processInt(__int64 value, const RtlFieldInfo * field)
+   {
+      if(inDataSet)
+      {
+         setParam += " int64("+std::to_string(value)+") ";
+         return;
+      }
+
+      if (inSet)
+      {
+         setParam += " int64("+std::to_string(value)+"); ";
+         return;
+      }
+
+      std::string name =varname + "." + field->name;
+      params[name]="int64("+std::to_string(value)+")";
+   }
+
+   virtual void processUInt(unsigned __int64 value, const RtlFieldInfo * field)
+   {
+      if(inDataSet)
+      {
+         setParam += " uint64("+std::to_string(value)+") ";
+         return;
+      }
+
+      if (inSet)
+      {
+         setParam += " uint64("+std::to_string(value)+"); ";
+         return;
+      }
+
+      std::string name =varname + "." + field->name;
+      params[name]="uint64("+std::to_string(value)+")";
+   }
+
+   virtual void processReal(double value, const RtlFieldInfo * field)
+   {
+      if(inDataSet)
+      {
+         setParam += " " + std::to_string(value) + " ";
+         return;
+      }
+
+      if (inSet)
+      {
+         setParam += std::to_string(value)+" ; ";
+         return;
+      }
+
+      std::string name =varname + "." + field->name;
+      params[name]=std::to_string(value);
+   }
+
+   virtual void processDecimal(const void *value, unsigned digits, unsigned precision, const RtlFieldInfo * field)
+   {
+      std::string name =varname + "." + field->name;
+      Decimal val;
+      val.setDecimal(digits, precision, value);
+      params[name]=std::to_string(val.getReal());
+   }
+   virtual void processUDecimal(const void *value, unsigned digits, unsigned precision, const RtlFieldInfo * field)
+   {
+      std::string name =varname + "." + field->name;
+      Decimal val;
+      val.setUDecimal(digits, precision, value);
+      params[name]=std::to_string(val.getReal());
+   }
+   virtual void processUnicode(unsigned len, const UChar *_value, const RtlFieldInfo * field){}
+   virtual void processQString(unsigned len, const char *_value, const RtlFieldInfo * field)
+   {
+      std::string name = varname +"." + field->name;
+      char * out;
+      size32_t outlen;
+      rtlQStrToStr(outlen, out, len, _value);
+      std::string value(out,outlen);
+      std::cout << out;
+      value = "\""+value+"\"";
+      params[name]=value;        //Still need to be tested
+   }
+   virtual void processUtf8(unsigned len, const char *_value, const RtlFieldInfo * field)
+   {
+      std::string name = varname +"." + field->name;
+      std::string value(_value,rtlUtf8Size(len, _value));
+      value = "\""+value+"\"";
+      params[name]=value;
+   }
+
+   virtual bool processBeginSet(const RtlFieldInfo * field, unsigned elements, bool isAll, const byte *data)
+   {
+      if (isAll)
+         rtlFail(0, "OctaveEmbed: ALL sets are not supported");
+      if(inDataSet)
+         return true;
+      setParam +="[ ";
+      inSet = true;
+      return true;
+   }
+
+   virtual bool processBeginDataset(const RtlFieldInfo * field, unsigned rows)
+   {
+      setParam +="[ ";
+      inDataSet = true;
+      return true;
+   }
+
+   virtual bool processBeginRow(const RtlFieldInfo * field)
+   {
+      if(inDataSet)
+      {
+         return true;
+      }
+
+      std::string fieldName = field->name;
+      if(fieldName.compare("<row>") == 0)
+      {
+         return true;
+      }
+
+      pushName(field);    //For record within a record
+      return true;
+   }
+
+   virtual void processEndSet(const RtlFieldInfo * field)
+   {
+      if(inDataSet)
+         return;
+      std::string name = varname+"." + field->name;
+      setParam += " ]";
+      params[name] = setParam;
+      setParam  = "";
+      inSet = false;
+   }
+
+   virtual void processEndDataset(const RtlFieldInfo * field)
+   {
+      if(inDataSet)
+      {
+         std::string name = varname + "." + field->name;
+         setParam += " ]";
+         params[name] = setParam;
+         setParam = "";
+         inDataSet = false;
+      }
+   }
+   virtual void processEndRow(const RtlFieldInfo * field)
+   {
+      std::string fieldName =  field->name;
+      if(inDataSet)
+      {
+         setParam +=" ; ";    //Each row in a dataset(matrix) are separated by ;
+         return;
+      }
+
+      if(fieldName.compare("<row>") != 0)
+      {
+         popName();     //For record within a record
+      }
+   }
+
+   std::map<std::string , std::string> getValue()
+   {
+      return params;
+   }
+
+protected:
+   void pushName(const RtlFieldInfo * field)
+   {
+      std::string name = field->name;
+      nameList.push(varname);
+      varname +="."+name;
+   }
+
+   void popName()
+   {
+      varname = nameList.top();
+      nameList.pop();
+   }
+
+   bool inSet;
+   bool inDataSet;
+   const RtlFieldInfo * outerRow;
+   std::string varname;
+   std::string setParam;
+   std::stack<std::string> nameList;
+   std::map<std::string , std::string> params;
+};
 
 class OctaveEmbedImportContext : public CInterfaceOf<IEmbedFunctionContext>
 {
@@ -455,7 +771,19 @@ public:
       params[varname]=value;
       std::cout << value;
    }
-   virtual void bindUnicodeParam(const char *name, size32_t chars, const UChar *__val){}
+   virtual void bindUnicodeParam(const char *name, size32_t chars, const UChar *__val)
+   {
+      std::string varname(name);       //Correction Required
+      char * out;
+      unsigned outlen;
+      std::cout <<"heelkkv\n";
+      rtlUnicodeToStr(outlen,  out,chars,__val);
+      std::cout << out;
+      /* std::string value(out,outlen);
+      value = "\""+value+"\"";
+     // params[varname] = value;
+      std::cout << value;*/
+   }
    virtual void bindSetParam(const char *name, int elemType, size32_t elemSize, bool isAll, size32_t totalBytes, const void *setData)  
    {
       std::string varname(name);
@@ -964,6 +1292,7 @@ public:
       {
          throw MakeStringException(-1,"%s","Unable to initialize interpreter");
       }
+
       appendParameters();
       global=globalState;
       octave_value_list output;
@@ -978,6 +1307,7 @@ public:
             parse_status =0;
             output.prepend(temp);
          }
+         
          result=output(0);
          //global=nullptr;
       }
@@ -989,12 +1319,12 @@ public:
    }
    virtual IRowStream *getDatasetResult(IEngineRowAllocator * _resultAllocator)   
    {
-      throwUnexpected();
+      return new OctaveRowStream(result,_resultAllocator);
    }
    virtual byte * getRowResult(IEngineRowAllocator * _resultAllocator)   
    {
       RtlDynamicRowBuilder rowBuilder(_resultAllocator);
-      size32_t len = octaveembed::getRowResult(result, rowBuilder);
+      size32_t len = octaveembed::getRowResult(result, rowBuilder,false,nullptr);
       return (byte *) rowBuilder.finalizeRowClear(len);
    }
    virtual size32_t getTransformResult(ARowBuilder & builder)   
@@ -1003,7 +1333,14 @@ public:
    }
    virtual void bindRowParam(const char *name, IOutputMetaData & metaVal, const byte *val)   
    {
-      throwUnexpected();
+      std::string varname(name);
+      const RtlTypeInfo *typeInfo = metaVal.queryTypeInfo();
+      assertex(typeInfo);
+      RtlFieldStrInfo dummyField("<row>", NULL, typeInfo);
+      OctaveObjectBuilder objBuilder(&dummyField,varname);
+      typeInfo->process(val, val, &dummyField, objBuilder);
+      std::map<std::string , std::string> temp = objBuilder.getValue();
+      params.insert(temp.begin(),temp.end());
    }
    virtual void bindDatasetParam(const char *name, IOutputMetaData & metaVal, IRowStream * val)   
    {
@@ -1049,7 +1386,7 @@ protected:
       std::string temp;
       for(size_t i=0;i<params.size();i++,itr++)
       {
-         temp="assignin (\"base\",'" + itr->first+"',"+itr->second+")\n";
+         temp="evalin (\"base\",'" + itr->first+" = "+itr->second+"')\n";
          statement.insert(statement.begin(),temp);
          statement_list_size++;
       }
@@ -1082,15 +1419,18 @@ protected:
                {
                  top++;
                }
+
                if(posc != query.npos)
                   top--;
             }
+
             while(len>0)
             {
                len--;
                preprocess->erase(x);
             }
          }
+
          statement.push_back(stmt);
       }
    }
@@ -1108,25 +1448,28 @@ protected:
         {    
             if(temp.at(j)!=' ')
             {
-                flag=1;break;
+                flag=1;
+                break;
             }
         }
+
         if(flag!=1)
         {
             output->erase(p);
             p--;
             i--;
         }
+
         p++;
       }
    }
 protected:
-    const IThorActivityContext *activityCtx=nullptr;
-    octave_value result;
-    int statement_list_size = 0;
-    std::vector<std::string> statement;
-    octave::interpreter* global;
-    std::map<std::string , std::string> params;
+   const IThorActivityContext *activityCtx=nullptr;
+   octave_value result;
+   int statement_list_size = 0;
+   std::vector<std::string> statement;
+   octave::interpreter* global;
+   std::map<std::string , std::string> params;
 };
 static __thread OctaveEmbedImportContext * theFunctionContext;  // We reuse per thread, for speed
 static __thread ThreadTermFunc threadHookChain;
