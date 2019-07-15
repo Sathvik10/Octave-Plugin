@@ -15,6 +15,7 @@
 #include "jexcept.hpp"
 #include "jthread.hpp"
 
+#include "roxiemem.hpp"
 #include "nbcd.hpp"
 #include "deftype.hpp"
 
@@ -110,6 +111,17 @@ protected:
      setSize = 0;
    }
 
+   void pushSize()
+   {
+      sizeStack.append(setSize);
+   }
+
+   void popSize()
+   {
+      setSize = sizeStack.popGet();
+   }
+
+   IntArray sizeStack;
    std::stack<octave_value> list;
    bool inSet;
    bool inDataSet;
@@ -124,7 +136,7 @@ class OctaveRowBuilder : public OctaveObjectAccessor, public CInterfaceOf<IField
 {
 public:
    OctaveRowBuilder(octave_value __result, const RtlFieldInfo *__outerRow,bool _inDataset)
-   :OctaveObjectAccessor(_inDataset),outerRow(__outerRow),row(__result)
+   :OctaveObjectAccessor(_inDataset),outerRow(__outerRow),row(__result),struct_array(false)
    {
    }
 
@@ -218,7 +230,6 @@ public:
       }
       else
       {
-         std::cout << field->name;
          result = getResult(field);
          if(result.is_string())
          {
@@ -251,12 +262,35 @@ public:
       }
    }
 
-   virtual void getUnicodeResult(const RtlFieldInfo *field, size32_t &chars, UChar * &result) {}
-   virtual void getDecimalResult(const RtlFieldInfo *field, Decimal &value){}
+   virtual void getUnicodeResult(const RtlFieldInfo *field, size32_t &chars, UChar * &__result)
+   {
+      if(inSet)
+      {
+         std::string temp = cm.row_as_string(idx++);
+         const char * src = temp.c_str();
+         unsigned slen = rtlUtf8Length(temp.length(),src);
+         rtlUtf8ToUnicodeX(chars,__result,slen,src);
+      }
+      else
+      {
+         result = getResult(field);
+         if(result.is_string())
+         {
+            std::string temp = result.string_value();
+            const char * src = temp.c_str();
+            unsigned slen = rtlUtf8Length(temp.length(),src);
+            rtlUtf8ToUnicodeX(chars,__result,slen,src);
+         }
+      }
+   }
+   virtual void getDecimalResult(const RtlFieldInfo *field, Decimal &value)
+   {
+      value.setReal(getRealResult(field));
+   }
 
     //The following are used process the structured fields
    virtual void processBeginSet(const RtlFieldInfo * field, bool &isAll)
-   {
+   {      
       if(inDataSet)
          return;
       result = getResult(field);
@@ -269,6 +303,7 @@ public:
             {
                inSet = true;
                vectorSet = result.vector_value();
+               pushSize();
                setSize = vectorSet.numel();
                pushIdx();
             }
@@ -276,6 +311,7 @@ public:
             {
                inSet = true;
                vectorSet = result.vector_value();
+               pushSize();
                setSize = vectorSet.numel();
                pushIdx();
             }
@@ -284,11 +320,13 @@ public:
          {
             inSet = true;
             cm = result.char_matrix_value();
+            pushSize();
             setSize = cm.rows();
             pushIdx();
          }
       }
    }
+
    virtual void processBeginDataset(const RtlFieldInfo * field) 
    {
       result = getResult(field);
@@ -298,6 +336,7 @@ public:
          {
             inDataSet = true ;
             mat = result.matrix_value();
+            pushSize();
             setSize = mat.rows();
             pushIdx();
          }
@@ -305,15 +344,23 @@ public:
          {
             inDataSet = true;
             mat = result.matrix_value();
+            pushSize();
             setSize = mat.rows();
             pushIdx();
          }
-      }
 
+         if(result.isstruct())
+         {
+            struct_array = true;
+            sArray = result.map_value();
+            pushSize();
+            setSize = sArray.numel();
+            pushIdx();
+         }
+      }
    }
-   virtual void processBeginRow(const RtlFieldInfo * field) 
+   virtual void processBeginRow(const RtlFieldInfo * field)
    {
-      std::cout << "process Begin Row\n";
       std::string fieldName(field->name);
       if(inDataSet)
       {  
@@ -321,6 +368,8 @@ public:
          return;
       }
 
+      if(struct_array)
+         return;
       if(fieldName.compare("<row>") == 0)
       {  
          if(row.isstruct())
@@ -340,14 +389,9 @@ public:
       }     
    }
 
-   virtual bool processNextSet(const RtlFieldInfo * field) 
+   virtual bool processNextSet(const RtlFieldInfo * field)
    {
-      if(vectorSet.isempty())
-      {
-         return false;
-      }
-
-      if(vectorSet.isempty() && cm.isempty()&& mat.isempty())
+      if (vectorSet.isempty()&&cm.isempty()&& mat.isempty())
          return false;
       if(idx<setSize)
          return true;
@@ -356,29 +400,57 @@ public:
 
    virtual bool processNextRow(const RtlFieldInfo * field)
    {
-      if(mat.isempty())
+      if(mat.isempty() && sArray.isempty())
          return false;
       if(idx < setSize)
-      {  if (!mat.isempty())
+      {  
+         if (!mat.isempty())
+         {
             vectorSet = mat.row(idx++).as_row();
-         return true;
+            return true;
+         }
+
+         if(!sArray.isempty())
+         {
+            octave_scalar_map sMap = sArray.elem(idx++);
+            octave_value str(sMap);
+            pushResult(row);
+            row = str;
+            initializeStruct();
+            return true;
+         }
       }
 
       return false;   
    }
 
-   virtual void processEndSet(const RtlFieldInfo * field) 
+   virtual void processEndSet(const RtlFieldInfo * field)
    { 
       if(inSet == true)
+      {
          popIdx();
+         popSize();
+      }
+
       inSet = false;
    }
 
    virtual void processEndDataset(const RtlFieldInfo * field)
    {
       if(inDataSet == true)
+      {  
          popIdx();
-      inDataSet = false;
+         popSize();
+         inDataSet = false;
+      }
+
+      if(struct_array)
+      {
+         popIdx();
+         popSize();
+         initializeStruct();
+         struct_array = false;
+      }
    }
 
    virtual void processEndRow(const RtlFieldInfo * field)
@@ -387,6 +459,12 @@ public:
       if(inDataSet)
       {
          popIdx();
+         return;
+      }
+
+      if(struct_array)
+      {
+         row = popResult();
          return;
       }
 
@@ -411,7 +489,6 @@ protected:
       value = row.map_value();
       for(size_t i =0;i<keyName.numel();i++)
       {
-         std::cout << keyName.elem(i) << "   ";
          Cell c = value.getfield(keyName.elem(i));
          stack.append(c.checkelem(0));
       }
@@ -426,6 +503,8 @@ protected:
    }
 
    octave_value row;
+   bool struct_array;
+   octave_map sArray;
    octave_value result;
    octave_value_list stack;
    const RtlFieldInfo *outerRow;
@@ -458,14 +537,32 @@ public:
    {
       if (dataSet.isempty())
          rtlFail(0,"OctaveEmbed: Result empty");
-      if(!dataSet.is_matrix_type())
+      if(!dataSet.is_matrix_type() && !dataSet.isstruct())
          rtlFail(0,"OctaveEmbed: Type Mismatch");
-      mat = dataSet.matrix_value();
+      if(dataSet.is_matrix_type())
+         mat = dataSet.matrix_value();
+      if(dataSet.isstruct())
+         sArray = dataSet.map_value();
    }
 
    virtual const void *nextRow()
    {
       rowIdx++;
+      if(!sArray.isempty())
+      {
+         if(rowIdx >= sArray.numel())
+         {
+            stop();
+            return NULL;
+         }
+
+         octave_scalar_map sMap = sArray.elem(rowIdx);
+         octave_value result(sMap);
+         RtlDynamicRowBuilder rowBuilder(resultAllocator);
+         size32_t len = octaveembed::getRowResult(result, rowBuilder,false,nullptr);
+         return (byte *) rowBuilder.finalizeRowClear(len);
+      }
+
       if(rowIdx >= mat.rows())
       {
          stop();
@@ -486,6 +583,7 @@ public:
 protected:
    octave_value dataSet;
    Matrix mat;
+   octave_map sArray;
    Linked<IEngineRowAllocator> resultAllocator;
    unsigned rowIdx;
 };
@@ -494,14 +592,21 @@ class OctaveObjectBuilder : public CInterfaceOf<IFieldProcessor>
 {
 public:
    OctaveObjectBuilder(const RtlFieldInfo *__outerRow,std::string __varname)
-   :outerRow(__outerRow),varname(__varname),setParam(""),inSet(false),inDataSet(false)
+   :outerRow(__outerRow),setParam(""),inSet(false),inDataSet(false),struct_array(false),idx(1)
    {
+      varname = __varname+".";
    }
 
-   virtual void processString(unsigned len, const char *value, const RtlFieldInfo * field){}
+   virtual void processString(unsigned len, const char *value, const RtlFieldInfo * field)
+   {
+      std::string  name = varname+field->name;
+      std::string value(value);
+      value = "\""+value +"\"";
+      params[name]= value;
+   }
    virtual void processBool(bool value, const RtlFieldInfo * field)
    {
-      if(inDataSet)
+      if(inDataSet && !struct_array)
       {
          if(value)
             setParam += " true ";
@@ -519,7 +624,7 @@ public:
          return;
       }
 
-      std::string name = varname+"."+field->name;
+      std::string name = varname+field->name;
       if(value)
          params[name] = "true";
       else
@@ -529,7 +634,7 @@ public:
    virtual void processData(unsigned len, const void *value, const RtlFieldInfo * field){}
    virtual void processInt(__int64 value, const RtlFieldInfo * field)
    {
-      if(inDataSet)
+      if(inDataSet && !struct_array)
       {
          setParam += " int64("+std::to_string(value)+") ";
          return;
@@ -541,13 +646,13 @@ public:
          return;
       }
 
-      std::string name =varname + "." + field->name;
+      std::string name =varname  + field->name;
       params[name]="int64("+std::to_string(value)+")";
    }
 
    virtual void processUInt(unsigned __int64 value, const RtlFieldInfo * field)
    {
-      if(inDataSet)
+      if(inDataSet && !struct_array)
       {
          setParam += " uint64("+std::to_string(value)+") ";
          return;
@@ -559,13 +664,13 @@ public:
          return;
       }
 
-      std::string name =varname + "." + field->name;
+      std::string name =varname  + field->name;
       params[name]="uint64("+std::to_string(value)+")";
    }
 
    virtual void processReal(double value, const RtlFieldInfo * field)
    {
-      if(inDataSet)
+      if(inDataSet && !struct_array)
       {
          setParam += " " + std::to_string(value) + " ";
          return;
@@ -577,7 +682,7 @@ public:
          return;
       }
 
-      std::string name =varname + "." + field->name;
+      std::string name =varname  + field->name;
       params[name]=std::to_string(value);
    }
 
@@ -588,6 +693,7 @@ public:
       val.setDecimal(digits, precision, value);
       params[name]=std::to_string(val.getReal());
    }
+
    virtual void processUDecimal(const void *value, unsigned digits, unsigned precision, const RtlFieldInfo * field)
    {
       std::string name =varname + "." + field->name;
@@ -595,21 +701,22 @@ public:
       val.setUDecimal(digits, precision, value);
       params[name]=std::to_string(val.getReal());
    }
+
    virtual void processUnicode(unsigned len, const UChar *_value, const RtlFieldInfo * field){}
    virtual void processQString(unsigned len, const char *_value, const RtlFieldInfo * field)
    {
-      std::string name = varname +"." + field->name;
+      std::string name = varname  + field->name;
       char * out;
       size32_t outlen;
       rtlQStrToStr(outlen, out, len, _value);
       std::string value(out,outlen);
-      std::cout << out;
       value = "\""+value+"\"";
       params[name]=value;        //Still need to be tested
    }
+
    virtual void processUtf8(unsigned len, const char *_value, const RtlFieldInfo * field)
    {
-      std::string name = varname +"." + field->name;
+      std::string name = varname  + field->name;
       std::string value(_value,rtlUtf8Size(len, _value));
       value = "\""+value+"\"";
       params[name]=value;
@@ -620,7 +727,22 @@ public:
       if (isAll)
          rtlFail(0, "OctaveEmbed: ALL sets are not supported");
       if(inDataSet)
-         return true;
+      {
+         if(!struct_array)
+            return true;
+         if(flag == 1000)
+         {
+            struct_array = false;
+            popName();
+            return true;
+         }
+         else
+         {
+            setParam ="";
+            inDataSet = false;
+         }
+      }
+
       setParam +="[ ";
       inSet = true;
       return true;
@@ -630,13 +752,21 @@ public:
    {
       setParam +="[ ";
       inDataSet = true;
+      struct_array = true;
+      flag= 999;
       return true;
    }
 
    virtual bool processBeginRow(const RtlFieldInfo * field)
    {
-      if(inDataSet)
+      if(inDataSet || struct_array)
       {
+         flag++;
+         if(struct_array)
+         {
+            pushName(field);        //for dataset mapping to struct array.
+            varname += "("+std::to_string(idx++)+").";
+         }
          return true;
       }
 
@@ -654,7 +784,7 @@ public:
    {
       if(inDataSet)
          return;
-      std::string name = varname+"." + field->name;
+      std::string name = varname + field->name;
       setParam += " ]";
       params[name] = setParam;
       setParam  = "";
@@ -663,24 +793,33 @@ public:
 
    virtual void processEndDataset(const RtlFieldInfo * field)
    {
-      if(inDataSet)
+      if(inDataSet && !struct_array)
       {
-         std::string name = varname + "." + field->name;
+         std::string name = varname  + field->name;
          setParam += " ]";
          params[name] = setParam;
          setParam = "";
          inDataSet = false;
       }
+      if(struct_array)
+      {
+         popName();
+         struct_array = false;
+      }
    }
    virtual void processEndRow(const RtlFieldInfo * field)
    {
       std::string fieldName =  field->name;
-      if(inDataSet)
+      if(inDataSet && !struct_array)
       {
-         setParam +=" ; ";    //Each row in a dataset(matrix) are separated by ;
+         setParam +=" ; ";    //Each row in a dataset(matrix) is separated by ;
          return;
       }
-
+      if(struct_array)
+      {
+         popName();
+         return;
+      }
       if(fieldName.compare("<row>") != 0)
       {
          popName();     //For record within a record
@@ -697,17 +836,26 @@ protected:
    {
       std::string name = field->name;
       nameList.push(varname);
-      varname +="."+name;
+      if(!struct_array)
+         varname +=name + ".";
+      else
+         varname +=name;
    }
 
    void popName()
    {
-      varname = nameList.top();
-      nameList.pop();
+      if(!nameList.empty())
+      {
+         varname = nameList.top();
+         nameList.pop();
+      }
    }
 
    bool inSet;
    bool inDataSet;
+   bool struct_array;
+   int idx;
+   int flag;
    const RtlFieldInfo * outerRow;
    std::string varname;
    std::string setParam;
@@ -721,13 +869,16 @@ public:
    OctaveEmbedImportContext()
    {  
    }
+
    ~OctaveEmbedImportContext()
    {   
    }
+
    void setActivityContext(const IThorActivityContext *_activityCtx)
    {
         activityCtx = _activityCtx;
    }
+
    virtual void bindBooleanParam(const char *name, bool __val)  
    {
       std::string varname(name);
@@ -736,22 +887,26 @@ public:
       else 
          params[varname]="false";      
    }
+
    virtual void bindDataParam(const char *name, size32_t len, const void *val){}
    virtual void bindRealParam(const char *name, double __val)  
    {
       std::string varname (name);
       params[varname]=std::to_string(__val);     
    }
+
    virtual void bindSignedParam(const char *name, __int64 __val)   
    {
       std::string varname (name);
       params[varname]="int64("+std::to_string(__val)+")";
    }
+
    virtual void bindUnsignedParam(const char *name, unsigned __int64 __val)  
    {
       std::string varname (name);
       params[varname]="uint64("+std::to_string(__val)+")";
    }
+
    virtual void bindStringParam(const char *name, size32_t len, const char *__val)  
    {
       std::string varname(name);
@@ -759,31 +914,21 @@ public:
       value = "\""+value +"\"";
       params[varname]= value;
    }
+
    virtual void bindVStringParam(const char *name, const char *val)  
    {
       bindStringParam(name, strlen(val), val);
    }
+
    virtual void bindUTF8Param(const char *name, size32_t chars, const char *__val)  
    {
       std::string varname(name);
       std::string value(__val,rtlUtf8Size(chars, __val));
       value = "\""+value+"\"";
       params[varname]=value;
-      std::cout << value;
    }
-   virtual void bindUnicodeParam(const char *name, size32_t chars, const UChar *__val)
-   {
-      std::string varname(name);       //Correction Required
-      char * out;
-      unsigned outlen;
-      std::cout <<"heelkkv\n";
-      rtlUnicodeToStr(outlen,  out,chars,__val);
-      std::cout << out;
-      /* std::string value(out,outlen);
-      value = "\""+value+"\"";
-     // params[varname] = value;
-      std::cout << value;*/
-   }
+
+   virtual void bindUnicodeParam(const char *name, size32_t chars, const UChar *__val){}
    virtual void bindSetParam(const char *name, int elemType, size32_t elemSize, bool isAll, size32_t totalBytes, const void *setData)  
    {
       std::string varname(name);
@@ -817,9 +962,11 @@ public:
                rtlFail(0, "Octaveembed: Unsupported parameter type");
                break;
             }
+
             inData += thisSize;
             numElems++;
          }
+
          inData = (const byte *) setData;
       }
       else 
@@ -838,6 +985,7 @@ public:
                value +=" false ";
             break;
          }
+
          case type_int:
          {
             if (elemSize == sizeof(int8_t))
@@ -860,8 +1008,10 @@ public:
                int64_t val = rtlReadInt(inData, elemSize);
                value +=" int64("+std::to_string(val)+") ";
             }
+
             break;
          }
+
          case type_unsigned:
          {
             if (elemSize == sizeof(uint8_t))
@@ -884,8 +1034,10 @@ public:
                uint64_t val = rtlReadUInt(inData, elemSize);
                value +=" int64("+std::to_string(val)+") ";
             }
+
             break;
          }
+
          case type_real:
          {
             double val;
@@ -898,9 +1050,11 @@ public:
             {
                val = *(float *) inData;
                value += " single("+std::to_string(val)+") ";
-            }  
+            } 
+
             break;
          }
+
          case type_string :
          {
             if (elemSize == UNKNOWN_LENGTH)
@@ -915,6 +1069,7 @@ public:
             value += "\"" +val+"\" \n "; 
             break;
          }
+
          case type_varstring :
          {
             size32_t numChars = strlen((const char *) inData);
@@ -927,6 +1082,7 @@ public:
             value += "\""+val+"\" \n";
             break;
          }
+
          case type_utf8:
          {
             assertex (elemSize == UNKNOWN_LENGTH);
@@ -937,26 +1093,30 @@ public:
             value += "\""+val+"\" \n";
             break;
          }
+
+         //unicode binding .............
          default :
             rtlFail(0, "Octaveembed: Unsupported parameter type");
             break;
          }
+
          inData += thisSize;
       }
+
       value += " ]";
-      std::cout << value <<"\n";
       params[varname]=value;
    }
+
    virtual bool getBooleanResult() 
    {    
       if(!result.isempty())
       {
          if(result.islogical())
                return result.bool_value();
-         resultMismatchException("Boolean");
+         rtlFail(0,"OctaveEmbed : Result type mismatch");
       }
-      throwUnexpected();    
    }
+
    virtual void getDataResult(size32_t &len, void * &result){}
    virtual double getRealResult() 
    {
@@ -966,13 +1126,13 @@ public:
          {
             if(result.is_double_type())
                return result.double_value();
-
             return result.float_value();
          }
-         resultMismatchException("Real");
+
+         rtlFail(0,"OctaveEmbed : Result type mismatch");         
       }
-      throwUnexpected();
    }
+
    virtual __int64 getSignedResult() 
    {
       int64_t ret;
@@ -1006,11 +1166,11 @@ public:
          }
          else
          {
-            resultMismatchException("Signed");
+            rtlFail(0,"OctaveEmbed : Result type mismatch");         
          }
+
          return ret;
       }
-      throwUnexpected();
    }
    virtual unsigned __int64 getUnsignedResult() 
    {
@@ -1045,8 +1205,8 @@ public:
          }
          return ret;
       }
-        throwUnexpected();
    }
+
    virtual void getStringResult(size32_t &tlen, char * &trg)   
    {  
       if(!result.isempty())
@@ -1059,56 +1219,50 @@ public:
          }
          else
          {
-         throwUnexpected();
-
-            resultMismatchException("String");
+            rtlFail(0,"OctaveEmbed : Result type mismatch");
          }
       }
-      else
-      {
-         throwUnexpected();
-      }
+
+      tlen = 0;
+      trg = NULL;
    }
    virtual void getUTF8Result(size32_t &tlen, char * &trg)   
    {
       if(!result.isempty())
       {  
          if(result.is_string())
-        {   
+         {   
             const std::string src = result.string_value();
             unsigned slen = rtlUtf8Length(src.length(),src.c_str());
             rtlUtf8ToUtf8X(tlen,trg,rtlUtf8Length(src.length(),src.c_str()),src.c_str());
-        }
+         }
         else
-        {
-           resultMismatchException("UTF8");
-        }
+         {
+            rtlFail(0,"OctaveEmbed : Result type mismatch");
+         } 
       }
-      else
-      {
-         throwUnexpected();
-      }
+      tlen = 0;
+      trg = NULL;
    }
    virtual void getUnicodeResult(size32_t &tlen, UChar * &trg)   
    {
       if(!result.isempty())
       {  
          if(result.is_string())
-        {   
+         {   
             const std::string src = result.string_value();
             unsigned slen = rtlUtf8Length(src.length(),src.c_str());
             rtlUtf8ToUnicodeX(tlen,trg,rtlUtf8Length(src.length(),src.c_str()),src.c_str());
-        }
+         }
         else
-        {
-           resultMismatchException("Unicode");
-        }
+         {
+            rtlFail(0,"OctaveEmbed : Result type mismatch");        
+         }
       }
-      else
-      {
-         throwUnexpected();
-      }
+      tlen = 0;
+      trg = NULL;
    }
+
    virtual void getSetResult(bool & __isAllResult, size32_t & __resultBytes, void * & __result, int elemType, size32_t elemSize)  
    {
       assertex(!result.isempty());
@@ -1127,6 +1281,7 @@ public:
                out.ensureAvailable(array_size * elemSize); // MORE - check for overflow?
                outData = out.getbytes();
             }
+
             for(size_t i = 0 ; i < array_size ; i++)
             {
                switch ((type_t) elemType)
@@ -1147,13 +1302,13 @@ public:
                default:
                   rtlFail(0, "OctaveEmbed: type mismatch - unsupported return type");
                }
+
                if (elemSize != UNKNOWN_LENGTH)
                {
                   outData += elemSize;
                   outBytes += elemSize;
                }
             }
-
          }
       }
       else if (result.islogical())
@@ -1168,6 +1323,7 @@ public:
                out.ensureAvailable(array_size * elemSize);
                outData = out.getbytes();
             }
+
             if ((type_t) elemType != type_boolean)
                rtlFail(0, "OctaveEmbed: type mismatch - unsupported return type");  
             for(size_t i = 0 ; i < array_size ; i++)
@@ -1191,8 +1347,9 @@ public:
          {
                out.ensureAvailable(cm_size * elemSize);
                outData = out.getbytes();
-         }  
-         for ( size_t i = 0; i < cm_size ; i++) 
+         }
+
+         for (size_t i = 0; i < cm_size ; i++) 
          {
             temp = cm.row_as_string(i);
             const char * src = temp.c_str();
@@ -1262,6 +1419,7 @@ public:
                         rtlUtf8ToUnicode(elemSize / sizeof(UChar), (UChar *) outData, numchars, src);
                   }
                }
+
                break;
             default :
                rtlFail(0, "OctaveEmbed: type mismatch - unsupported return type");
@@ -1272,6 +1430,7 @@ public:
       __resultBytes = outBytes;
       __result = out.detachdata();    
    }
+
    virtual void importFunction(size32_t len, const char *function)   
    {
       throwUnexpected();
@@ -1286,6 +1445,7 @@ public:
       cutEmptyLine(&statement);
       statement_list_size += statement.size();
    }
+
    virtual void callFunction()  
    {
       if(!globalState)
@@ -1344,26 +1504,44 @@ public:
    }
    virtual void bindDatasetParam(const char *name, IOutputMetaData & metaVal, IRowStream * val)   
    {
-      throwUnexpected();
+      std::string varname(name);
+      const RtlTypeInfo *typeInfo = metaVal.queryTypeInfo();
+      assertex(typeInfo);
+      RtlFieldStrInfo dummyField("<row>", NULL, typeInfo);
+      int idx = 1;
+      for (;;)
+      {
+         std::string name = varname + "("+std::to_string(idx++)+")";
+         roxiemem::OwnedConstRoxieRow row = val->ungroupedNextRow();
+         if (!row)
+             break;
+         OctaveObjectBuilder objBuilder(&dummyField,name);
+         const byte *brow = (const byte *) row.get();
+         typeInfo->process(brow, brow, &dummyField, objBuilder); // Creates a JS object from the incoming ECL row
+         std::map<std::string , std::string> temp = objBuilder.getValue();
+         params.insert(temp.begin(),temp.end());
+      }
    }
    virtual void bindFloatParam(const char *name, float val)   
    {
-      throwUnexpected();
+      std::string varname(name);
+      params[varname] = std::to_string(val)
    }
+
    virtual void bindSignedSizeParam(const char *name, int size, __int64 val)  
    {
-      throwUnexpected();
+      bindSignedParam(name,val);
    }
    virtual void bindUnsignedSizeParam(const char *name, int size, unsigned __int64 val)  
    {
-      throwUnexpected();
+      bindUnsignedParam(name,val);
    }
    virtual IInterface *bindParamWriter(IInterface *esdl, const char *esdlservice, const char *esdltype, const char *name) 
    {
       return nullptr;
    }
-   virtual void paramWriterCommit(IInterface *writer) {}
-   virtual void writeResult(IInterface *esdl, const char *esdlservice, const char *esdltype, IInterface *writer) {}
+   virtual void paramWriterCommit(IInterface *writer){}
+   virtual void writeResult(IInterface *esdl, const char *esdlservice, const char *esdltype, IInterface *writer){}
    virtual void loadCompiledScript(size32_t len, const void *script) 
    {
       throwUnexpected();
@@ -1376,9 +1554,9 @@ public:
    {
    }
 protected:
-   IException *resultMismatchException(const char *expected)
+   void resultMismatchException(const char *expected)
    {
-      return makeStringExceptionV(0, "OctaveEmbed: type mismatch - unsupported return type(%s expected)",expected );
+      makeStringExceptionV(0, "OctaveEmbed: type mismatch - unsupported return type(%s expected)",expected );
    }
    void appendParameters()
    {
