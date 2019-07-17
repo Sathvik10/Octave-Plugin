@@ -1,8 +1,9 @@
 #include <iostream>
-#include <octave/oct.h>
-#include <octave/parse.h>
-#include <octave/octave.h>
-#include <octave/interpreter.h>
+#include <octave-5.1.0/octave/oct.h>
+#include <octave-5.1.0/octave/parse.h>
+#include <octave-5.1.0/octave/octave.h>
+#include <octave-5.1.0/octave/interpreter.h>
+#include <octave-5.1.0/octave/unwind-prot.h>
 
 #include "platform.h"
 #include "eclrtl.hpp"
@@ -597,10 +598,10 @@ public:
       varname = __varname+".";
    }
 
-   virtual void processString(unsigned len, const char *value, const RtlFieldInfo * field)
+   virtual void processString(unsigned len, const char *_value, const RtlFieldInfo * field)
    {
       std::string  name = varname+field->name;
-      std::string value(value);
+      std::string value(_value);
       value = "\""+value +"\"";
       params[name]= value;
    }
@@ -867,6 +868,7 @@ class OctaveEmbedImportContext : public CInterfaceOf<IEmbedFunctionContext>
 {
 public:
    OctaveEmbedImportContext()
+   :first(""),second("")
    {  
    }
 
@@ -882,37 +884,37 @@ public:
    virtual void bindBooleanParam(const char *name, bool __val)  
    {
       std::string varname(name);
-      if(__val)
-         params[varname]="true";
-      else 
-         params[varname]="false";      
+      octave_value value(__val);
+       xx.assign(varname,value);   
    }
 
    virtual void bindDataParam(const char *name, size32_t len, const void *val){}
    virtual void bindRealParam(const char *name, double __val)  
    {
       std::string varname (name);
-      params[varname]=std::to_string(__val);     
+      octave_value value(__val);
+      xx.assign(varname,value);
    }
 
    virtual void bindSignedParam(const char *name, __int64 __val)   
    {
       std::string varname (name);
-      params[varname]="int64("+std::to_string(__val)+")";
+      octave_value value(__val);
+      xx.assign(varname,value);
    }
 
    virtual void bindUnsignedParam(const char *name, unsigned __int64 __val)  
    {
       std::string varname (name);
-      params[varname]="uint64("+std::to_string(__val)+")";
+      octave_value value(__val);
+      xx.assign(varname,value);        //test unsigned and signed
    }
 
    virtual void bindStringParam(const char *name, size32_t len, const char *__val)  
    {
       std::string varname(name);
       std::string value(__val);
-      value = "\""+value +"\"";
-      params[varname]= value;
+      xx.assign(varname,value);
    }
 
    virtual void bindVStringParam(const char *name, const char *val)  
@@ -924,8 +926,7 @@ public:
    {
       std::string varname(name);
       std::string value(__val,rtlUtf8Size(chars, __val));
-      value = "\""+value+"\"";
-      params[varname]=value;
+      xx.assign(varname,value);
    }
 
    virtual void bindUnicodeParam(const char *name, size32_t chars, const UChar *__val){}
@@ -1222,9 +1223,11 @@ public:
             rtlFail(0,"OctaveEmbed : Result type mismatch");
          }
       }
-
-      tlen = 0;
-      trg = NULL;
+      else
+      {
+         tlen = 0;
+         trg = NULL;
+      }
    }
    virtual void getUTF8Result(size32_t &tlen, char * &trg)   
    {
@@ -1345,8 +1348,8 @@ public:
          std::string temp;
          if (elemSize != UNKNOWN_LENGTH)
          {
-               out.ensureAvailable(cm_size * elemSize);
-               outData = out.getbytes();
+            out.ensureAvailable(cm_size * elemSize);
+            outData = out.getbytes();
          }
 
          for (size_t i = 0; i < cm_size ; i++) 
@@ -1435,15 +1438,17 @@ public:
    {
       throwUnexpected();
    }
+
    virtual void compileEmbeddedScript(size32_t len, const char *script)   
    {
-      size_t i;
       std::string queries(script);
-      std::vector<std::string> preprocess;
-      boost::split(preprocess,queries,boost::is_any_of("\n"));
-      balancedBrackets(&preprocess);
-      cutEmptyLine(&statement);
-      statement_list_size += statement.size();
+      cutStatements(queries);
+      if(!globalState)
+      {
+         throw MakeStringException(-1,"%s","Unable to initialize interpreter");
+      }
+      global = globalState;
+      xx = global->get_current_scope();
    }
 
    virtual void callFunction()  
@@ -1452,45 +1457,59 @@ public:
       {
          throw MakeStringException(-1,"%s","Unable to initialize interpreter");
       }
-
+      
+      std::ostringstream buffer;
+      std::ostream& out_stream = octave_stdout;
+      std::ostream& err_stream = std::cerr;
+      out_stream.flush ();
+      err_stream.flush ();
+      std::streambuf* old_out_buf = out_stream.rdbuf(buffer.rdbuf());
+      std::streambuf* old_err_buf = err_stream.rdbuf (buffer.rdbuf ());
+      octave::unwind_protect frame;
+      frame.add_fcn(restore_octave_stdout, old_out_buf);
+      frame.add_fcn(restore_octave_stderr, old_err_buf);
       appendParameters();
       global=globalState;
-      octave_value_list output;
-      octave_value temp;
-      int parse_status=0;
+      int parse_status=1;
       try
       {
          for(int i=0;i<statement.size();i++)
          {
             const std::string query=statement.at(i);
-            temp=global->eval_string(query,true,parse_status);
+            global->eval_string(query,true,parse_status);
             parse_status =0;
-            output.prepend(temp);
          }
-         
-         result=output(0);
+         //std::cout << first << "(:)\n" <<second <<"\n";
+         global->eval_string(first,true,parse_status,0);         
+         result = global->eval_string(second,true,parse_status);
+         xx.clear_variables();
          //global=nullptr;
       }
-      catch(const octave::execution_exception& e)
+      catch(...)
       {
          //global=nullptr;
-         throw MakeStringException(-1,"%s",e.info().c_str());
+         throw MakeStringException(-1,"%s",buffer.str().c_str());
       }
+      
    }
+
    virtual IRowStream *getDatasetResult(IEngineRowAllocator * _resultAllocator)   
    {
       return new OctaveRowStream(result,_resultAllocator);
    }
+
    virtual byte * getRowResult(IEngineRowAllocator * _resultAllocator)   
    {
       RtlDynamicRowBuilder rowBuilder(_resultAllocator);
       size32_t len = octaveembed::getRowResult(result, rowBuilder,false,nullptr);
       return (byte *) rowBuilder.finalizeRowClear(len);
    }
+   
    virtual size32_t getTransformResult(ARowBuilder & builder)   
    {
       throwUnexpected();
    }
+
    virtual void bindRowParam(const char *name, IOutputMetaData & metaVal, const byte *val)   
    {
       std::string varname(name);
@@ -1502,6 +1521,7 @@ public:
       std::map<std::string , std::string> temp = objBuilder.getValue();
       params.insert(temp.begin(),temp.end());
    }
+
    virtual void bindDatasetParam(const char *name, IOutputMetaData & metaVal, IRowStream * val)   
    {
       std::string varname(name);
@@ -1522,24 +1542,29 @@ public:
          params.insert(temp.begin(),temp.end());
       }
    }
+
    virtual void bindFloatParam(const char *name, float val)   
    {
       std::string varname(name);
-      params[varname] = std::to_string(val)
+      octave_value value(val);
+      xx.assign(varname,value);
    }
 
    virtual void bindSignedSizeParam(const char *name, int size, __int64 val)  
    {
       bindSignedParam(name,val);
    }
+
    virtual void bindUnsignedSizeParam(const char *name, int size, unsigned __int64 val)  
    {
       bindUnsignedParam(name,val);
    }
+
    virtual IInterface *bindParamWriter(IInterface *esdl, const char *esdlservice, const char *esdltype, const char *name) 
    {
       return nullptr;
    }
+
    virtual void paramWriterCommit(IInterface *writer){}
    virtual void writeResult(IInterface *esdl, const char *esdlservice, const char *esdltype, IInterface *writer){}
    virtual void loadCompiledScript(size32_t len, const void *script) 
@@ -1558,6 +1583,51 @@ protected:
    {
       makeStringExceptionV(0, "OctaveEmbed: type mismatch - unsupported return type(%s expected)",expected );
    }
+
+   static void restore_octave_stdout (std::streambuf *buf)
+   {
+      octave_stdout.flush ();
+      octave_stdout.rdbuf (buf);
+   }
+
+   static void restore_octave_stderr (std::streambuf *buf)
+   {
+      std::cerr.flush ();
+      std::cerr.rdbuf (buf);
+   }
+
+   bool isEmpty(std::string x)
+   {
+      for(int i =0 ;i< x.length();i++)
+      {
+         if(x.at(i)!=' '&&x.at(i)!='\t')
+            return false;
+      }
+
+      return true;
+   }
+
+   void cutStatements(std::string script)
+   {
+      size_t pos = script.find_last_of("\n");
+      while(second.empty())
+      {
+         if(pos == script.npos)
+         {
+            second = script;
+            first = "";
+            break;
+         }
+
+         first = script.substr(0,pos);
+         second = script.substr(pos+1,script.size()-pos);
+         if(isEmpty(second))
+            second="";
+         script= first;
+         pos = script.find_last_of("\n");
+      }
+   }
+
    void appendParameters()
    {
       std::map<std::string, std::string>::iterator itr=params.begin();
@@ -1566,10 +1636,9 @@ protected:
       {
          temp="evalin (\"base\",'" + itr->first+" = "+itr->second+"')\n";
          statement.insert(statement.begin(),temp);
-         statement_list_size++;
       }
    }
-   void balancedBrackets(std::vector<std::string>* preprocess)
+  /* void balancedBrackets(std::vector<std::string>* preprocess)
    {
       size_t top = -1,len,poso,posc;
       std::string query , stmt;
@@ -1611,8 +1680,8 @@ protected:
 
          statement.push_back(stmt);
       }
-   }
-   void cutEmptyLine(std::vector<std::string> *output)
+   }*/
+   /* void cutEmptyLine(std::vector<std::string> *output)
    {   
       int flag=0;
       std::string temp;
@@ -1640,11 +1709,12 @@ protected:
 
         p++;
       }
-   }
+   }*/
 protected:
    const IThorActivityContext *activityCtx=nullptr;
    octave_value result;
-   int statement_list_size = 0;
+   octave::symbol_scope xx;
+   std::string first,second;
    std::vector<std::string> statement;
    octave::interpreter* global;
    std::map<std::string , std::string> params;
@@ -1668,24 +1738,27 @@ static void releaseContext()
 class OctaveEmbedContext : public CInterfaceOf<IEmbedContext>
 {
 public:
-    virtual IEmbedFunctionContext *createFunctionContext(unsigned flags,const char *options) 
-    {
-        return createFunctionContextEx(nullptr,nullptr,flags,options);
-    }
-    virtual IEmbedFunctionContext *createFunctionContextEx(ICodeContext *ctx,const IThorActivityContext *activityCtx,unsigned flags,const char *options) 
-    {
-       if (!theFunctionContext)
-        {
-            theFunctionContext = new OctaveEmbedImportContext;
-            threadHookChain = addThreadTermFunc(releaseContext);
-        }
+   virtual IEmbedFunctionContext *createFunctionContext(unsigned flags,const char *options) 
+   {
+      return createFunctionContextEx(nullptr,nullptr,flags,options);
+   }
+
+   virtual IEmbedFunctionContext *createFunctionContextEx(ICodeContext *ctx,const IThorActivityContext *activityCtx,unsigned flags,const char *options) 
+   {
+      if (!theFunctionContext)
+      {
+         theFunctionContext = new OctaveEmbedImportContext;
+         threadHookChain = addThreadTermFunc(releaseContext);
+      }
+
       theFunctionContext->setActivityContext(activityCtx);
       return LINK(theFunctionContext);
-    }
-    virtual IEmbedServiceContext *createServiceContext(const char *service ,unsigned flags,const char *options) 
-    {
-        throwUnexpected();
-    }
+   }
+
+   virtual IEmbedServiceContext *createServiceContext(const char *service ,unsigned flags,const char *options) 
+   {
+      throwUnexpected();
+   }
 }embedContext;
 
 extern DECL_EXPORT IEmbedContext *queryEmbedContext()
