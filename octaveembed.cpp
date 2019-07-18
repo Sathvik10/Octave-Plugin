@@ -1584,7 +1584,7 @@ public:
             global->eval_string(query,true,parse_status);
             parse_status =0;
          }
-         std::cout << first << "(:)\n" <<second <<"\n";
+        // std::cout << first << "(:)\n" <<second <<"\n";
          global->eval_string(first,true,parse_status,0);         
          result = global->eval_string(second,true,parse_status);
          xx.clear_variables();
