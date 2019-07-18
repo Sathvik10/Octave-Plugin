@@ -23,7 +23,6 @@
 #include <vector>
 #include <map>
 #include <stack>
-#include <boost/algorithm/string.hpp>
 
 
 #define OCTAVE_PLUGIN_VERSION "octave plugin 1.0.0"
@@ -899,14 +898,16 @@ public:
    virtual void bindSignedParam(const char *name, __int64 __val)   
    {
       std::string varname (name);
-      octave_value value(__val);
+      octave_int64 val = __val;
+      octave_value value(val);
       xx.assign(varname,value);
    }
 
    virtual void bindUnsignedParam(const char *name, unsigned __int64 __val)  
    {
       std::string varname (name);
-      octave_value value(__val);
+      octave_uint64 val = __val;
+      octave_value value(val);
       xx.assign(varname,value);        //test unsigned and signed
    }
 
@@ -933,7 +934,6 @@ public:
    virtual void bindSetParam(const char *name, int elemType, size32_t elemSize, bool isAll, size32_t totalBytes, const void *setData)  
    {
       std::string varname(name);
-      std::string value="[ ";
       type_t typecode = (type_t) elemType;
       const byte *inData = (const byte *) setData;
       const byte *endData = inData + totalBytes;
@@ -973,105 +973,74 @@ public:
       else 
          numElems = totalBytes / elemSize;
       size32_t thisSize = elemSize ;
-      for(int idx=0;idx < numElems;idx++)
+
+      switch(typecode)
       {
-         switch(typecode)
+      case type_boolean:
+      {
+         boolNDArray arr = boolNDArray(dim_vector(1,numElems));
+         for(int idx = 0 ; idx < numElems;idx++)
          {
-         case type_boolean:
-         {
-            bool val = *(bool *) inData;
-            if(val)
-               value +=" true ";
-            else 
-               value +=" false ";
-            break;
+            arr(idx) = *(bool *)inData;
+            inData += thisSize;
          }
-
-         case type_int:
-         {
-            if (elemSize == sizeof(int8_t))
-            {
-               int8_t val = rtlReadInt(inData,elemSize);
-               value +=" int8("+std::to_string(val)+") ";
-            }
-            else if (elemSize == sizeof(int16_t))
-            {
-               int16_t val = rtlReadInt(inData,elemSize);
-               value +=" int16("+std::to_string(val)+") ";
-            }
-            else if (elemSize == sizeof(int32_t))
-            {
-               int32_t val =rtlReadInt (inData , elemSize);
-               value +="int32("+std::to_string(val)+") ";
-            }
-            else
-            {
-               int64_t val = rtlReadInt(inData, elemSize);
-               value +=" int64("+std::to_string(val)+") ";
-            }
-
-            break;
-         }
-
-         case type_unsigned:
-         {
-            if (elemSize == sizeof(uint8_t))
-            {
-               uint8_t val = rtlReadUInt(inData,elemSize);
-               value +=" int8("+std::to_string(val)+") ";
-            }
-            else if (elemSize == sizeof(uint16_t))
-            {
-               uint16_t val = rtlReadUInt(inData,elemSize);
-               value +=" int16("+std::to_string(val)+") ";
-            }
-            else if (elemSize == sizeof(uint32_t))
-            {
-               uint32_t val =rtlReadUInt (inData , elemSize);
-               value +="int32("+std::to_string(val)+") ";
-            }
-            else
-            {
-               uint64_t val = rtlReadUInt(inData, elemSize);
-               value +=" int64("+std::to_string(val)+") ";
-            }
-
-            break;
-         }
-
-         case type_real:
+         octave_value val(arr);
+         xx.assign(varname,val);
+         break;
+      }
+      
+      case type_real:
+      {
+         RowVector arr = RowVector(numElems);
+         for(int idx = 0 ; idx < numElems;idx++)
          {
             double val;
             if (elemSize == sizeof(double))
             {
                val = *(double *) inData;
-               value += " "+std::to_string(val)+" ";
+               arr(idx) = val;
             }
             else
             {
                val = *(float *) inData;
-               value += " single("+std::to_string(val)+") ";
-            } 
-
-            break;
+               arr(idx) = val;               
+            }
+            inData += thisSize;
          }
+         octave_value val(arr);
+         xx.assign(varname,val);
+         break;
+      }
 
-         case type_string :
+      case type_string :
+      {
+         string_vector vec = string_vector(numElems);
+         for (int idx = 0;idx < numElems;idx++)
          {
             if (elemSize == UNKNOWN_LENGTH)
             {
                thisSize = * (size32_t *) inData;
                inData += sizeof(size32_t);
             }
+
             size32_t utfCharCount;
             rtlDataAttr utfText;
             rtlStrToUtf8X(utfCharCount, utfText.refstr(), thisSize, (const char *) inData);
             std::string val(utfText.getstr(),rtlUtf8Size(utfCharCount,utfText.getstr()));
-            value += "\"" +val+"\" \n "; 
-            break;
+            vec(idx) = val;
+            inData += thisSize;
          }
 
-         case type_varstring :
+         charMatrix ch = charMatrix(vec);
+         octave_value val(ch);
+         xx.assign(varname,val);
+         break;  
+      }
+
+      case type_varstring :
+      {
+         string_vector vec = string_vector(numElems);
+         for(int idx = 0; idx < numElems ; idx++)
          {
             size32_t numChars = strlen((const char *) inData);
             size32_t utfCharCount;
@@ -1080,32 +1049,168 @@ public:
             if (elemSize == UNKNOWN_LENGTH)
                thisSize = numChars + 1;
             std::string val(utfText.getstr(),rtlUtf8Size(utfCharCount,utfText.getstr()));
-            value += "\""+val+"\" \n";
-            break;
+            vec(idx) = val;
+            inData += thisSize;
          }
 
-         case type_utf8:
+         charMatrix ch = charMatrix(vec);
+         octave_value val(ch);
+         xx.assign(varname,val);
+         break;
+      }
+
+      case type_utf8:
+      {
+         assertex (elemSize == UNKNOWN_LENGTH);
+         string_vector vec= string_vector(numElems);
+         for(int idx = 0; idx < numElems ; idx++)
          {
-            assertex (elemSize == UNKNOWN_LENGTH);
             size32_t numChars = * (size32_t *) inData;
             inData += sizeof(size32_t);
             thisSize = rtlUtf8Size(numChars, inData);
             std::string val((const char *)inData,thisSize);
-            value += "\""+val+"\" \n";
-            break;
+            vec(idx) = val;
+            inData += thisSize;
          }
-
-         //unicode binding .............
-         default :
-            rtlFail(0, "Octaveembed: Unsupported parameter type");
-            break;
-         }
-
-         inData += thisSize;
+         
+         charMatrix ch = charMatrix(vec);
+         octave_value val(ch);
+         xx.assign(varname,val);
+         break;
       }
 
-      value += " ]";
-      params[varname]=value;
+      case type_int:
+      {
+         if( elemSize == sizeof(int8_t))
+         {
+            int8NDArray vec = int8NDArray(dim_vector(1,numElems));
+            int8_t val;
+            for(int idx = 0;idx < numElems ;idx++)
+            {
+               val = rtlReadInt(inData,elemSize);
+               vec(idx) = val;
+               inData +=thisSize;
+            }
+
+            octave_value _val(vec);
+            xx.assign(varname,_val);
+            break;
+         }
+         else if( elemSize == sizeof(int16_t))
+         {
+            int16NDArray vec = int16NDArray(dim_vector(1,numElems));
+            int16_t val;
+            for(int idx = 0;idx < numElems ;idx++)
+            {
+               val = rtlReadInt(inData,elemSize);
+               vec(idx) = val;
+               inData +=thisSize;
+            }
+
+            octave_value _val(vec);
+            xx.assign(varname,_val);
+            break;
+         }
+         else if( elemSize == sizeof(int32_t))
+         {
+            int32NDArray vec = int32NDArray(dim_vector(1,numElems));
+            int32_t val;
+            for(int idx = 0;idx < numElems ;idx++)
+            {
+               val = rtlReadInt(inData,elemSize);
+               vec(idx) = val;
+               inData +=thisSize;
+            }
+
+            octave_value _val(vec);
+            xx.assign(varname,_val);
+            break;
+         }
+         else 
+         {
+            int64NDArray vec = int64NDArray(dim_vector(1,numElems));
+            int64_t val;
+            for(int idx = 0;idx < numElems ;idx++)
+            {
+               val = rtlReadInt(inData,elemSize);
+               vec(idx) = val;
+               inData +=thisSize;
+            }
+
+            octave_value _val(vec);
+            xx.assign(varname,_val);
+            break;
+         }
+         break;
+      }
+
+      case type_unsigned:
+      {
+         if( elemSize == sizeof(uint8_t))
+         {
+            uint8NDArray vec = uint8NDArray(dim_vector(1,numElems));
+            uint8_t val;
+            for(int idx = 0;idx < numElems ;idx++)
+            {
+               val = rtlReadUInt(inData,elemSize);
+               vec(idx) = val;
+               inData +=thisSize;
+            }
+
+            octave_value _val(vec);
+            xx.assign(varname,_val);
+            break;
+         }
+         else if( elemSize == sizeof(uint16_t))
+         {
+            uint16NDArray vec = uint16NDArray(dim_vector(1,numElems));
+            uint16_t val;
+            for(int idx = 0;idx < numElems ;idx++)
+            {
+               val = rtlReadUInt(inData,elemSize);
+               vec(idx) = val;
+               inData +=thisSize;
+            }
+
+            octave_value _val(vec);
+            xx.assign(varname,_val);
+            break;
+         }
+         else if( elemSize == sizeof(uint32_t))
+         {
+            uint32NDArray vec = uint32NDArray(dim_vector(1,numElems));
+            uint32_t val;
+            for(int idx = 0;idx < numElems ;idx++)
+            {
+               val = rtlReadUInt(inData,elemSize);
+               vec(idx) = val;
+               inData +=thisSize;
+            }
+
+            octave_value _val(vec);
+            xx.assign(varname,_val);
+            break;
+         }
+         else 
+         {
+            uint64NDArray vec = uint64NDArray(dim_vector(1,numElems));
+            uint64_t val;
+            for(int idx = 0;idx < numElems ;idx++)
+            {
+               val = rtlReadUInt(inData,elemSize);
+               vec(idx) = val;
+               inData +=thisSize;
+            }
+
+            octave_value _val(vec);
+            xx.assign(varname,_val);
+            break;
+         }
+         break;
+      }
+      default :
+         rtlFail(0, "Octaveembed: Unsupported parameter type");
+      }
    }
 
    virtual bool getBooleanResult() 
@@ -1479,7 +1584,7 @@ public:
             global->eval_string(query,true,parse_status);
             parse_status =0;
          }
-         //std::cout << first << "(:)\n" <<second <<"\n";
+         std::cout << first << "(:)\n" <<second <<"\n";
          global->eval_string(first,true,parse_status,0);         
          result = global->eval_string(second,true,parse_status);
          xx.clear_variables();
@@ -1745,14 +1850,15 @@ public:
 
    virtual IEmbedFunctionContext *createFunctionContextEx(ICodeContext *ctx,const IThorActivityContext *activityCtx,unsigned flags,const char *options) 
    {
-      if (!theFunctionContext)
+      /* if (!theFunctionContext)
       {
          theFunctionContext = new OctaveEmbedImportContext;
          threadHookChain = addThreadTermFunc(releaseContext);
       }
 
       theFunctionContext->setActivityContext(activityCtx);
-      return LINK(theFunctionContext);
+      return LINK(theFunctionContext);*/
+      return new OctaveEmbedImportContext;
    }
 
    virtual IEmbedServiceContext *createServiceContext(const char *service ,unsigned flags,const char *options) 
