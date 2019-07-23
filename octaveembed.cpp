@@ -144,15 +144,11 @@ public:
    
    virtual bool getBooleanResult(const RtlFieldInfo *field)
    {
-      if(inSet)
+      if(inSet || inDataSet)
       {
          return vectorSet.elem(idx++);
       }
 
-      if(inDataSet)
-      {
-         return vectorSet.elem(idx++);
-      }
       result = getResult(field);
       if(result.islogical())
       {
@@ -715,13 +711,12 @@ public:
 
    virtual bool processBeginSet(const RtlFieldInfo * field, unsigned elements, bool isAll, const byte *inData)
    {
+      std::cout << "process Begin Set\n";
       bool processNext = false;
       if (isAll)
          rtlFail(0, "OctaveEmbed: ALL sets are not supported");
-      if(inDataSet)
+      if(inDataSet && structArray)
       {
-         if(!structArray)
-            return true;
          if(flag == 1000)
          {
             structArray = false;
@@ -764,6 +759,7 @@ public:
             {
                val = *(double *) inData;
                arr(i) = val;
+               std::cout << val;
             }
             else
             {
@@ -772,9 +768,20 @@ public:
             }
             inData += thisSize;
          }
-         octave_value val(arr);
-         std::string name(field->name);
-         sMap.setfield(name,val);
+         if(inDataSet)
+         {
+            std::cout << "matrix\n";
+            if(mat.isempty())
+               mat = Matrix(dim_vector(row,numElems));
+            mat = mat.insert(arr,idx++,0);
+         }
+         else
+         {
+            octave_value val(arr);
+            std::string name(field->name);
+            sMap.setfield(name,val);
+         }
+         
          break;
       }
       case type_int:
@@ -934,19 +941,20 @@ public:
 
    virtual bool processBeginDataset(const RtlFieldInfo * field, unsigned rows)
    {
-      setParam +="[ ";
+      std::cout << "process Begin dataset\n";      
       inDataSet = true;
       structArray = true;
       flag= 999;
       pushIdx();
-            pushSMap(sMap);
-
+      pushSMap(sMap);
+      row = rows;
       map = octave_map();
       return true;
    }
 
    virtual bool processBeginRow(const RtlFieldInfo * field)
    {
+      std::cout << "process Begin row\n";
 
       if(inDataSet || structArray)
       {
@@ -972,6 +980,8 @@ public:
 
    virtual void processEndSet(const RtlFieldInfo * field)
    {
+      std::cout << "process end Set\n";
+
       if(inDataSet)
          return;
       if(inSet)
@@ -988,13 +998,21 @@ public:
 
    virtual void processEndDataset(const RtlFieldInfo * field)
    {
+      std::cout << "process end dataSet\n";
+
       if(inDataSet && !structArray)
       {
-         std::string name = varName  + field->name;
-         setParam += " ]";
-         params[name] = setParam;
-         setParam = "";
+         std::string name = field->name;
+         std::cout << name << mat.rows();
+        // setParam += " ]";
+         //params[name] = setParam;
+         //setParam = "";
+         popIdx();
          inDataSet = false;
+         sMap = popSMap();
+         octave_value value (mat);
+         sMap.setfield(name,value);
+         mat.clear();
       }
       if(structArray)
       {
@@ -1009,11 +1027,11 @@ public:
    }
    virtual void processEndRow(const RtlFieldInfo * field)
    {
-
+      std::cout << "process End Row\n";
       std::string fieldName  (field->name);
       if(inDataSet && !structArray)
       {
-         setParam +=" ; ";    //Each row in a dataset(matrix) is separated by ;
+         //setParam +=" ; ";    //Each row in a dataset(matrix) is separated by ;
          return;
       }
       if(structArray)
@@ -1073,10 +1091,12 @@ protected:
       return emptyResult;
    }
 
+   int row;
    octave_map map;
    std::stack<octave_scalar_map> scalarList;
    bool structArray;
    int flag;
+   Matrix mat;
    string_vector sVec ;
    octave_scalar_map sMap;
    const RtlFieldInfo * outerRow;
