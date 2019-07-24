@@ -1,6 +1,3 @@
-#include <iostream>
-#include <octave-5.1.0/octave/oct.h>
-#include <octave-5.1.0/octave/parse.h>
 #include <octave-5.1.0/octave/octave.h>
 #include <octave-5.1.0/octave/interpreter.h>
 #include <octave-5.1.0/octave/unwind-prot.h>
@@ -11,17 +8,13 @@
 #include "hqlplugins.hpp"
 #include "eclhelper.hpp"
 #include "rtlds_imp.hpp"
-
 #include "jlib.hpp"
 #include "jexcept.hpp"
 #include "jthread.hpp"
-
 #include "roxiemem.hpp"
 #include "nbcd.hpp"
 #include "deftype.hpp"
 
-#include <vector>
-#include <map>
 #include <stack>
 
 
@@ -1739,14 +1732,7 @@ public:
       global = globalState;
       int parseStatus = 1;
       try
-      {
-         for (int i = 0;i<statement.size();i++)
-         {
-            const std::string query = statement.at(i);
-            global->eval_string(query, true, parseStatus);
-            parseStatus = 0;
-         }
-         
+      {  
          global->eval_string(first, true, parseStatus, 0);         
          result = global->eval_string(second, true, parseStatus);
          setSymbol.clear_variables();
@@ -1870,7 +1856,7 @@ protected:
 
    bool isEmpty(std::string x)
    {
-      for (int i =0 ;i< x.length();i++)
+      for (int i = 0 ;i < x.length();i++)
       {
          if (x.at(i) != ' ' && x.at(i) != '\t')
             return false;
@@ -1905,7 +1891,6 @@ protected:
    octave_value result;
    octave::symbol_scope setSymbol;
    std::string first, second;
-   std::vector<std::string> statement;
    octave::interpreter* global;
 };
 static __thread OctaveEmbedImportContext * theFunctionContext;  // We reuse per thread, for speed
