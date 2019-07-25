@@ -1,3 +1,4 @@
+#include <iostream>
 #include <octave-5.1.0/octave/octave.h>
 #include <octave-5.1.0/octave/interpreter.h>
 #include <octave-5.1.0/octave/unwind-prot.h>
@@ -54,13 +55,13 @@ namespace octaveembed {
 static octave::interpreter* globalState = nullptr;
 static int status;
 MODULE_INIT(INIT_PRIORITY_STANDARD)
-{   
+{
    if (!globalState)
    {
       globalState = new octave::interpreter;
       status = globalState->execute();
    }
-   
+
    return true;
 }
 
@@ -138,7 +139,7 @@ public:
    ~OctaveRowBuilder()
    {
    }
-   
+
    virtual bool getBooleanResult(const RtlFieldInfo *field)
    {
       if (inSet || inDataSet)
@@ -174,7 +175,7 @@ public:
    }
 
    virtual __int64 getSignedResult(const RtlFieldInfo *field)
-   {  
+   {
       if (inSet)
       {
          return vectorSet.elem(idx++);
@@ -225,7 +226,7 @@ public:
             unsigned slen = src.length();
             rtlStrToStrX(len, __result, slen, src.c_str());
          }
-      } 
+      }
    }
 
    virtual void getUTF8Result(const RtlFieldInfo *field, size32_t &chars, char * &__result)
@@ -279,7 +280,7 @@ public:
 
     //The following are used process the structured fields
    virtual void processBeginSet(const RtlFieldInfo * field, bool &isAll)
-   {      
+   {
       if (inDataSet)
          return;
       result = getResult(field);
@@ -305,6 +306,7 @@ public:
                pushIdx();
             }
          }
+
          if (result.is_char_matrix())
          {
             inSet = true;
@@ -316,7 +318,7 @@ public:
       }
    }
 
-   virtual void processBeginDataset(const RtlFieldInfo * field) 
+   virtual void processBeginDataset(const RtlFieldInfo * field)
    {
       result = getResult(field);
       if (!result.isempty())
@@ -335,7 +337,7 @@ public:
             rtlFail(0, "OctaveEmbed: Multi-Dimensional char matrix is not supported");
          if (result.is_real_matrix())
          {
-            inDataSet = true ;
+            inDataSet = true;
             mat = result.matrix_value();
             pushSize();
             setSize = mat.rows();
@@ -357,15 +359,16 @@ public:
             setSize = mat.rows();
             pushIdx();
          }
-         else 
+         else
             rtlFail(0, "OctaveEmbed: Unsupported Type");
       }
    }
+
    virtual void processBeginRow(const RtlFieldInfo * field)
    {
       std::string fieldName(field->name);
       if (inDataSet)
-      {  
+      {
          pushIdx();
          return;
       }
@@ -373,7 +376,7 @@ public:
       if (structArray)
          return;
       if (fieldName.compare("<row>") == 0)
-      {  
+      {
          if (row.isstruct())
             initializeStruct();
          else
@@ -388,7 +391,7 @@ public:
             row = result;
             initializeStruct();
          }
-      }     
+      }
    }
 
    virtual bool processNextSet(const RtlFieldInfo * field)
@@ -423,11 +426,11 @@ public:
          }
       }
 
-      return false;   
+      return false;
    }
 
    virtual void processEndSet(const RtlFieldInfo * field)
-   { 
+   {
       if (inSet == true)
       {
          popIdx();
@@ -508,13 +511,13 @@ protected:
    charMatrix cm;
 };
 
-static size32_t getRowResult(octave_value row, ARowBuilder &builder, bool inDataSet, Array<double> * vector)
+static size32_t getRowResult(octave_value row, ARowBuilder &builder, bool inDataSet, Array<double>* vector)
 {
    if (row.isempty())
       rtlFail(0, "Null Object Returned");
    const RtlTypeInfo *typeInfo = builder.queryAllocator()->queryOutputMeta()->queryTypeInfo();
    assertex(typeInfo);
-   RtlFieldStrInfo dummyField("<row>", NULL, typeInfo);      
+   RtlFieldStrInfo dummyField("<row>", NULL, typeInfo);
    OctaveRowBuilder ORowBuilder(row, &dummyField, inDataSet);
    if (inDataSet)
       ORowBuilder.initializeRow(*vector);
@@ -525,7 +528,7 @@ class OctaveRowStream : public  CInterfaceOf<IRowStream>
 {
 public:
    OctaveRowStream(octave_value result, IEngineRowAllocator *_resultAllocator)
-   : dataSet(result), resultAllocator(_resultAllocator), rowIdx(-1)
+   :dataSet(result), resultAllocator(_resultAllocator), rowIdx(-1)
    {
       if (dataSet.isempty())
          rtlFail(0, "OctaveEmbed: Result is empty");
@@ -552,7 +555,7 @@ public:
          octave_value result(sMap);
          RtlDynamicRowBuilder rowBuilder(resultAllocator);
          size32_t len = octaveembed::getRowResult(result, rowBuilder, false, nullptr);
-         return (byte *) rowBuilder.finalizeRowClear(len);
+         return (byte*) rowBuilder.finalizeRowClear(len);
       }
 
       if (rowIdx >= mat.rows())
@@ -602,11 +605,12 @@ public:
       std::string temp(field->name);
       sMap.setfield(temp, val);
    }
+
    virtual void processBool(bool value, const RtlFieldInfo * field)
    {
       octave_value val(value);
       std::string temp(field->name);
-      sMap.setfield(temp, val);         
+      sMap.setfield(temp, val);
    }
 
    virtual void processData(unsigned len, const void *value, const RtlFieldInfo * field){}
@@ -654,8 +658,8 @@ public:
    virtual void processUnicode(unsigned len, const UChar *_value, const RtlFieldInfo * field){}
    virtual void processQString(unsigned len, const char *_value, const RtlFieldInfo * field)
    {
-      std::string name ( field->name);
-      char * out;
+      std::string name (field->name);
+      char* out;
       size32_t outLen;
       rtlQStrToStr(outLen, out, len, _value);
       std::string value(out, outLen);
@@ -667,12 +671,12 @@ public:
    {
       if (inSet)
       {
-         std::string value(_value, rtlUtf8Size(len, _value));      
+         std::string value(_value, rtlUtf8Size(len, _value));
          sVec(idx++) =  value;
          return;
       }
 
-      std::string value(_value, rtlUtf8Size(len, _value));      
+      std::string value(_value, rtlUtf8Size(len, _value));
       octave_value valo(value);
       std::string temp(field->name);
       sMap.setfield(temp, valo);
@@ -706,11 +710,12 @@ public:
       case type_boolean:
       {
          boolNDArray arr = boolNDArray(dim_vector(1, numElems));
-         for (int i = 0 ; i < numElems;i++)
+         for (int i = 0; i < numElems; i++)
          {
             arr(i) = *(bool *)inData;
             inData += thisSize;
          }
+
          octave_value val(arr);
          std::string name (field->name);
          sMap.setfield(name, val);
@@ -720,7 +725,7 @@ public:
       case type_real:
       {
          RowVector arr = RowVector(numElems);
-         for (int i = 0 ; i < numElems;i++)
+         for (int i = 0; i < numElems; i++)
          {
             double val;
             if (elemSize == sizeof(double))
@@ -731,10 +736,11 @@ public:
             else
             {
                val = *(float *) inData;
-               arr(i) = val;               
+               arr(i) = val;
             }
             inData += thisSize;
          }
+
          if (inDataSet)
          {
             if (mat.isempty())
@@ -750,13 +756,14 @@ public:
          
          break;
       }
+
       case type_int:
       {
          if ( elemSize == sizeof(int8_t))
          {
             int8NDArray vec = int8NDArray(dim_vector(1, numElems));
             int8_t val;
-            for (int i = 0;i < numElems ;i++)
+            for (int i = 0; i < numElems; i++)
             {
                val = rtlReadInt(inData, elemSize);
                vec(i) = val;
@@ -772,7 +779,7 @@ public:
          {
             int16NDArray vec = int16NDArray(dim_vector(1, numElems));
             int16_t val;
-            for (int i = 0;i < numElems ;i++)
+            for (int i = 0; i < numElems; i++)
             {
                val = rtlReadInt(inData, elemSize);
                vec(i) = val;
@@ -788,7 +795,7 @@ public:
          {
             int32NDArray vec = int32NDArray(dim_vector(1, numElems));
             int32_t val;
-            for (int i = 0;i < numElems ;i++)
+            for (int i = 0; i < numElems; i++)
             {
                val = rtlReadInt(inData, elemSize);
                vec(i) = val;
@@ -804,7 +811,7 @@ public:
          {
             int64NDArray vec = int64NDArray(dim_vector(1, numElems));
             int64_t val;
-            for (int i = 0;i < numElems ;i++)
+            for (int i = 0; i < numElems; i++)
             {
                val = rtlReadInt(inData, elemSize);
                vec(i) = val;
@@ -821,11 +828,11 @@ public:
 
       case type_unsigned:
       {
-         if ( elemSize == sizeof(uint8_t))
+         if (elemSize == sizeof(uint8_t))
          {
             uint8NDArray vec = uint8NDArray(dim_vector(1, numElems));
             uint8_t val;
-            for (int i = 0;i < numElems ;i++)
+            for (int i = 0; i < numElems; i++)
             {
                val = rtlReadUInt(inData, elemSize);
                vec(i) = val;
@@ -841,7 +848,7 @@ public:
          {
             uint16NDArray vec = uint16NDArray(dim_vector(1, numElems));
             uint16_t val;
-            for (int i = 0;i < numElems ;i++)
+            for (int i = 0; i < numElems; i++)
             {
                val = rtlReadUInt(inData, elemSize);
                vec(i) = val;
@@ -857,7 +864,7 @@ public:
          {
             uint32NDArray vec = uint32NDArray(dim_vector(1, numElems));
             uint32_t val;
-            for (int i = 0;i < numElems ;i++)
+            for (int i = 0; i < numElems; i++)
             {
                val = rtlReadUInt(inData, elemSize);
                vec(i) = val;
@@ -873,7 +880,7 @@ public:
          {
             uint64NDArray vec = uint64NDArray(dim_vector(1, numElems));
             uint64_t val;
-            for (int i = 0;i < numElems ;i++)
+            for (int i = 0; i < numElems; i++)
             {
                val = rtlReadUInt(inData, elemSize);
                vec(i) = val;
@@ -896,7 +903,7 @@ public:
          sVec = string_vector(numElems);
          pushIdx();
          break;
-      
+
       default :
          rtlFail(0, "Octaveembed: Unsupported parameter type");
 
@@ -927,6 +934,7 @@ public:
          {
             sMap.clear();
          }
+
          return true;
       }
 
@@ -972,6 +980,7 @@ public:
          mat.clear();
          return;
       }
+
       if (structArray)
       {
          popIdx();
@@ -984,6 +993,7 @@ public:
          return;
       }
    }
+
    virtual void processEndRow(const RtlFieldInfo * field)
    {
       std::string fieldName  (field->name);
@@ -1007,22 +1017,22 @@ public:
          octave_value value (newMap);
          sMap.setfield(fieldName, value);
       }
-      
    }
 
    octave_scalar_map getScalarMap()
    {
       return sMap;
    }
+
 protected:
    int row;
    int flag;
    bool structArray;
    Matrix mat;
    octave_map map;
-   string_vector sVec ;
+   string_vector sVec;
    octave_scalar_map sMap;
-   const RtlFieldInfo * outerRow;
+   const RtlFieldInfo* outerRow;
 };
 
 class OctaveEmbedImportContext : public CInterfaceOf<IEmbedFunctionContext>
@@ -1030,34 +1040,34 @@ class OctaveEmbedImportContext : public CInterfaceOf<IEmbedFunctionContext>
 public:
    OctaveEmbedImportContext()
    :first(""), second("")
-   {  
+   {
    }
 
    ~OctaveEmbedImportContext()
-   {   
+   {
    }
 
    void setActivityContext(const IThorActivityContext *_activityCtx)
    {
-        activityCtx = _activityCtx;
+      activityCtx = _activityCtx;
    }
 
-   virtual void bindBooleanParam(const char *name, bool __val)  
+   virtual void bindBooleanParam(const char *name, bool __val)
    {
       std::string varName(name);
       octave_value value(__val);
-       setSymbol.assign(varName, value);   
+       setSymbol.assign(varName, value);
    }
 
    virtual void bindDataParam(const char *name, size32_t len, const void *val){}
-   virtual void bindRealParam(const char *name, double __val)  
+   virtual void bindRealParam(const char *name, double __val)
    {
       std::string varName (name);
       octave_value value(__val);
       setSymbol.assign(varName, value);
    }
 
-   virtual void bindSignedParam(const char *name, __int64 __val)   
+   virtual void bindSignedParam(const char *name, __int64 __val)
    {
       std::string varName (name);
       octave_int64 val = __val;
@@ -1065,7 +1075,7 @@ public:
       setSymbol.assign(varName, value);
    }
 
-   virtual void bindUnsignedParam(const char *name, unsigned __int64 __val)  
+   virtual void bindUnsignedParam(const char *name, unsigned __int64 __val)
    {
       std::string varName (name);
       octave_uint64 val = __val;
@@ -1073,19 +1083,19 @@ public:
       setSymbol.assign(varName, value);        //test unsigned and signed
    }
 
-   virtual void bindStringParam(const char *name, size32_t len, const char *__val)  
+   virtual void bindStringParam(const char *name, size32_t len, const char *__val)
    {
       std::string varName(name);
       std::string value(__val);
       setSymbol.assign(varName, value);
    }
 
-   virtual void bindVStringParam(const char *name, const char *val)  
+   virtual void bindVStringParam(const char *name, const char *val)
    {
       bindStringParam(name, strlen(val), val);
    }
 
-   virtual void bindUTF8Param(const char *name, size32_t chars, const char *__val)  
+   virtual void bindUTF8Param(const char *name, size32_t chars, const char *__val)
    {
       std::string varName(name);
       std::string value(__val, rtlUtf8Size(chars, __val));
@@ -1093,7 +1103,7 @@ public:
    }
 
    virtual void bindUnicodeParam(const char *name, size32_t chars, const UChar *__val){}
-   virtual void bindSetParam(const char *name, int elemType, size32_t elemSize, bool isAll, size32_t totalBytes, const void *setData)  
+   virtual void bindSetParam(const char *name, int elemType, size32_t elemSize, bool isAll, size32_t totalBytes, const void *setData)
    {
       std::string varName(name);
       type_t typeCode = (type_t) elemType;
@@ -1130,31 +1140,32 @@ public:
             numElems++;
          }
 
-         inData = (const byte *) setData;
+         inData = (const byte*) setData;
       }
-      else 
+      else
          numElems = totalBytes / elemSize;
-      size32_t thisSize = elemSize ;
+      size32_t thisSize = elemSize;
 
       switch(typeCode)
       {
       case type_boolean:
       {
          boolNDArray arr = boolNDArray(dim_vector(1, numElems));
-         for (int i = 0 ; i < numElems;i++)
+         for (int i = 0; i < numElems; i++)
          {
             arr(i) = *(bool *)inData;
             inData += thisSize;
          }
+
          octave_value val(arr);
          setSymbol.assign(varName, val);
          break;
       }
-      
+
       case type_real:
       {
          RowVector arr = RowVector(numElems);
-         for (int i = 0 ; i < numElems;i++)
+         for (int i = 0; i < numElems; i++)
          {
             double val;
             if (elemSize == sizeof(double))
@@ -1165,10 +1176,12 @@ public:
             else
             {
                val = *(float *) inData;
-               arr(i) = val;               
+               arr(i) = val;
             }
+
             inData += thisSize;
          }
+
          octave_value val(arr);
          setSymbol.assign(varName, val);
          break;
@@ -1177,7 +1190,7 @@ public:
       case type_string :
       {
          string_vector vec = string_vector(numElems);
-         for (int i = 0;i < numElems;i++)
+         for (int i = 0; i < numElems; i++)
          {
             if (elemSize == UNKNOWN_LENGTH)
             {
@@ -1196,13 +1209,13 @@ public:
          charMatrix ch = charMatrix(vec, ' ');
          octave_value val(ch);
          setSymbol.assign(varName, val);
-         break;  
+         break;
       }
 
       case type_varstring :
       {
          string_vector vec = string_vector(numElems);
-         for (int i = 0; i < numElems ; i++)
+         for (int i = 0; i < numElems; i++)
          {
             size32_t numChars = strlen((const char *) inData);
             size32_t utfCharCount;
@@ -1225,7 +1238,7 @@ public:
       {
          assertex (elemSize == UNKNOWN_LENGTH);
          string_vector vec = string_vector(numElems);
-         for (int i = 0; i < numElems ; i++)
+         for (int i = 0; i < numElems; i++)
          {
             size32_t numChars = * (size32_t *) inData;
             inData += sizeof(size32_t);
@@ -1234,7 +1247,7 @@ public:
             vec(i) = val;
             inData += thisSize;
          }
-         
+
          charMatrix ch = charMatrix(vec, ' ');
          octave_value val(ch);
          setSymbol.assign(varName, val);
@@ -1247,7 +1260,7 @@ public:
          {
             int8NDArray vec = int8NDArray(dim_vector(1, numElems));
             int8_t val;
-            for (int i = 0;i < numElems ;i++)
+            for (int i = 0; i < numElems; i++)
             {
                val = rtlReadInt(inData, elemSize);
                vec(i) = val;
@@ -1262,7 +1275,7 @@ public:
          {
             int16NDArray vec = int16NDArray(dim_vector(1, numElems));
             int16_t val;
-            for (int i = 0;i < numElems ;i++)
+            for (int i = 0; i < numElems; i++)
             {
                val = rtlReadInt(inData, elemSize);
                vec(i) = val;
@@ -1277,7 +1290,7 @@ public:
          {
             int32NDArray vec = int32NDArray(dim_vector(1, numElems));
             int32_t val;
-            for (int i = 0;i < numElems ;i++)
+            for (int i = 0; i < numElems; i++)
             {
                val = rtlReadInt(inData, elemSize);
                vec(i) = val;
@@ -1292,7 +1305,7 @@ public:
          {
             int64NDArray vec = int64NDArray(dim_vector(1, numElems));
             int64_t val;
-            for (int i = 0;i < numElems ;i++)
+            for (int i = 0; i < numElems; i++)
             {
                val = rtlReadInt(inData, elemSize);
                vec(i) = val;
@@ -1312,7 +1325,7 @@ public:
          {
             uint8NDArray vec = uint8NDArray(dim_vector(1, numElems));
             uint8_t val;
-            for (int idx = 0;idx < numElems ;idx++)
+            for (int idx = 0; idx < numElems; idx++)
             {
                val = rtlReadUInt(inData, elemSize);
                vec(idx) = val;
@@ -1327,7 +1340,7 @@ public:
          {
             uint16NDArray vec = uint16NDArray(dim_vector(1, numElems));
             uint16_t val;
-            for (int idx = 0;idx < numElems ;idx++)
+            for (int idx = 0; idx < numElems; idx++)
             {
                val = rtlReadUInt(inData, elemSize);
                vec(idx) = val;
@@ -1342,7 +1355,7 @@ public:
          {
             uint32NDArray vec = uint32NDArray(dim_vector(1, numElems));
             uint32_t val;
-            for (int idx = 0;idx < numElems ;idx++)
+            for (int idx = 0; idx < numElems; idx++)
             {
                val = rtlReadUInt(inData, elemSize);
                vec(idx) = val;
@@ -1353,11 +1366,11 @@ public:
             setSymbol.assign(varName, _val);
             break;
          }
-         else 
+         else
          {
             uint64NDArray vec = uint64NDArray(dim_vector(1, numElems));
             uint64_t val;
-            for (int idx = 0;idx < numElems ;idx++)
+            for (int idx = 0; idx < numElems ; idx++)
             {
                val = rtlReadUInt(inData, elemSize);
                vec(idx) = val;
@@ -1375,8 +1388,8 @@ public:
       }
    }
 
-   virtual bool getBooleanResult() 
-   {    
+   virtual bool getBooleanResult()
+   {
       if (!result.isempty())
       {
          if (result.islogical())
@@ -1386,7 +1399,7 @@ public:
    }
 
    virtual void getDataResult(size32_t &len, void * &result){}
-   virtual double getRealResult() 
+   virtual double getRealResult()
    {
       if (!result.isempty())
       {
@@ -1397,11 +1410,11 @@ public:
             return result.float_value();
          }
 
-         rtlFail(0, "OctaveEmbed : Result type mismatch");         
+         rtlFail(0, "OctaveEmbed : Result type mismatch");
       }
    }
 
-   virtual __int64 getSignedResult() 
+   virtual __int64 getSignedResult()
    {
       int64_t ret;
       if (!result.isempty())
@@ -1435,7 +1448,7 @@ public:
       }
    }
 
-   virtual unsigned __int64 getUnsignedResult() 
+   virtual unsigned __int64 getUnsignedResult()
    {
       u_int64_t ret;
       if (!result.isempty())
@@ -1465,8 +1478,8 @@ public:
       }
    }
 
-   virtual void getStringResult(size32_t &tlen, char * &trg)   
-   {  
+   virtual void getStringResult(size32_t &tlen, char * &trg)
+   {
       if (!result.isempty())
       {
          if (result.is_string())
@@ -1487,12 +1500,12 @@ public:
       }
    }
 
-   virtual void getUTF8Result(size32_t &tlen, char * &trg)   
+   virtual void getUTF8Result(size32_t &tlen, char * &trg)
    {
       if (!result.isempty())
-      {  
+      {
          if (result.is_string())
-         {   
+         {
             const std::string src = result.string_value();
             unsigned slen = rtlUtf8Length(src.length(), src.c_str());
             rtlUtf8ToUtf8X(tlen, trg, rtlUtf8Length(src.length(), src.c_str()), src.c_str());
@@ -1501,32 +1514,34 @@ public:
         else
          {
             rtlFail(0, "OctaveEmbed : Result type mismatch");
-         } 
+         }
       }
+
       tlen = 0;
       trg = NULL;
    }
 
-   virtual void getUnicodeResult(size32_t &tlen, UChar * &trg)   
+   virtual void getUnicodeResult(size32_t &tlen, UChar * &trg)
    {
       if (!result.isempty())
-      {  
+      {
          if (result.is_string())
-         {   
+         {
             const std::string src = result.string_value();
             unsigned slen = rtlUtf8Length(src.length(), src.c_str());
             rtlUtf8ToUnicodeX(tlen, trg, rtlUtf8Length(src.length(), src.c_str()), src.c_str());
          }
         else
          {
-            rtlFail(0, "OctaveEmbed : Result type mismatch");        
+            rtlFail(0, "OctaveEmbed : Result type mismatch");
          }
       }
+
       tlen = 0;
       trg = NULL;
    }
 
-   virtual void getSetResult(bool & __isAllResult, size32_t & __resultBytes, void * & __result, int elemType, size32_t elemSize)  
+   virtual void getSetResult(bool & __isAllResult, size32_t & __resultBytes, void * & __result, int elemType, size32_t elemSize)
    {
       assertex(!result.isempty());
       rtlRowBuilder out;
@@ -1545,7 +1560,7 @@ public:
                outData = out.getbytes();
             }
 
-            for (size_t i = 0 ; i < arraySize ; i++)
+            for (size_t i = 0; i < arraySize; i++)
             {
                switch ((type_t) elemType)
                {
@@ -1588,9 +1603,9 @@ public:
             }
 
             if ((type_t) elemType != type_boolean)
-               rtlFail(0, "OctaveEmbed: type mismatch - unsupported return type");  
-            for (size_t i = 0 ; i < arraySize ; i++)
-            {               
+               rtlFail(0, "OctaveEmbed: type mismatch - unsupported return type");
+            for (size_t i = 0; i < arraySize; i++)
+            {
                assertex(elemSize == sizeof(bool));
                * (bool *) outData = array.elem(i);
                if (elemSize != UNKNOWN_LENGTH)
@@ -1612,7 +1627,7 @@ public:
             outData = out.getbytes();
          }
 
-         for (size_t i = 0; i < cmSize ; i++) 
+         for (size_t i = 0; i < cmSize; i++)
          {
             temp = cm.row_as_string(i);
             const char * src = temp.c_str();
@@ -1630,7 +1645,6 @@ public:
                      * (size32_t *) outData = slen;
                      rtlStrToStr(slen, outData+sizeof(size32_t), slen, src);
                      outBytes += slen + sizeof(size32_t);
-
                   }
                   else
                   {
@@ -1692,15 +1706,15 @@ public:
       }
       __isAllResult = false;
       __resultBytes = outBytes;
-      __result = out.detachdata();    
+      __result = out.detachdata();
    }
 
-   virtual void importFunction(size32_t len, const char *function)   
+   virtual void importFunction(size32_t len, const char *function)
    {
       throwUnexpected();
    }
 
-   virtual void compileEmbeddedScript(size32_t len, const char *script)   
+   virtual void compileEmbeddedScript(size32_t len, const char *script)
    {
       std::string queries(script);
       cutStatements(queries);
@@ -1708,11 +1722,12 @@ public:
       {
          throw MakeStringException(-1, "%s", "Unable to initialize interpreter");
       }
+
       global = globalState;
       setSymbol = global->get_current_scope();
    }
 
-   virtual void callFunction()  
+   virtual void callFunction()
    {
       if (!globalState)
       {
@@ -1732,8 +1747,8 @@ public:
       global = globalState;
       int parseStatus = 1;
       try
-      {  
-         global->eval_string(first, true, parseStatus, 0);         
+      {
+         global->eval_string(first, true, parseStatus, 0);
          result = global->eval_string(second, true, parseStatus);
          setSymbol.clear_variables();
          //global=nullptr;
@@ -1743,27 +1758,26 @@ public:
          //global=nullptr;
          throw MakeStringException(-1, "%s", buffer.str().c_str());
       }
-      
    }
 
-   virtual IRowStream *getDatasetResult(IEngineRowAllocator * _resultAllocator)   
+   virtual IRowStream *getDatasetResult(IEngineRowAllocator * _resultAllocator)
    {
       return new OctaveRowStream(result, _resultAllocator);
    }
 
-   virtual byte * getRowResult(IEngineRowAllocator * _resultAllocator)   
+   virtual byte * getRowResult(IEngineRowAllocator * _resultAllocator)
    {
       RtlDynamicRowBuilder rowBuilder(_resultAllocator);
       size32_t len = octaveembed::getRowResult(result, rowBuilder, false, nullptr);
       return (byte *) rowBuilder.finalizeRowClear(len);
    }
-   
-   virtual size32_t getTransformResult(ARowBuilder & builder)   
+
+   virtual size32_t getTransformResult(ARowBuilder & builder)
    {
       throwUnexpected();
    }
 
-   virtual void bindRowParam(const char *name, IOutputMetaData & metaVal, const byte *val)   
+   virtual void bindRowParam(const char *name, IOutputMetaData & metaVal, const byte *val)
    {
       std::string varName(name);
       const RtlTypeInfo *typeInfo = metaVal.queryTypeInfo();
@@ -1776,7 +1790,7 @@ public:
       setSymbol.assign(varName, rowParam);
    }
 
-   virtual void bindDatasetParam(const char *name, IOutputMetaData & metaVal, IRowStream * val)   
+   virtual void bindDatasetParam(const char *name, IOutputMetaData & metaVal, IRowStream * val)
    {
       std::string varName(name);
       const RtlTypeInfo *typeInfo = metaVal.queryTypeInfo();
@@ -1801,41 +1815,43 @@ public:
       setSymbol.assign(varName, value);
    }
 
-   virtual void bindFloatParam(const char *name, float val)   
+   virtual void bindFloatParam(const char *name, float val)
    {
       std::string varName(name);
       octave_value value(val);
       setSymbol.assign(varName, value);
    }
 
-   virtual void bindSignedSizeParam(const char *name, int size, __int64 val)  
+   virtual void bindSignedSizeParam(const char *name, int size, __int64 val)
    {
       bindSignedParam(name, val);
    }
 
-   virtual void bindUnsignedSizeParam(const char *name, int size, unsigned __int64 val)  
+   virtual void bindUnsignedSizeParam(const char *name, int size, unsigned __int64 val)
    {
       bindUnsignedParam(name, val);
    }
 
-   virtual IInterface *bindParamWriter(IInterface *esdl, const char *esdlservice, const char *esdltype, const char *name) 
+   virtual IInterface *bindParamWriter(IInterface *esdl, const char *esdlservice, const char *esdltype, const char *name)
    {
       return nullptr;
    }
 
    virtual void paramWriterCommit(IInterface *writer){}
    virtual void writeResult(IInterface *esdl, const char *esdlservice, const char *esdltype, IInterface *writer){}
-   virtual void loadCompiledScript(size32_t len, const void *script) 
+   virtual void loadCompiledScript(size32_t len, const void *script)
    {
       throwUnexpected();
    }
     // If reusing a context, need to call these before using/after using
-   virtual void enter()   
+   virtual void enter()
    {
    }
+
    virtual void exit()
    {
    }
+   
 protected:
    void resultMismatchException(const char *expected)
    {
@@ -1856,7 +1872,7 @@ protected:
 
    bool isEmpty(std::string x)
    {
-      for (int i = 0 ;i < x.length();i++)
+      for (int i = 0; i < x.length(); i++)
       {
          if (x.at(i) != ' ' && x.at(i) != '\t')
             return false;
@@ -1885,7 +1901,7 @@ protected:
          pos = script.find_last_of("\n");
       }
    }
-  
+
 protected:
    const IThorActivityContext *activityCtx = nullptr;
    octave_value result;
@@ -1893,6 +1909,7 @@ protected:
    std::string first, second;
    octave::interpreter* global;
 };
+
 static __thread OctaveEmbedImportContext * theFunctionContext;  // We reuse per thread, for speed
 static __thread ThreadTermFunc threadHookChain;
 
@@ -1903,8 +1920,9 @@ static void releaseContext()
       ::Release(theFunctionContext);
       theFunctionContext = NULL;
    }
+
    if (threadHookChain)
-   {  
+   {
         (*threadHookChain)();
         threadHookChain = NULL;
    }
@@ -1912,12 +1930,12 @@ static void releaseContext()
 class OctaveEmbedContext : public CInterfaceOf<IEmbedContext>
 {
 public:
-   virtual IEmbedFunctionContext *createFunctionContext(unsigned flags, const char *options) 
+   virtual IEmbedFunctionContext *createFunctionContext(unsigned flags, const char *options)
    {
       return createFunctionContextEx(nullptr, nullptr, flags, options);
    }
 
-   virtual IEmbedFunctionContext *createFunctionContextEx(ICodeContext *ctx, const IThorActivityContext *activityCtx, unsigned flags, const char *options) 
+   virtual IEmbedFunctionContext *createFunctionContextEx(ICodeContext *ctx, const IThorActivityContext *activityCtx, unsigned flags, const char *options)
    {
       /* if (!theFunctionContext)
       {
@@ -1930,10 +1948,11 @@ public:
       return new OctaveEmbedImportContext;
    }
 
-   virtual IEmbedServiceContext *createServiceContext(const char *service, unsigned flags, const char *options) 
+   virtual IEmbedServiceContext *createServiceContext(const char *service, unsigned flags, const char *options)
    {
       throwUnexpected();
    }
+   
 }embedContext;
 
 extern DECL_EXPORT IEmbedContext *queryEmbedContext()
