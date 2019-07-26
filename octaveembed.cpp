@@ -1735,8 +1735,10 @@ public:
       if (!globalState)
       {
          globalState = new octave::interpreter;
+         parse_status = globalState->execute();
          threadHookChain = addThreadTermFunc(releaseContext);
       }
+      
       if (!globalState)
       {
          throw MakeStringException(-1, "%s", "Unable to initialize interpreter");
