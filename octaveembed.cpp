@@ -52,21 +52,31 @@ static void UNSUPPORTED(const char *feature)
 
 namespace octaveembed {
 
-static octave::interpreter* globalState = nullptr;
 static int status;
+static __thread octave::interpreter * globalState;  // We reuse per thread, for speed
+static __thread ThreadTermFunc threadHookChain;
+
 MODULE_INIT(INIT_PRIORITY_STANDARD)
 {
-   if (!globalState)
-   {
-      globalState = new octave::interpreter;
-      status = globalState->execute();
-   }
-
-   return true;
 }
 
 MODULE_EXIT()
 {
+}
+
+static void releaseContext()
+{
+   if (globalState)
+   {
+      delete globalState;
+      globalState = NULL;
+   }
+
+   if (threadHookChain)
+   {
+      (*threadHookChain)();
+      threadHookChain = NULL;
+   }
 }
 
 class OctaveObjectAccessor
@@ -1718,6 +1728,15 @@ public:
    {
       std::string queries(script);
       cutStatements(queries);
+      //if (!globalState)
+      //{
+         //throw MakeStringException(-1, "%s", "Unable to initialize interpreter");
+      //}
+      if (!globalState)
+      {
+         globalState = new octave::interpreter;
+         threadHookChain = addThreadTermFunc(releaseContext);
+      }
       if (!globalState)
       {
          throw MakeStringException(-1, "%s", "Unable to initialize interpreter");
@@ -1910,23 +1929,7 @@ protected:
    octave::interpreter* global;
 };
 
-static __thread OctaveEmbedImportContext * theFunctionContext;  // We reuse per thread, for speed
-static __thread ThreadTermFunc threadHookChain;
 
-static void releaseContext()
-{
-   if (theFunctionContext)
-   {
-      ::Release(theFunctionContext);
-      theFunctionContext = NULL;
-   }
-
-   if (threadHookChain)
-   {
-        (*threadHookChain)();
-        threadHookChain = NULL;
-   }
-}
 class OctaveEmbedContext : public CInterfaceOf<IEmbedContext>
 {
 public:
@@ -1937,14 +1940,6 @@ public:
 
    virtual IEmbedFunctionContext *createFunctionContextEx(ICodeContext *ctx, const IThorActivityContext *activityCtx, unsigned flags, const char *options)
    {
-      /* if (!theFunctionContext)
-      {
-         theFunctionContext = new OctaveEmbedImportContext;
-         threadHookChain = addThreadTermFunc(releaseContext);
-      }
-
-      theFunctionContext->setActivityContext(activityCtx);
-      return LINK(theFunctionContext);*/
       return new OctaveEmbedImportContext;
    }
 
