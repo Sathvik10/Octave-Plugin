@@ -58,6 +58,7 @@ static __thread ThreadTermFunc threadHookChain;
 
 MODULE_INIT(INIT_PRIORITY_STANDARD)
 {
+   return true;
 }
 
 MODULE_EXIT()
@@ -69,13 +70,13 @@ static void releaseContext()
    if (globalState)
    {
       delete globalState;
-      globalState = NULL;
+      globalState = nullptr;
    }
 
    if (threadHookChain)
    {
       (*threadHookChain)();
-      threadHookChain = NULL;
+      threadHookChain = nullptr;
    }
 }
 
@@ -507,10 +508,10 @@ protected:
 static size32_t getRowResult(octave_value row, ARowBuilder &builder, bool inDataSet, Array<double>* vector)
 {
    if (row.isempty())
-      rtlFail(0, "Null Object Returned");
+      rtlFail(0, "OctaveEmbed: Result is empty");
    const RtlTypeInfo *typeInfo = builder.queryAllocator()->queryOutputMeta()->queryTypeInfo();
    assertex(typeInfo);
-   RtlFieldStrInfo dummyField("<row>", NULL, typeInfo);
+   RtlFieldStrInfo dummyField("<row>", nullptr, typeInfo);
    OctaveRowBuilder ORowBuilder(row, &dummyField, inDataSet);
    if (inDataSet)
       ORowBuilder.initializeRow(*vector);
@@ -541,7 +542,7 @@ public:
          if (rowIdx >= sArray.numel())
          {
             stop();
-            return NULL;
+            return nullptr;
          }
 
          octave_scalar_map sMap = sArray.elem(rowIdx);
@@ -554,7 +555,7 @@ public:
       if (rowIdx >= mat.rows())
       {
          stop();
-         return NULL;
+         return nullptr;
       }
 
       Array<double> vectorSet = mat.row(rowIdx).as_row();
@@ -1177,7 +1178,7 @@ public:
          break;
       }
 
-      case type_string :
+      case type_string:
       {
          string_vector vec = string_vector(numElems);
          for (int i = 0; i < numElems; i++)
@@ -1202,7 +1203,7 @@ public:
          break;
       }
 
-      case type_varstring :
+      case type_varstring:
       {
          string_vector vec = string_vector(numElems);
          for (int i = 0; i < numElems; i++)
@@ -1490,7 +1491,7 @@ public:
       else
       {
          tlen = 0;
-         trg = NULL;
+         trg = nullptr;
       }
    }
 
@@ -1512,7 +1513,7 @@ public:
       }
 
       tlen = 0;
-      trg = NULL;
+      trg = nullptr;
    }
 
    virtual void getUnicodeResult(size32_t &tlen, UChar * &trg)
@@ -1524,7 +1525,7 @@ public:
    {
       assertex(!result.isempty());
       rtlRowBuilder out;
-      byte *outData = NULL;
+      byte *outData = nullptr;
       size32_t outBytes = 0;
       if (result.isnumeric())
       {
@@ -1543,11 +1544,11 @@ public:
             {
                switch ((type_t) elemType)
                {
-               case type_int :
-               case type_unsigned :
+               case type_int:
+               case type_unsigned:
                   rtlWriteInt(outData, array.elem(i), elemSize);
                   break;
-               case type_real :
+               case type_real:
                   if (elemSize == sizeof(double))
                      * (double *) outData = (double) array.elem(i);
                   else
@@ -1678,10 +1679,6 @@ public:
    {
       std::string queries(script);
       cutStatements(queries);
-      //if (!globalState)
-      //{
-         //throw MakeStringException(-1, "%s", "Unable to initialize interpreter");
-      //}
       if (!globalState)
       {
          globalState = new octave::interpreter;
@@ -1722,11 +1719,9 @@ public:
          global->eval_string(first, true, parseStatus, 0);
          result = global->eval_string(second, true, parseStatus);
          setSymbol.clear_variables();
-         //global=nullptr;
       }
       catch(...)
       {
-         //global=nullptr;
          throw MakeStringException(-1, "%s", buffer.str().c_str());
       }
    }
@@ -1753,7 +1748,7 @@ public:
       std::string varName(name);
       const RtlTypeInfo *typeInfo = metaVal.queryTypeInfo();
       assertex(typeInfo);
-      RtlFieldStrInfo dummyField("<row>", NULL, typeInfo);
+      RtlFieldStrInfo dummyField("<row>", nullptr, typeInfo);
       OctaveObjectBuilder objBuilder(&dummyField);
       typeInfo->process(val, val, &dummyField, objBuilder);
       octave_scalar_map sMap = objBuilder.getScalarMap();
@@ -1766,7 +1761,7 @@ public:
       std::string varName(name);
       const RtlTypeInfo *typeInfo = metaVal.queryTypeInfo();
       assertex(typeInfo);
-      RtlFieldStrInfo dummyField("<row>", NULL, typeInfo);
+      RtlFieldStrInfo dummyField("<row>", nullptr, typeInfo);
       int idx = 0;
       octave_map map;
       for (;;)
@@ -1952,7 +1947,7 @@ public:
       throwUnexpected();
    }
    
-}embedContext;
+} embedContext;
 
 extern DECL_EXPORT IEmbedContext *queryEmbedContext()
 {
