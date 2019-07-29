@@ -6,13 +6,13 @@ This is the ECL plugin for embedding octave queries within the ECL definitions.
 
 Octave plugin enables to bring octave queries within ECL. All the queries within the embedded context is evaluated using octave interpreter. Each statement or a query has its own return type. In some cases, the return value in octave CUI and embed Octave differs, especially in data containers and conditional statements. To make sure we get the proper output, the last statement should always be the required return value.
 
-Example:
+[Example:\n
 If the output required is a structure, then the embedded code should always follow the below syntax
 
 x.a = 9
 x.b= 'Hello'
 ....
-X
+X]
 
 The last statement returns the strucure which is the required return value. If we consider the statement "x.b = 'Hello'", the return value in octave CUI is a structure, but the return value is a string in embedded context.
 
