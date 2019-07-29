@@ -263,24 +263,7 @@ public:
 
    virtual void getUnicodeResult(const RtlFieldInfo *field, size32_t &chars, UChar * &__result)
    {
-      if (inSet)
-      {
-         std::string temp = cm.row_as_string(idx++);
-         const char * src = temp.c_str();
-         unsigned slen = rtlUtf8Length(temp.length(), src);
-         rtlUtf8ToUnicodeX(chars, __result, slen, src);
-      }
-      else
-      {
-         result = getResult(field);
-         if (result.is_string())
-         {
-            std::string temp = result.string_value();
-            const char * src = temp.c_str();
-            unsigned slen = rtlUtf8Length(temp.length(), src);
-            rtlUtf8ToUnicodeX(chars, __result, slen, src);
-         }
-      }
+      UNSUPPORTED("Unicode");
    }
 
    virtual void getDecimalResult(const RtlFieldInfo *field, Decimal &value)
@@ -665,17 +648,11 @@ public:
       sMap.setfield(temp, valo);
    }
 
-   virtual void processUnicode(unsigned len, const UChar *_value, const RtlFieldInfo * field){}
-   virtual void processQString(unsigned len, const char *_value, const RtlFieldInfo * field)
+   virtual void processUnicode(unsigned len, const UChar *_value, const RtlFieldInfo * field)
    {
-      std::string name (field->name);
-      char* out;
-      size32_t outLen;
-      rtlQStrToStr(outLen, out, len, _value);
-      std::string value(out, outLen);
-      octave_value qstr(value);
-      sMap.setfield(name, qstr);        //Still need to be tested
+      UNSUPPORTED("Unicode");
    }
+   virtual void processQString(unsigned len, const char *_value, const RtlFieldInfo * field){}
 
    virtual void processUtf8(unsigned len, const char *_value, const RtlFieldInfo * field)
    {
@@ -1066,7 +1043,7 @@ public:
    {
       std::string varName(name);
       octave_value value(__val);
-       setSymbol.assign(varName, value);
+      setSymbol.assign(varName, value);
    }
 
    virtual void bindDataParam(const char *name, size32_t len, const void *val){}
@@ -1112,7 +1089,10 @@ public:
       setSymbol.assign(varName, value);
    }
 
-   virtual void bindUnicodeParam(const char *name, size32_t chars, const UChar *__val){}
+   virtual void bindUnicodeParam(const char *name, size32_t chars, const UChar *__val)
+   {
+      UNSUPPORTED("Unicode");
+   }
    virtual void bindSetParam(const char *name, int elemType, size32_t elemSize, bool isAll, size32_t totalBytes, const void *setData)
    {
       std::string varName(name);
@@ -1136,7 +1116,7 @@ public:
                thisSize = * (size32_t *) inData + sizeof(size32_t);
                break;
             case type_unicode:
-               thisSize = (* (size32_t *) inData) * sizeof(UChar) + sizeof(size32_t);
+               UNSUPPORTED("Unicode");
                break;
             case type_utf8:
                thisSize = rtlUtf8Size(* (size32_t *) inData, inData + sizeof(size32_t)) + sizeof(size32_t);
@@ -1408,7 +1388,11 @@ public:
       }
    }
 
-   virtual void getDataResult(size32_t &len, void * &result){}
+   virtual void getDataResult(size32_t &len, void * &result)
+   {
+      UNSUPPORTED("Data");
+   }
+
    virtual double getRealResult()
    {
       if (!result.isempty())
@@ -1533,22 +1517,7 @@ public:
 
    virtual void getUnicodeResult(size32_t &tlen, UChar * &trg)
    {
-      if (!result.isempty())
-      {
-         if (result.is_string())
-         {
-            const std::string src = result.string_value();
-            unsigned slen = rtlUtf8Length(src.length(), src.c_str());
-            rtlUtf8ToUnicodeX(tlen, trg, rtlUtf8Length(src.length(), src.c_str()), src.c_str());
-         }
-        else
-         {
-            rtlFail(0, "OctaveEmbed : Result type mismatch");
-         }
-      }
-
-      tlen = 0;
-      trg = NULL;
+      UNSUPPORTED("Unicode");
    }
 
    virtual void getSetResult(bool & __isAllResult, size32_t & __resultBytes, void * & __result, int elemType, size32_t elemSize)
@@ -1677,37 +1646,18 @@ public:
                }
                break;
             case type_utf8:
-            case type_unicode:
                {
                   size_t numChars = rtlUtf8Length(slen, src);
-                  if (elemType == type_utf8)
-                  {
-                     assertex (elemSize == UNKNOWN_LENGTH);
-                     out.ensureAvailable(outBytes + slen + sizeof(size32_t));
-                     outData = out.getbytes() + outBytes;
-                     * (size32_t *) outData = numChars;
-                     rtlStrToStr(slen, outData+sizeof(size32_t), slen, src);
-                     outBytes += slen + sizeof(size32_t);
-                  }
-                  else
-                  {
-                     if (elemSize == UNKNOWN_LENGTH)
-                     {
-                        out.ensureAvailable(outBytes + numChars*sizeof(UChar) + sizeof(size32_t));
-                        outData = out.getbytes() + outBytes;
-                        // You can't assume that number of chars in utf8 matches number in unicode16 ...
-                        size32_t numChars16;
-                        rtlDataAttr unicode16;
-                        rtlUtf8ToUnicodeX(numChars16, unicode16.refustr(), numChars, src);
-                        * (size32_t *) outData = numChars16;
-                        rtlUnicodeToUnicode(numChars16, (UChar *) (outData+sizeof(size32_t)), numChars16, unicode16.getustr());
-                        outBytes += numChars16*sizeof(UChar) + sizeof(size32_t);
-                     }
-                     else
-                        rtlUtf8ToUnicode(elemSize / sizeof(UChar), (UChar *) outData, numChars, src);
-                  }
+                  assertex (elemSize == UNKNOWN_LENGTH);
+                  out.ensureAvailable(outBytes + slen + sizeof(size32_t));
+                  outData = out.getbytes() + outBytes;
+                  * (size32_t *) outData = numChars;
+                  rtlStrToStr(slen, outData+sizeof(size32_t), slen, src);
+                  outBytes += slen + sizeof(size32_t);
                }
-
+               case type_unicode:
+                  UNSUPPORTED("Unicode");
+                  
                break;
             default :
                rtlFail(0, "OctaveEmbed: type mismatch - unsupported return type");
@@ -1843,14 +1793,66 @@ public:
       setSymbol.assign(varName, value);
    }
 
-   virtual void bindSignedSizeParam(const char *name, int size, __int64 val)
+   virtual void bindSignedSizeParam(const char *name, int size, __int64 _val)
    {
-      bindSignedParam(name, val);
+      std::string varName(name);
+      if (size == sizeof(int8_t))
+      {
+         octave_int8 val = _val;
+         octave_value value(val);
+         setSymbol.assign(varName, value);
+      }
+      else if (size == sizeof(int16_t))
+      {
+         octave_int16 val = _val;
+         octave_value value(val);
+         setSymbol.assign(varName, value);
+      }
+      else if (size == sizeof(int32_t))
+      {
+         octave_int32 val = _val;
+         octave_value value(val);
+         setSymbol.assign(varName, value);
+      }
+      else if (size == sizeof(int64_t))
+      {
+         octave_int64 val = _val;
+         octave_value value(val);
+         setSymbol.assign(varName,value);
+      }
+      else
+         rtlFail(0,"OctaveEmbed: Only 1,2,4,8 byte sized integer is Supported");
    }
 
-   virtual void bindUnsignedSizeParam(const char *name, int size, unsigned __int64 val)
+   virtual void bindUnsignedSizeParam(const char *name, int size, unsigned __int64 _val)
    {
-      bindUnsignedParam(name, val);
+      std::string varName(name);
+      if (size == sizeof(int8_t))
+      {
+         octave_uint8 val = _val;
+         octave_value value(val);
+         setSymbol.assign(varName, value);
+      }
+      else if (size == sizeof(int16_t))
+      {
+         octave_uint16 val = _val;
+         octave_value value(val);
+         setSymbol.assign(varName, value);
+      }
+      else if (size == sizeof(int32_t))
+      {
+         octave_uint32 val = _val;
+         octave_value value(val);
+         setSymbol.assign(varName, value);
+      }
+      else if (size == sizeof(int64_t))
+      {
+         octave_uint64 val = _val;
+         octave_value value(val);
+         setSymbol.assign(varName,value);
+      }
+      else
+         rtlFail(0,"OctaveEmbed: Only 1,2,4,8 byte sized integer is Supported");
    }
 
    virtual IInterface *bindParamWriter(IInterface *esdl, const char *esdlservice, const char *esdltype, const char *name)
