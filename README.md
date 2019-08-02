@@ -58,6 +58,7 @@ x               //If X is the required value.
     Octave plugin doesn't support data type.
 
 9.Set Of:
+
     a.Numerical: All numerical set of type is mapped to row vectors of corresponding type and size except real. Set of type is mapped to double vector irrespective of size
 
     b.String: Set of string is mapped to char matrix, where each string represents each row in the matrix. Same implies for obtaining set of string output. Octave-5.1.0 doesn't have support for string matrix, mapping to char matrix is the suitable choice. Additional spaces are filled by space character.
@@ -73,7 +74,6 @@ x               //If X is the required value.
     Dataset is mapped with structure array in octave. Dataset with specific record definition as a template is mapped to numerical matrix. Additional information is given in the next section.
 
 #Record, Dataset and Numerical Matrix
-
     As mentioned matrices are bound to specific definition of dataset. The definition is;
      ```
     Identifier := Record
@@ -82,7 +82,6 @@ x               //If X is the required value.
 
     Dataset(Identifier)
     ```
-
     This is the only way to define a octave matrix definition in ECL. Few points to add
     1. To get a matrix result from embedded script, matrix can be real, integer, unsigned and boolean. Only these four specified type are supported. As char matrix is already mapped to set of strings, usage of string implies multi-dimensional char matrix whose support is not provided.
 
@@ -110,7 +109,6 @@ x               //If X is the required value.
         .....
     endembed;
     ```
-
     This implies matrix to be passed as a parameter can be a part of record or dataset, can't be parsed indivisually. If passed it will be mapped to structure array, where each structure consists of a row vector.
 
     4. No dataset should follow the specified syntax below to pass a parameter.
@@ -127,7 +125,6 @@ x               //If X is the required value.
         ....
     end;
     ```
-
     This implies record used as a template for dataset, can't start with set of type as a part of its definition. Mapping holds good for placing set of type at bottom or in between. Placing at top will generate error.
 
     Following are points necessary for octave plugin usage:
