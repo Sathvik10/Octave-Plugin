@@ -16,9 +16,6 @@
 #include "nbcd.hpp"
 #include "deftype.hpp"
 
-#include <stack>
-
-
 #define OCTAVE_PLUGIN_VERSION "octave plugin 1.0.0"
  bool getECLPluginDefinition(ECLPluginDefinitionBlock *pb)
 {
@@ -91,7 +88,7 @@ public:
 protected:
    void pushResult(octave_value _result)
    {
-      list.push(_result);
+      list.append(_result);
    }
 
    octave_value popResult()
@@ -101,9 +98,7 @@ protected:
       {
          return emptyResult;
       }
-
-      emptyResult = list.top();
-      list.pop();
+      emptyResult = list.popGet();
       return emptyResult;
    }
 
@@ -130,8 +125,34 @@ protected:
       setSize = sizeStack.popGet();
    }
 
+   void pushSArray(bool value)
+   {
+      structStack.append(value);
+   }
+
+   bool popSArray()
+   {
+      return structStack.popGet();
+   }
+
+   void pushMapValue(octave_map value)
+   {
+      mapList.append(value);
+   }
+
+   octave_map popMapValue()
+   {
+      octave_map mResult;
+      if (mapList.empty())
+         return mResult;
+      mResult = mapList.popGet();
+      return mResult;
+   }
+
+   ArrayOf<octave_map> mapList;
    IntArray sizeStack;
-   std::stack<octave_value> list;
+   BoolArray structStack;
+   ArrayOf<octave_value> list;
    bool inSet;
    bool inDataSet;
    int setSize;
@@ -276,7 +297,13 @@ public:
    virtual void processBeginSet(const RtlFieldInfo * field, bool &isAll)
    {
       if (inDataSet)
+      {
+         pushSize();
+         if (!mat.isempty())           //initialises no of elements is a row
+            setSize = mat.columns();
          return;
+      }
+      
       result = getResult(field);
       if (!result.isempty())
       {
@@ -319,11 +346,13 @@ public:
       {
          if (result.isstruct())
          {
+            pushSArray(structArray);
+            pushMapValue(sArray);            //outer struct-array is pushed on stack
+            pushSize();
+            pushIdx();                       //Can push the row here instead at next row
             structArray = true;
             sArray = result.map_value();
-            pushSize();
             setSize = sArray.numel();
-            pushIdx();
             return;
          }
          
@@ -361,25 +390,25 @@ public:
    virtual void processBeginRow(const RtlFieldInfo * field)
    {
       std::string fieldName(field->name);
-      if (inDataSet)
+      if (inDataSet)                   //Represents Matrix type result
       {
          pushIdx();
          return;
       }
 
-      if (structArray)
+      if (structArray)                 //Represents Struct array type Data
          return;
-      if (fieldName.compare("<row>") == 0)
+      if (fieldName.compare("<row>") == 0)   
       {
-         if (row.isstruct())
+         if (row.isstruct())           //Actual structure output obtained from evaluation 
             initializeStruct();
          else
             rtlFail(0, "OctaveEmbed: Type Mismatch");
       }
       else
       {
-         result = getResult(field);
-         if (result.isstruct())
+         result = getResult(field);       //For Record within a Record condition
+         if (result.isstruct())           //Outer structure is pushed on Stack
          {
             pushResult(row);
             row = result;
@@ -392,7 +421,7 @@ public:
    {
       if (vectorSet.isempty() && cm.isempty() && mat.isempty())
          return false;
-      if (idx<setSize)
+      if (idx < setSize)
          return true;
       return false;
    }
@@ -411,9 +440,9 @@ public:
 
          if (!sArray.isempty())
          {
-            octave_scalar_map sMap = sArray.elem(idx++);
+            octave_scalar_map sMap = sArray.elem(idx++);    //obtaining single struct within struct-array
             octave_value str(sMap);
-            pushResult(row);
+            pushResult(row);                                //Pushing the outer struct onto stack
             row = str;
             initializeStruct();
             return true;
@@ -425,10 +454,17 @@ public:
 
    virtual void processEndSet(const RtlFieldInfo * field)
    {
+      if(inDataSet)
+      {
+         popSize();
+      }
+
       if (inSet == true)
       {
          popIdx();
          popSize();
+         vectorSet.clear();
+         cm.clear();
       }
 
       inSet = false;
@@ -441,6 +477,8 @@ public:
          popIdx();
          popSize();
          inDataSet = false;
+         mat.clear();
+         return;
       }
 
       if (structArray)
@@ -448,13 +486,13 @@ public:
          popIdx();
          popSize();
          initializeStruct();
-         structArray = false;
+         structArray = popSArray();       //Can pop the row here
+         sArray = popMapValue();
       }
    }
 
    virtual void processEndRow(const RtlFieldInfo * field)
    {
-      std::string fieldName(field->name);
       if (inDataSet)
       {
          popIdx();
@@ -463,14 +501,15 @@ public:
 
       if (structArray)
       {
-         row = popResult();
+         row = popResult();         //Poping the result pushed at next row(Can be changed)
          return;
       }
 
+      std::string fieldName(field->name);
       if (fieldName.compare("<row>") != 0)
       {
-         row = popResult();
-         initializeStruct();
+         row = popResult();         //For Record within a Record condition
+         initializeStruct();        //Outer Structure is obtained back
       }
    }
 
@@ -489,8 +528,9 @@ protected:
    octave_value getResult(const RtlFieldInfo * field)
    {
       Cell c = value.getfield(field->name);
+      std::string name(field->name);
       if (c.isempty())
-         rtlFail(0, "OctaveEmbed : Field name Mismatch");
+         rtlFail(0, "OctaveEmbed: Field name mismatch");
       return c.checkelem(0);
    }
 
@@ -525,7 +565,7 @@ public:
    :dataSet(result), resultAllocator(_resultAllocator), rowIdx(-1)
    {
       if (dataSet.isempty())
-         rtlFail(0, "OctaveEmbed: Result is empty");
+         rtlFail(0, "OctaveEmbed: Result is empty");     //add char matrix check
       if (!dataSet.is_matrix_type() && !dataSet.isstruct())
          rtlFail(0, "OctaveEmbed: Type Mismatch");
       if (dataSet.is_matrix_type())
@@ -679,7 +719,7 @@ public:
       {
          if (flag == 1000)
          {
-            structArray = false;
+            structArray = popSArray();
          }
          else
          {
@@ -903,11 +943,14 @@ public:
    virtual bool processBeginDataset(const RtlFieldInfo * field, unsigned rows)
    {
       inDataSet = true;
+      pushSArray(structArray);
       structArray = true;
       flag = 999;
       pushIdx();
       octave_value push(sMap);
       pushResult(push);
+      pushMapValue(map);
+      //map.clear();
       row = rows;
       map = octave_map();
       return true;
@@ -966,6 +1009,8 @@ public:
          octave_value value (mat);
          sMap.setfield(name, value);
          mat.clear();
+         map = popMapValue();
+         flag = 999;
          return;
       }
 
@@ -974,20 +1019,26 @@ public:
          popIdx();
          octave_value pop = popResult();
          sMap = pop.scalar_map_value();
-         structArray = false;
+         structArray = popSArray();
          std::string name(field->name);      
          octave_value value(map);
          sMap.setfield(name, value);
+         map = popMapValue();
          return;
       }
    }
 
    virtual void processEndRow(const RtlFieldInfo * field)
    {
-      std::string fieldName  (field->name);
+      std::string fieldName (field->name);
       if (inDataSet && !structArray)
       {
          return;
+      }
+
+      if (inDataSet && structArray)
+      {
+         inDataSet = false;      //By the completion of single row both can't be true,
       }
 
       if (structArray)
@@ -1724,6 +1775,8 @@ public:
       {
          throw MakeStringException(-1, "%s", buffer.str().c_str());
       }
+
+      octave_stdout.flush ();
    }
 
    virtual IRowStream *getDatasetResult(IEngineRowAllocator * _resultAllocator)

@@ -165,6 +165,62 @@ string testType(real4 x):=embed(octave)
     class(x)
 endembed;
 
-output(testType(4));
+//output(testType(4));
 //single
 //Info      ---> Real4 is mapped to single and Real8 and real is mapped to double
+
+matrix := { set of real a};
+scale:=RECORD
+    boolean agree;
+    real scalefactor;
+    Dataset(matrix) mat;    //Matrix has to be a part of record or dataset.
+END;
+
+mat := dataset([{[53,2,6]},{[3,4,5]},{[90,7,6]}],matrix);
+mat2 := dataset([{[2,2,2]},{[2,2,2]},{[2,2,2]}],matrix);
+
+scale1:=row({true,3,mat},scale);
+
+scale Magnify(scale a) := embed(octave)
+    if(a.agree)
+        a.mat = a.scalefactor * a.mat;
+        a.agree = false;
+    endif
+    a
+endembed;
+
+//output(Magnify(scale1),named('RecordResult'));
+//false,3.0,[[[159.0,6.0,18.0]],[[9.0,12.0,15.0]],[[270.0,21.0,18.0]]]
+
+matmul := {Dataset(matrix) mat};
+mul1 := row({mat},matmul);
+mul2 := row({mat2},matmul);
+
+Dataset(matrix) multiplymat(matmul a,matmul b):=embed(octave)
+    a.mat .* b.mat
+endembed;
+
+//output(multiplymat(mul1,mul2),named('DatasetResult'));
+//[106.0,4.0,12.0]
+//[6.0,8.0,10.0]
+//[180.0,14.0,12.0]
+//Info -->  Matrix can be obtained as a result indivisually, but as to be part of record or dataset to send as parameters.
+//          In the above operation corresponding elements in each matrix are multipled.
+
+//Below example shows binding and obtaining dataset output
+
+dataCheck := { boolean b, real r, integer i, string s};
+row1:= dataset([{false,10, 20, 'Octave'},{true,30,40,'Embed'}],datacheck);
+
+dataset(datacheck) tester(Dataset(datacheck) a):=embed(octave)
+    a(1).b = a(2).b
+    a(1).r = a(2).r
+    a(1).i = a(2).i
+    a(1).s = a(2).s
+    a
+endembed;
+
+//output(tester(row1),named('DatasetResult'));
+//true,30.0,40,Embed
+//true,30.0,40,Embed
+// values for first structure is copied to second
