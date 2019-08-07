@@ -1,4 +1,4 @@
-EXPORT Language := SERVICE : plugin('octaveplugin')
+EXPORT Language := SERVICE : plugin('octaveembed')
   integer queryEmbedContext():cpp,pure,namespace='octaveembed',entrypoint='queryEmbedContext',prototype='IEmbedContext* queryEmbedContext()',fold;
 END;
 EXPORT getEmbedContext := Language.queryEmbedContext;
