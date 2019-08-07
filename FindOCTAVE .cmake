@@ -1,13 +1,6 @@
 IF (NOT OCTAVE_FOUND)
-	IF (WIN32)
-		
-	ELSE
-		SET(octave_lib "liboctave")
-		SET (octave_lib_interp "liboctinterp")
-	ENDIF()
-	
-	FIND_LIBRARY (OCTAVE_LIBRARIES NAMES ${octave_lib} PATHS "usr/local/lib" PATH_SUFFIXES "octave/5.1.0")	
-	FIND_LIBRARY (OCTAVE_LIBRARIES NAMES ${octave_lib_interp} PATHS "usr/local/lib" PATH_SUFFIXES "octave/5.1.0")	
+	FIND_LIBRARY (OCTAVE_LIBRARIES NAMES octave PATHS "/usr/local/lib/octave/5.1.0" NO_DEFAULT_PATH)
+	FIND_LIBRARY (OCTAVE_LIBRARIES2 NAMES octinterp PATHS "/usr/local/lib/octave/5.1.0" NO_DEFAULT_PATH)
 
 	if (USE_NATIVE_LIBRARIES)
     		FIND_LIBRARY (OCTAVE_LIBRARIES NAMES ${octave_lib} PATH_SUFFIXES "octave")
