@@ -1,0 +1,46 @@
+<esxdl name="ws_account">
+	<EsdlRequest name='UpdateUserInputRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='UpdateUserInputResponse' exceptions_inline='1'>
+		<EsdlElement name='username' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='MyAccountRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='MyAccountResponse' exceptions_inline='1'>
+		<EsdlElement name='username' type='string'/>
+		<EsdlElement name='firstName' type='string'/>
+		<EsdlElement name='lastName' type='string'/>
+		<EsdlElement name='passwordExpiration' type='string'/>
+		<EsdlElement name='passwordDaysRemaining' type='int'/>
+		<EsdlElement name='passwordExpirationWarningDays' type='int' min_ver='1.01'/>
+		<EsdlElement name='employeeID' type='string' min_ver='1.02'/>
+		<EsdlElement name='distinguishedName' type='string' min_ver='1.03'/>
+	</EsdlResponse>
+	<EsdlRequest name='UpdateUserRequest'>
+		<EsdlElement name='username' type='string' cols='20' label='User Name'/>
+		<EsdlElement name='oldpass' type='string' cols='20' password='1' label='Old Password'/>
+		<EsdlElement name='newpass1' type='string' cols='20' password='1' label='New password'/>
+		<EsdlElement name='newpass2' type='string' cols='20' password='1' label='Retype new password'/>
+	</EsdlRequest>
+	<EsdlResponse name='UpdateUserResponse' exceptions_inline='1'>
+		<EsdlElement name='retcode' type='int'/>
+		<EsdlElement name='message' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='VerifyUserRequest'>
+		<EsdlElement name='application' type='string'/>
+		<EsdlElement name='version' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='VerifyUserResponse' exceptions_inline='1'>
+		<EsdlElement name='retcode' type='int'/>
+	</EsdlResponse>
+	<EsdlRequest name='ws_accountPingRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='ws_accountPingResponse'>
+	</EsdlResponse>
+		<EsdlService name='ws_account'  exceptions_inline='./smc_xslt/exceptions.xslt' default_client_version='1.03' version='1.03' auth_feature='NONE'>
+	<EsdlMethod name='MyAccount' request_type='MyAccountRequest' response_type='MyAccountResponse'  client_xslt='/esp/xslt/account_myaccount.xslt'/>
+	<EsdlMethod name='Ping' request_type='ws_accountPingRequest' response_type='ws_accountPingResponse' />
+	<EsdlMethod name='UpdateUser' request_type='UpdateUserRequest' response_type='UpdateUserResponse'  resp_xsl_default='./smc_xslt/account.xslt'/>
+	<EsdlMethod name='UpdateUserInput' request_type='UpdateUserInputRequest' response_type='UpdateUserInputResponse'  client_xslt='/esp/xslt/account_input.xslt'/>
+	<EsdlMethod name='VerifyUser' request_type='VerifyUserRequest' response_type='VerifyUserResponse' />
+		</EsdlService></esxdl>

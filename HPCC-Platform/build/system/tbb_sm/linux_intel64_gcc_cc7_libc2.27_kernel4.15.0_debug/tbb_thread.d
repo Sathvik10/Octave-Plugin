@@ -1,0 +1,26 @@
+tbb_thread.o: \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./src/tbb/tbb_thread.cpp \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./src/tbb/tbb_misc.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./include/tbb/tbb_stddef.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./include/tbb/tbb_config.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./include/tbb/tbb_machine.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./include/tbb/tbb_stddef.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./include/tbb/machine/linux_intel64.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./include/tbb/machine/gcc_ia32_common.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./include/tbb/machine/gcc_itsx.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./include/tbb/machine/linux_common.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./include/tbb/atomic.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./include/tbb/tbb_machine.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./include/tbb/tbb_thread.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./include/tbb/atomic.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./include/tbb/internal/_tbb_hash_compare_impl.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./include/tbb/tick_count.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./include/tbb/tbb_allocator.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./include/tbb/global_control.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./src/tbb/governor.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./include/tbb/task_scheduler_init.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./src/tbb/../rml/include/rml_tbb.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./include/tbb/tbb_config.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./src/tbb/../rml/include/rml_base.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./src/tbb/tls.h \
+ /home/sathvik/hpcc/HPCC-Platform/system/tbb_sm/tbb/./src/tbb/cilk-tbb-interop.h

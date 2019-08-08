@@ -1,0 +1,1 @@
+cmd='/home/sathvik/hpcc/HPCC-Platform/build/esp/services/ws_sql/antlr3c/src/libantlr3c-3.4/configure;--silent;--disable-antlrdebug;--enable-64bit;--prefix=/home/sathvik/hpcc/HPCC-Platform/build/esp/services/ws_sql/antlr3c;2>;antlr.cfg.err'

@@ -1,0 +1,3 @@
+if [[ -e /bin/systemctl ]]; then
+    installFile "$path/etc/systemd/system/configmgr-conf.service" "/etc/systemd/system/configmgr-conf.service" 1 || exit 1
+fi

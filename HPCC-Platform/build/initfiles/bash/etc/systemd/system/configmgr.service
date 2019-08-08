@@ -1,0 +1,19 @@
+[Unit]
+Description=configmgr
+After=network.target remote-fs.target configmgr-conf.service 
+Requires=configmgr-conf.service
+
+[Service]
+Type=forking
+User=hpcc
+Group=hpcc
+PermissionsStartOnly=true
+WorkingDirectory=/var/lib/HPCCSystems/configmgr
+PIDFile=/var/run/HPCCSystems/configmgr.pid
+ExecStart=/opt/HPCCSystems/bin/esp --daemon configmgr
+Restart=on-failure
+RestartSec=5
+TimeoutSec=30
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,8 @@
+INSTALL_DIR=/opt/HPCCSystems
+CONFIG_DIR=/etc/HPCCSystems
+ENV_XML_FILE=environment.xml
+ENV_CONF_FILE=environment.conf
+PID_DIR=/var/run/HPCCSystems
+LOCK_DIR=/var/lock/HPCCSystems
+LOG_DIR=/var/log/HPCCSystems
+INIT_PATH=/etc/init.d

@@ -1,0 +1,17 @@
+[Unit]
+Description=generating configuration files in %i instance directory
+After=network.target remote-fs.target
+
+[Service]
+Type=oneshot
+User=hpcc
+Group=hpcc
+ExecStartPre=/bin/mkdir -p /var/lib/HPCCSystems/%i /var/log/HPCCSystems/%i /var/run/HPCCSystems /var/lock/HPCCSystems/%i
+ExecStartPre=/bin/chown -R hpcc:hpcc /var/lib/HPCCSystems /var/log/HPCCSystems /var/run/HPCCSystems /var/lock/HPCCSystems
+ExecStart=/opt/HPCCSystems/sbin/check-component-exists.sh %i
+ExecStart=/opt/HPCCSystems/sbin/configgen -env /etc/HPCCSystems/environment.xml -od /var/lib/HPCCSystems -id /opt/HPCCSystems/componentfiles/configxml -c %i
+ExecStart=/bin/bash -c '/bin/echo "PATH=$PATH:/opt/HPCCSystems/bin:/opt/HPCCSystems/sbin:/var/lib/HPCCSystems/%i" > /var/lib/HPCCSystems/%i/%i.cfg'
+PermissionsStartOnly=true
+
+[Install]
+WantedBy=default.target

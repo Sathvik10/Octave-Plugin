@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/sathvik/hpcc/HPCC-Platform/system/libbase58/base58.c
+arpa/inet.h
+-
+winsock2.h
+-
+stdbool.h
+-
+stddef.h
+-
+stdint.h
+-
+string.h
+-
+sys/types.h
+-
+alloca.h
+-
+memory
+-
+libbase58.h
+/home/sathvik/hpcc/HPCC-Platform/system/libbase58/libbase58.h
+
+/home/sathvik/hpcc/HPCC-Platform/system/libbase58/libbase58.h
+stdbool.h
+-
+stddef.h
+-
+

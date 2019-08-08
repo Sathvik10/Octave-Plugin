@@ -1,0 +1,293 @@
+<esxdl name="ws_configmgr">
+	<EsdlStruct name='StatusMsgType'>
+		<EsdlElement name='MsgLevel' type='string'/>
+		<EsdlElement name='NodeId' type='string'/>
+		<EsdlElement name='NodeName' type='string' default=''/>
+		<EsdlElement name='Attribute' type='string' default=''/>
+		<EsdlElement name='Msg' type='string'/>
+		<EsdlArray name='ParentIdList'  type='string' item_tag='parentId'/>
+	</EsdlStruct>
+	<EsdlStruct name='StatusType'>
+		<EsdlElement name='Error' type='bool' default='0'/>
+		<EsdlArray name='StatusMessages'  type='StatusMsgType' item_tag='StatusMsg'/>
+	</EsdlStruct>
+	<EsdlResponse name='EmptyResponse' exceptions_inline='1'>
+	</EsdlResponse>
+	<EsdlResponse name='StatusResponse'>
+		<EsdlElement name='EnvironmentModified' type='bool'/>
+		<EsdlElement name='Status' complex_type='StatusType'/>
+	</EsdlResponse>
+	<EsdlRequest name='OpenSessionRequest'>
+		<EsdlElement name='Username' type='string'/>
+		<EsdlElement name='SchemaPath' type='string' default=''/>
+		<EsdlElement name='MasterSchemaFile' type='string' default=''/>
+		<EsdlElement name='SourcePath' type='string' default=''/>
+		<EsdlElement name='ActivePath' type='string' default=''/>
+		<EsdlElement name='PluginPaths' type='string' default=''/>
+	</EsdlRequest>
+	<EsdlResponse name='OpenSessionResponse' exceptions_inline='1'>
+		<EsdlElement name='SessionId' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='CloseSessionRequest'>
+		<EsdlElement name='SessionId' type='string'/>
+		<EsdlElement name='ForceClose' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlRequest name='ListOpenSessionsRequest'>
+	</EsdlRequest>
+	<EsdlStruct name='OpenSessionInfo'>
+		<EsdlElement name='Username' type='string'/>
+		<EsdlElement name='CurEnvironmentFile' type='string' default=''/>
+		<EsdlElement name='Locked' type='bool'/>
+		<EsdlElement name='Modified' type='bool'/>
+	</EsdlStruct>
+	<EsdlResponse name='ListOpenSessionsResponse' exceptions_inline='1'>
+		<EsdlArray name='OpenSessions'  type='OpenSessionInfo' item_tag='SessionInfo'/>
+	</EsdlResponse>
+	<EsdlRequest name='GetNodeRequest'>
+		<EsdlElement name='SessionId' type='string'/>
+		<EsdlElement name='NodeId' type='string'/>
+	</EsdlRequest>
+	<EsdlRequest name='GetParentsRequest'>
+		<EsdlElement name='SessionId' type='string'/>
+		<EsdlElement name='NodeId' type='string'/>
+	</EsdlRequest>
+	<EsdlRequest name='RemoveNodeRequest'>
+		<EsdlElement name='SessionId' type='string'/>
+		<EsdlElement name='SessionLockKey' type='string'/>
+		<EsdlElement name='NodeId' type='string'/>
+	</EsdlRequest>
+	<EsdlStruct name='DependentValueType'>
+		<EsdlElement name='AttributeName' type='string'/>
+		<EsdlElement name='AttributeValue' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='ChoiceType'>
+		<EsdlElement name='DisplayName' type='string'/>
+		<EsdlElement name='Value' type='string'/>
+		<EsdlElement name='Desc' type='string' default=''/>
+		<EsdlElement name='MsgType' type='string' default=''/>
+		<EsdlElement name='Msg' type='string' default=''/>
+		<EsdlArray name='Dependencies'  type='DependentValueType' item_tag='dependentValue'/>
+		<EsdlArray name='OptionalAttributes'  type='string' item_tag='Attribute'/>
+		<EsdlArray name='RequiredAttributes'  type='string' item_tag='Attribute'/>
+	</EsdlStruct>
+	<EsdlStruct name='LimitsType'>
+		<EsdlElement name='MinValid' type='bool' default='0'/>
+		<EsdlElement name='MaxValid' type='bool' default='0'/>
+		<EsdlElement name='Min' type='int' default='0'/>
+		<EsdlElement name='Max' type='int' default='0'/>
+		<EsdlElement name='hasChoices' type='bool' default='0'/>
+		<EsdlArray name='ChoiceList'  type='ChoiceType' item_tag='Choice'/>
+		<EsdlArray name='Regex'  type='string' item_tag='Expr'/>
+	</EsdlStruct>
+	<EsdlStruct name='TypeInfo'>
+		<EsdlElement name='BaseType' type='string'/>
+		<EsdlElement name='SubType' type='string'/>
+		<EsdlElement name='Limits' complex_type='LimitsType'/>
+	</EsdlStruct>
+	<EsdlStruct name='NodeInfoType'>
+		<EsdlElement name='DisplayName' type='string' default=''/>
+		<EsdlElement name='NodeType' type='string' default=''/>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Class' type='string' default=''/>
+		<EsdlElement name='Category' type='string' default=''/>
+		<EsdlElement name='Hidden' type='bool' default='0'/>
+		<EsdlElement name='Tooltip' type='string' default=''/>
+	</EsdlStruct>
+	<EsdlStruct name='Node'>
+		<EsdlElement name='NodeId' type='string'/>
+		<EsdlElement name='NumChildren' type='int' default='0'/>
+		<EsdlElement name='NodeInfo' complex_type='NodeInfoType'/>
+	</EsdlStruct>
+	<EsdlStruct name='ChoiceLimitType'>
+		<EsdlElement name='DisplayName' type='string'/>
+		<EsdlElement name='ItemType' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='InsertItemType'>
+		<EsdlElement name='Name' type='string' default=''/>
+		<EsdlElement name='NodeType' type='string' default=''/>
+		<EsdlElement name='Class' type='string' default=''/>
+		<EsdlElement name='Category' type='string' default=''/>
+		<EsdlElement name='Required' type='bool' default='0'/>
+		<EsdlElement name='Tooltip' type='string' default=''/>
+		<EsdlArray name='ChoiceList'  type='ChoiceLimitType' item_tag='ChoiceLimit'/>
+		<EsdlElement name='FixedChoices' type='bool' default='0'/>
+	</EsdlStruct>
+	<EsdlStruct name='AttributeType'>
+		<EsdlElement name='DisplayName' type='string'/>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Ordinal' type='unsigned'/>
+		<EsdlElement name='Group' type='string' default=''/>
+		<EsdlElement name='Tooltip' type='string' default=''/>
+		<EsdlElement name='Type' complex_type='TypeInfo'/>
+		<EsdlElement name='CurrentValue' type='string' default=''/>
+		<EsdlElement name='ForcedValue' type='string' default=''/>
+		<EsdlElement name='IsPresentInEnvironment' type='bool'/>
+		<EsdlElement name='PresetValue' type='string' default=''/>
+		<EsdlElement name='Required' type='bool' default='1'/>
+		<EsdlElement name='ReadOnly' type='bool' default='0'/>
+		<EsdlElement name='Hidden' type='bool' default='0'/>
+		<EsdlElement name='Deprecated' type='bool' default='0'/>
+		<EsdlArray name='Modifiers'  type='string' item_tag='Modifier'/>
+	</EsdlStruct>
+	<EsdlStruct name='AttributeValueType'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Value' type='string'/>
+	</EsdlStruct>
+	<EsdlResponse name='GetNodeResponse' exceptions_inline='1'>
+		<EsdlElement name='NodeId' type='string'/>
+		<EsdlElement name='NodeInfo' complex_type='NodeInfoType'/>
+		<EsdlArray name='Attributes'  type='AttributeType' item_tag='Attribute'/>
+		<EsdlArray name='Children'  type='Node' item_tag='Child'/>
+		<EsdlArray name='Insertable'  type='InsertItemType' item_tag='Item'/>
+		<EsdlElement name='Status' complex_type='StatusType'/>
+		<EsdlElement name='LocalValueDefined' type='bool' default='0'/>
+		<EsdlElement name='Value' complex_type='AttributeType'/>
+	</EsdlResponse>
+	<EsdlRequest name='InsertNodeRequest'>
+		<EsdlElement name='SessionId' type='string'/>
+		<EsdlElement name='SessionLockKey' type='string'/>
+		<EsdlElement name='ParentNodeId' type='string'/>
+		<EsdlElement name='NodeType' type='string'/>
+		<EsdlArray name='AttributeValues'  type='AttributeValueType' item_tag='Attribute'/>
+		<EsdlElement name='AllowInvalid' type='bool' default='0'/>
+		<EsdlElement name='ForceCreate' type='bool' default='0'/>
+		<EsdlElement name='LocalValue' type='string' default=''/>
+	</EsdlRequest>
+	<EsdlRequest name='GetCreateNodeInfoRequest'>
+		<EsdlElement name='SessionId' type='string'/>
+		<EsdlElement name='ParentNodeId' type='string'/>
+		<EsdlElement name='NodeType' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetCreateNodeInfoResponse' exceptions_inline='1'>
+		<EsdlElement name='NodeInfo' complex_type='NodeInfoType'/>
+		<EsdlArray name='Attributes'  type='AttributeType' item_tag='Attribute'/>
+		<EsdlElement name='LocalValueDefined' type='bool' default='0'/>
+		<EsdlElement name='Value' complex_type='AttributeType'/>
+	</EsdlResponse>
+	<EsdlRequest name='SetValuesRequest'>
+		<EsdlElement name='SessionId' type='string'/>
+		<EsdlElement name='SessionLockKey' type='string'/>
+		<EsdlElement name='NodeId' type='string'/>
+		<EsdlArray name='AttributeValues'  type='AttributeValueType' item_tag='Attribute'/>
+		<EsdlElement name='AllowInvalid' type='bool' default='0'/>
+		<EsdlElement name='ForceCreate' type='bool' default='0'/>
+		<EsdlElement name='LocalValue' type='string' default=''/>
+	</EsdlRequest>
+	<EsdlResponse name='GetParentsResponse' exceptions_inline='1'>
+		<EsdlArray name='ParentIdList'  type='string' item_tag='parentId'/>
+	</EsdlResponse>
+	<EsdlRequest name='GetNodeCopyRequest'>
+		<EsdlElement name='SessionId' type='string'/>
+		<EsdlElement name='NodeId' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetNodeCopyResponse'>
+		<EsdlElement name='ValidInsertPath' type='string' default=''/>
+		<EsdlElement name='NodeCopy' type='string' default=''/>
+	</EsdlResponse>
+	<EsdlRequest name='PasteNodeCopyRequest'>
+		<EsdlElement name='SessionId' type='string'/>
+		<EsdlElement name='SessionLockKey' type='string'/>
+		<EsdlElement name='ParentNodeId' type='string'/>
+		<EsdlElement name='NodeCopy' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='PasteNodeCopyResponse'>
+		<EsdlElement name='NodeInserted' type='bool' default='0'/>
+		<EsdlElement name='Status' complex_type='StatusType'/>
+		<EsdlElement name='NewNodeId' type='string' default=''/>
+	</EsdlResponse>
+	<EsdlStruct name='EnvironmentFileType'>
+		<EsdlElement name='Filename' type='string'/>
+		<EsdlElement name='IsActive' type='bool' default='0'/>
+	</EsdlStruct>
+	<EsdlRequest name='GetEnvironmentFileListRequest'>
+		<EsdlElement name='SessionId' type='string'/>
+	</EsdlRequest>
+	<EsdlRequest name='LockSessionRequest'>
+		<EsdlElement name='SessionId' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetEnvironmentListResponse' exceptions_inline='1'>
+		<EsdlArray name='EnvironmentFiles'  type='EnvironmentFileType' item_tag='EnvironmentFile'/>
+	</EsdlResponse>
+	<EsdlRequest name='OpenEnvironmentFileRequest'>
+		<EsdlElement name='SessionId' type='string'/>
+		<EsdlElement name='Filename' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='OpenEnvironmentFileResponse' exceptions_inline='1'>
+		<EsdlElement name='RootNodeId' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='CloseEnvironmentFileRequest'>
+		<EsdlElement name='SessionId' type='string'/>
+		<EsdlElement name='SessionLockKey' type='string'/>
+		<EsdlElement name='DiscardChanges' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlRequest name='SaveEnvironmentFileRequest'>
+		<EsdlElement name='SessionId' type='string'/>
+		<EsdlElement name='SessionLockKey' type='string'/>
+		<EsdlElement name='Filename' type='string' default=''/>
+	</EsdlRequest>
+	<EsdlResponse name='LockSessionResponse' exceptions_inline='1'>
+		<EsdlElement name='SessionLockKey' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='UnlockSessionRequest'>
+		<EsdlElement name='SessionId' type='string'/>
+		<EsdlElement name='SessionLockKey' type='string'/>
+		<EsdlElement name='RejectIfModified' type='bool' default='1'/>
+	</EsdlRequest>
+	<EsdlRequest name='ValidateEnvironmentRequest'>
+		<EsdlElement name='SessionId' type='string'/>
+		<EsdlElement name='IncludeHiddenNodes' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlRequest name='GetTreeRequest'>
+		<EsdlElement name='SessionId' type='string'/>
+		<EsdlElement name='NodeId' type='string'/>
+		<EsdlElement name='IncludeAttributes' type='bool'/>
+		<EsdlElement name='NumLevels' type='int' default='1'/>
+	</EsdlRequest>
+	<EsdlStruct name='TreeElementType'>
+		<EsdlElement name='NodeId' type='string'/>
+		<EsdlElement name='NodeInfo' complex_type='NodeInfoType'/>
+		<EsdlArray name='Attributes'  type='AttributeType' item_tag='attribute'/>
+		<EsdlArray name='Children'  type='TreeElementType' item_tag='Element'/>
+	</EsdlStruct>
+	<EsdlResponse name='GetTreeResponse' exceptions_inline='1'>
+		<EsdlElement name='Tree' complex_type='TreeElementType'/>
+	</EsdlResponse>
+	<EsdlRequest name='FetchNodesRequest'>
+		<EsdlElement name='SessionId' type='string'/>
+		<EsdlElement name='StartingNodeId' type='string' default=''/>
+		<EsdlElement name='Path' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='FetchNodesResponse' exceptions_inline='1'>
+		<EsdlArray name='NodeIds'  type='string' item_tag='nodeId'/>
+	</EsdlResponse>
+	<EsdlRequest name='WizardTestRequest'>
+		<EsdlElement name='SessionId' type='string'/>
+		<EsdlElement name='FqFilename' type='string'/>
+	</EsdlRequest>
+	<EsdlRequest name='ws_configmgrPingRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='ws_configmgrPingResponse'>
+	</EsdlResponse>
+		<EsdlService name='ws_configmgr'  exceptions_inline='xslt/exceptions.xslt' default_client_version='2.0' version='2.0' auth_feature='DEFERRED'>
+	<EsdlMethod name='CloseEnvironmentFile' request_type='CloseEnvironmentFileRequest' response_type='EmptyResponse'  description='Close an open environment file'/>
+	<EsdlMethod name='CloseSession' request_type='CloseSessionRequest' response_type='EmptyResponse'  description='Close a previously open session'/>
+	<EsdlMethod name='FetchNodes' request_type='FetchNodesRequest' response_type='FetchNodesResponse'  description='Fetch nodes matching the indicated path'/>
+	<EsdlMethod name='GetCreateNodeInfo' request_type='GetCreateNodeInfoRequest' response_type='GetCreateNodeInfoResponse'  description='Get information to insert a new node'/>
+	<EsdlMethod name='GetEnvironmentFileList' request_type='GetEnvironmentFileListRequest' response_type='GetEnvironmentListResponse'  description='Get a list of environment files available'/>
+	<EsdlMethod name='GetNode' request_type='GetNodeRequest' response_type='GetNodeResponse'  description='Get an environment node'/>
+	<EsdlMethod name='GetNodeCopy' request_type='GetNodeCopyRequest' response_type='GetNodeCopyResponse'  description='Get a copy of a node for paste operations'/>
+	<EsdlMethod name='GetNodeTree' request_type='GetTreeRequest' response_type='GetTreeResponse'  description='Return the tree of nodes beneath the indicated node for the indicated number of levels'/>
+	<EsdlMethod name='GetOpenSessions' request_type='ListOpenSessionsRequest' response_type='ListOpenSessionsResponse'  description='Return a list of open sessions'/>
+	<EsdlMethod name='GetParents' request_type='GetParentsRequest' response_type='GetParentsResponse'  description='Returns the nodes parents all the way to the root'/>
+	<EsdlMethod name='InsertNode' request_type='InsertNodeRequest' response_type='GetNodeResponse'  description='Insert a new node into the environment'/>
+	<EsdlMethod name='InsertNodeCopy' request_type='PasteNodeCopyRequest' response_type='PasteNodeCopyResponse'  description='Paste the copy of a node to an environment'/>
+	<EsdlMethod name='LockSession' request_type='LockSessionRequest' response_type='LockSessionResponse'  description='Lock a session&apos;s open environment for modification'/>
+	<EsdlMethod name='OpenEnvironmentFile' request_type='OpenEnvironmentFileRequest' response_type='OpenEnvironmentFileResponse'  description='Open an environment file'/>
+	<EsdlMethod name='OpenSession' request_type='OpenSessionRequest' response_type='OpenSessionResponse'  description='Open a session with the configuration manager service'/>
+	<EsdlMethod name='Ping' request_type='ws_configmgrPingRequest' response_type='ws_configmgrPingResponse' />
+	<EsdlMethod name='RemoveNode' request_type='RemoveNodeRequest' response_type='StatusResponse'  description='Remove a node from the environment'/>
+	<EsdlMethod name='SaveEnvironmentFile' request_type='SaveEnvironmentFileRequest' response_type='EmptyResponse'  description='Save a modifed environment file, or save to a new environment file'/>
+	<EsdlMethod name='SetValues' request_type='SetValuesRequest' response_type='StatusResponse'  description='Set one or more of a node&apos;s attribute values,and/or the node&apos;s local value'/>
+	<EsdlMethod name='UnlockSession' request_type='UnlockSessionRequest' response_type='EmptyResponse'  description='Unlock a previously locked session'/>
+	<EsdlMethod name='ValidateEnvironment' request_type='ValidateEnvironmentRequest' response_type='StatusResponse'  description='Validate the environment'/>
+		</EsdlService></esxdl>

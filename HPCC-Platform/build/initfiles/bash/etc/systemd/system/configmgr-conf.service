@@ -1,0 +1,12 @@
+[Unit]
+Description=generating configmgr configuration files and /var/lib/HPCCSystems/configmgr/configmgr.cfg
+After=configmgr-conf.service
+Requires=hpcc-conf@configmgr.service
+
+[Service]
+Type=oneshot
+User=hpcc
+Group=hpcc
+ExecStart=/opt/HPCCSystems/sbin/check-component-exists.sh %i
+ExecStart=/bin/mkdir -p /var/lib/HPCCSystems/configmgr /var/log/HPCCSystems/configmgr /var/run/HPCCSystems /var/lock/HPCCSystems/configmgr
+ExecStart=/bin/bash -c "/bin/cp /etc/HPCCSystems/configmgr/esp.xml /var/lib/HPCCSystems/configmgr/esp.xml"

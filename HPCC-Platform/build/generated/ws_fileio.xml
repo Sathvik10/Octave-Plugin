@@ -1,0 +1,50 @@
+<esxdl name="ws_fileio">
+	<EsdlRequest name='CreateFileRequest'>
+		<EsdlElement name='DestDropZone' type='string'/>
+		<EsdlElement name='DestRelativePath' type='string'/>
+		<EsdlElement name='Overwrite' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='CreateFileResponse' exceptions_inline='1' nil_remove='1'>
+		<EsdlElement name='DestDropZone' type='string'/>
+		<EsdlElement name='DestRelativePath' type='string'/>
+		<EsdlElement name='Overwrite' type='bool'/>
+		<EsdlElement name='Result' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='WriteFileDataRequest'>
+		<EsdlElement name='Data' type='binary'/>
+		<EsdlElement name='DestDropZone' type='string'/>
+		<EsdlElement name='DestRelativePath' type='string'/>
+		<EsdlElement name='Offset' type='int64' default='0'/>
+		<EsdlElement name='Append' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='WriteFileDataResponse' exceptions_inline='1' nil_remove='1'>
+		<EsdlElement name='DestDropZone' type='string'/>
+		<EsdlElement name='DestRelativePath' type='string'/>
+		<EsdlElement name='Offset' type='int64'/>
+		<EsdlElement name='Append' type='bool'/>
+		<EsdlElement name='Result' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='ReadFileDataRequest'>
+		<EsdlElement name='DestDropZone' type='string'/>
+		<EsdlElement name='DestRelativePath' type='string'/>
+		<EsdlElement name='Offset' type='int64' default='0'/>
+		<EsdlElement name='DataSize' type='int64'/>
+	</EsdlRequest>
+	<EsdlResponse name='ReadFileDataResponse' exceptions_inline='1' nil_remove='1'>
+		<EsdlElement name='Data' type='binary'/>
+		<EsdlElement name='DestDropZone' type='string'/>
+		<EsdlElement name='DestRelativePath' type='string'/>
+		<EsdlElement name='Offset' type='int64'/>
+		<EsdlElement name='DataSize' type='int64'/>
+		<EsdlElement name='Result' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='WsFileIOPingRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='WsFileIOPingResponse'>
+	</EsdlResponse>
+		<EsdlService name='WsFileIO'  exceptions_inline='./smc_xslt/exceptions.xslt' auth_feature='DEFERRED'>
+	<EsdlMethod name='CreateFile' request_type='CreateFileRequest' response_type='CreateFileResponse' />
+	<EsdlMethod name='Ping' request_type='WsFileIOPingRequest' response_type='WsFileIOPingResponse' />
+	<EsdlMethod name='ReadFileData' request_type='ReadFileDataRequest' response_type='ReadFileDataResponse' />
+	<EsdlMethod name='WriteFileData' request_type='WriteFileDataRequest' response_type='WriteFileDataResponse' />
+		</EsdlService></esxdl>

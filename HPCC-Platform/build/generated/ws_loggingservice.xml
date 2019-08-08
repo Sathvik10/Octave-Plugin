@@ -1,0 +1,35 @@
+<esxdl name="ws_loggingservice">
+	<EsdlStruct name='LogItem'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Value' type='string'/>
+	</EsdlStruct>
+	<EsdlRequest name='GetTransactionSeedRequest'>
+		<EsdlElement name='Application' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='LoggingServiceResponse' exceptions_inline='1'>
+		<EsdlElement name='StatusCode' type='int'/>
+		<EsdlElement name='StatusMessage' type='string'/>
+	</EsdlResponse>
+	<EsdlResponse name='GetTransactionSeedResponse' exceptions_inline='1'>
+		<EsdlElement name='SeedId' type='string'/>
+		<EsdlElement name='StatusCode' type='int'/>
+		<EsdlElement name='StatusMessage' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='UpdateLogRequest' nil_remove='1'>
+		<EsdlElement name='Option' type='string'/>
+		<EsdlElement name='LogContent' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='UpdateLogResponse' exceptions_inline='1'>
+		<EsdlElement name='Response' type='string'/>
+		<EsdlElement name='StatusCode' type='int'/>
+		<EsdlElement name='StatusMessage' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='WsLoggingServicePingRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='WsLoggingServicePingResponse'>
+	</EsdlResponse>
+		<EsdlService name='WsLoggingService'  use_method_name='1' noforms='1' version='1.0' auth_feature='DEFERRED'>
+	<EsdlMethod name='GetTransactionSeed' request_type='GetTransactionSeedRequest' response_type='GetTransactionSeedResponse' />
+	<EsdlMethod name='Ping' request_type='WsLoggingServicePingRequest' response_type='WsLoggingServicePingResponse' />
+	<EsdlMethod name='UpdateLog' request_type='UpdateLogRequest' response_type='UpdateLogResponse' />
+		</EsdlService></esxdl>

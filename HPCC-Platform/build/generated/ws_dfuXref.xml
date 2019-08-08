@@ -1,0 +1,87 @@
+<esxdl name="ws_dfuXref">
+	<EsdlRequest name='DFUXRefListRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='DFUXRefListResponse' encode='0'>
+		<EsdlElement name='DFUXRefListResult' type='string' json_inline='1'/>
+	</EsdlResponse>
+	<EsdlRequest name='DFUXRefBuildRequest'>
+		<EsdlElement name='Cluster' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUXRefBuildResponse' encode='0'>
+		<EsdlElement name='DFUXRefActionResult' type='string' json_inline='1'/>
+	</EsdlResponse>
+	<EsdlRequest name='DFUXRefLostFilesQueryRequest'>
+		<EsdlElement name='Cluster' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUXRefLostFilesQueryResponse' encode='0'>
+		<EsdlElement name='DFUXRefLostFilesQueryResult' type='string' json_inline='1'/>
+	</EsdlResponse>
+	<EsdlRequest name='DFUXRefOrphanFilesQueryRequest'>
+		<EsdlElement name='Cluster' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUXRefOrphanFilesQueryResponse' encode='0'>
+		<EsdlElement name='DFUXRefOrphanFilesQueryResult' type='string' json_inline='1'/>
+	</EsdlResponse>
+	<EsdlRequest name='DFUXRefMessagesQueryRequest'>
+		<EsdlElement name='Cluster' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUXRefMessagesQueryResponse' encode='0'>
+		<EsdlElement name='DFUXRefMessagesQueryResult' type='string' json_inline='1'/>
+	</EsdlResponse>
+	<EsdlRequest name='DFUXRefDirectoriesQueryRequest'>
+		<EsdlElement name='Cluster' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUXRefDirectoriesQueryResponse' encode='0'>
+		<EsdlElement name='DFUXRefDirectoriesQueryResult' type='string' json_inline='1'/>
+	</EsdlResponse>
+	<EsdlRequest name='DFUXRefFoundFilesQueryRequest'>
+		<EsdlElement name='Cluster' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUXRefFoundFilesQueryResponse' encode='0'>
+		<EsdlElement name='DFUXRefFoundFilesQueryResult' type='string' json_inline='1'/>
+	</EsdlResponse>
+	<EsdlRequest name='DFUXRefArrayActionRequest'>
+		<EsdlElement name='Type' type='string'/>
+		<EsdlElement name='Cluster' type='string'/>
+		<EsdlElement name='Action' type='string'/>
+		<EsdlArray name='XRefFiles'  type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUXRefArrayActionResponse' encode='0'>
+		<EsdlElement name='DFUXRefArrayActionResult' type='string' json_inline='1'/>
+	</EsdlResponse>
+	<EsdlRequest name='DFUXRefBuildCancelRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='DFUXRefBuildCancelResponse' encode='0'>
+		<EsdlElement name='DFUXRefBuildCancelResult' type='string' json_inline='1'/>
+	</EsdlResponse>
+	<EsdlRequest name='DFUXRefCleanDirectoriesRequest'>
+		<EsdlElement name='Cluster' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUXRefCleanDirectoriesResponse' exceptions_inline='1'>
+	</EsdlResponse>
+	<EsdlRequest name='DFUXRefUnusedFilesRequest'>
+		<EsdlElement name='ProcessCluster' type='string'/>
+		<EsdlElement name='CheckPackageMaps' type='bool'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUXRefUnusedFilesResponse' exceptions_inline='1'>
+		<EsdlElement name='UnusedFileCount' type='unsigned'/>
+		<EsdlArray name='UnusedFiles'  type='string' item_tag='File'/>
+	</EsdlResponse>
+	<EsdlRequest name='WsDFUXRefPingRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='WsDFUXRefPingResponse'>
+	</EsdlResponse>
+		<EsdlService name='WsDFUXRef'  exceptions_inline='./smc_xslt/exceptions.xslt' auth_feature='DEFERRED'>
+	<EsdlMethod name='DFUXRefArrayAction' request_type='DFUXRefArrayActionRequest' response_type='DFUXRefArrayActionResponse'  resp_xsl_default='/esp/xslt/action.xslt' auth_feature='DfuXrefAccess:access'/>
+	<EsdlMethod name='DFUXRefBuild' request_type='DFUXRefBuildRequest' response_type='DFUXRefBuildResponse'  resp_xsl_default='/esp/xslt/action.xslt'/>
+	<EsdlMethod name='DFUXRefBuildCancel' request_type='DFUXRefBuildCancelRequest' response_type='DFUXRefBuildCancelResponse'  resp_xsl_default='/esp/xslt/action.xslt'/>
+	<EsdlMethod name='DFUXRefCleanDirectories' request_type='DFUXRefCleanDirectoriesRequest' response_type='DFUXRefCleanDirectoriesResponse' />
+	<EsdlMethod name='DFUXRefDirectories' request_type='DFUXRefDirectoriesQueryRequest' response_type='DFUXRefDirectoriesQueryResponse'  resp_xsl_default='/esp/xslt/xref_directories.xslt'/>
+	<EsdlMethod name='DFUXRefFoundFiles' request_type='DFUXRefFoundFilesQueryRequest' response_type='DFUXRefFoundFilesQueryResponse'  resp_xsl_default='/esp/xslt/xref_found.xslt'/>
+	<EsdlMethod name='DFUXRefList' request_type='DFUXRefListRequest' response_type='DFUXRefListResponse'  resp_xsl_default='/esp/xslt/xref_main.xslt'/>
+	<EsdlMethod name='DFUXRefLostFiles' request_type='DFUXRefLostFilesQueryRequest' response_type='DFUXRefLostFilesQueryResponse'  resp_xsl_default='/esp/xslt/xref_lost.xslt'/>
+	<EsdlMethod name='DFUXRefMessages' request_type='DFUXRefMessagesQueryRequest' response_type='DFUXRefMessagesQueryResponse'  resp_xsl_default='/esp/xslt/xref_errwarn.xslt'/>
+	<EsdlMethod name='DFUXRefOrphanFiles' request_type='DFUXRefOrphanFilesQueryRequest' response_type='DFUXRefOrphanFilesQueryResponse'  resp_xsl_default='/esp/xslt/xref_orphan.xslt'/>
+	<EsdlMethod name='DFUXRefUnusedFiles' request_type='DFUXRefUnusedFilesRequest' response_type='DFUXRefUnusedFilesResponse'  auth_feature='DfuXrefAccess:access'/>
+	<EsdlMethod name='Ping' request_type='WsDFUXRefPingRequest' response_type='WsDFUXRefPingResponse' />
+		</EsdlService></esxdl>

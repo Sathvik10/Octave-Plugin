@@ -1,0 +1,8 @@
+EXPORT Language := SERVICE : plugin('octaveembed')
+  integer queryEmbedContext():cpp,pure,namespace='octaveembed',entrypoint='queryEmbedContext',prototype='IEmbedContext* queryEmbedContext()',fold;
+END;
+EXPORT getEmbedContext := Language.queryEmbedContext;
+EXPORT boolean supportsImport := true;
+EXPORT boolean supportsScript := true;
+EXPORT boolean threadlocal := true;
+EXPORT boolean singletonEmbedContext := true;

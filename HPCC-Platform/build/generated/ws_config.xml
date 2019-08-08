@@ -1,0 +1,14 @@
+<esxdl name="ws_config">
+	<EsdlRequest name='ConfigAccessRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='ConfigAccessResponse' encode='0' exceptions_inline='1'>
+		<EsdlElement name='AccessLevel' type='int'/>
+	</EsdlResponse>
+	<EsdlRequest name='ws_configPingRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='ws_configPingResponse'>
+	</EsdlResponse>
+		<EsdlService name='ws_config'  exceptions_inline='1' auth_feature='DEFERRED'>
+	<EsdlMethod name='GetConfigAccess' request_type='ConfigAccessRequest' response_type='ConfigAccessResponse'  noform='1' help='' description='Initial display'/>
+	<EsdlMethod name='Ping' request_type='ws_configPingRequest' response_type='ws_configPingResponse' />
+		</EsdlService></esxdl>

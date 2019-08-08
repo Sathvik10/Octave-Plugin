@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../../Release/libs/liblzma.a  CMakeFiles/lzma.dir/LzFind.cpp.o CMakeFiles/lzma.dir/LzmaDec.cpp.o CMakeFiles/lzma.dir/LzmaEnc.cpp.o
+/usr/bin/ranlib ../../Release/libs/liblzma.a

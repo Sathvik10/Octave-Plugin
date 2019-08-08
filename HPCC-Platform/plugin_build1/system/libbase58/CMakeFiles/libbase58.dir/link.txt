@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../../Release/libs/liblibbase58.a  CMakeFiles/libbase58.dir/base58.c.o
+/usr/bin/ranlib ../../Release/libs/liblibbase58.a

@@ -1,0 +1,14 @@
+<esxdl name="common">
+	<EsdlStruct name='NamedValue' nil_remove='1'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Value' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='NameAndType' nil_remove='1'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Type' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='LogicalFileError' nil_remove='1'>
+		<EsdlElement name='Error' type='string'/>
+		<EsdlElement name='LogicalName' type='string'/>
+	</EsdlStruct>
+</esxdl>

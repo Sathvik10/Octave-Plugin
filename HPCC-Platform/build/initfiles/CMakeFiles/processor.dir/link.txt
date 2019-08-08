@@ -1,0 +1,1 @@
+/usr/bin/c++   -frtti -fPIC -fmessage-length=0 -Werror=format -Wformat-security -Wformat-nonliteral -pthread -Wuninitialized -Werror=return-type -Werror=format-nonliteral -Wno-psabi -Wparentheses -std=c++11 -g -D_DEBUG -DDEBUG   CMakeFiles/processor.dir/processor.cpp.o  -o ../Debug/bin/processor 

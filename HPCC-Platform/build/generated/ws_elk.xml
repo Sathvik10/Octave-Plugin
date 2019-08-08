@@ -1,0 +1,23 @@
+<esxdl name="ws_elk">
+	<EsdlRequest name='GetConfigDetailsRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='GetConfigDetailsResponse'>
+		<EsdlElement name='IntegrateKibana' type='boolean'/>
+		<EsdlElement name='KibanaAddress' type='string'/>
+		<EsdlElement name='KibanaPort' type='string'/>
+		<EsdlElement name='KibanaEntryPointURI' type='string'/>
+		<EsdlElement name='ReportElasticSearchHealth' type='boolean'/>
+		<EsdlElement name='ElasticSearchAddresses' type='string'/>
+		<EsdlElement name='ElasticSearchPort' type='string'/>
+		<EsdlElement name='ReportLogStashHealth' type='boolean'/>
+		<EsdlElement name='LogStashAddress' type='string'/>
+		<EsdlElement name='LogStashPort' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='ws_elkPingRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='ws_elkPingResponse'>
+	</EsdlResponse>
+		<EsdlService name='ws_elk'  exceptions_inline='xslt/exceptions.xslt' default_client_version='1.0' version='1.0' auth_feature='WsELKAccess:ACCESS'>
+	<EsdlMethod name='GetConfigDetails' request_type='GetConfigDetailsRequest' response_type='GetConfigDetailsResponse'  auth_feature='WsELKAccess:READ'/>
+	<EsdlMethod name='Ping' request_type='ws_elkPingRequest' response_type='ws_elkPingResponse' />
+		</EsdlService></esxdl>

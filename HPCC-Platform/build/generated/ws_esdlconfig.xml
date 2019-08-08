@@ -1,0 +1,238 @@
+<esxdl name="ws_esdlconfig">
+	<EsdlInclude file='common'/>
+	<EsdlInclude file='ws_topology'/>
+	<EsdlRequest name='EchoRequest'>
+		<EsdlElement name='Request' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='EchoResponse'>
+		<EsdlElement name='Response' type='string'/>
+	</EsdlResponse>
+	<EsdlStruct name='BaseESDLStatus'>
+		<EsdlElement name='Code' type='int'/>
+		<EsdlElement name='Description' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='MethodConfig'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlArray name='Attributes'  type='NamedValue' item_tag='Attribute'/>
+		<EsdlElement name='Elements' type='string'/>
+		<EsdlElement name='XML' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='ESDLConfiguration'>
+		<EsdlArray name='Methods'  type='MethodConfig' item_tag='Method'/>
+	</EsdlStruct>
+	<EsdlStruct name='PublishHistory'>
+		<EsdlElement name='PublishBy' type='string'/>
+		<EsdlElement name='CreatedTime' type='string'/>
+		<EsdlElement name='LastEditBy' type='string'/>
+		<EsdlElement name='LastEditTime' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='ESDLBinding'>
+		<EsdlElement name='Id' type='string'/>
+		<EsdlElement name='EspProcess' type='string'/>
+		<EsdlElement name='Port' type='int' min_ver='1.4'/>
+		<EsdlElement name='EspBinding' type='string' max_ver='1.3'/>
+		<EsdlElement name='History' complex_type='PublishHistory' min_ver='1.4'/>
+	</EsdlStruct>
+	<EsdlStruct name='ESDLService'>
+		<EsdlArray name='Methods'  type='MethodConfig' item_tag='Method'/>
+		<EsdlElement name='Name' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='ESDLDefinition'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Seq' type='int'/>
+		<EsdlElement name='Id' type='string'/>
+		<EsdlElement name='Interface' type='string' min_ver='1.1'/>
+		<EsdlArray name='ESDLServices'  type='string' item_tag='Name' max_ver='1.3' min_ver='1.2'/>
+		<EsdlArray name='Services'  type='ESDLService' item_tag='Service' min_ver='1.4'/>
+		<EsdlElement name='History' complex_type='PublishHistory' min_ver='1.4'/>
+	</EsdlStruct>
+	<EsdlStruct name='ESDLBindingContents'>
+		<EsdlElement name='Definition' complex_type='ESDLDefinition'/>
+		<EsdlElement name='Configuration' complex_type='ESDLConfiguration'/>
+		<EsdlElement name='History' complex_type='PublishHistory' min_ver='1.4'/>
+	</EsdlStruct>
+	<EsdlRequest name='GetESDLDefinitionRequest' nil_remove='1'>
+		<EsdlElement name='Id' type='string'/>
+		<EsdlElement name='Name' type='string' min_ver='1.3'/>
+		<EsdlElement name='Seq' type='int' min_ver='1.3'/>
+		<EsdlElement name='ServiceName' type='string'/>
+		<EsdlElement name='ReportMethodsAvailable' type='boolean' min_ver='1.2'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetESDLDefinitionResponse' exceptions_inline='1' nil_remove='1'>
+		<EsdlElement name='Id' type='string' max_ver='1.3'/>
+		<EsdlArray name='ESDLServices'  type='string' item_tag='Name' max_ver='1.3' min_ver='1.2'/>
+		<EsdlElement name='XMLDefinition' type='string' max_ver='1.3'/>
+		<EsdlElement name='status' complex_type='BaseESDLStatus'/>
+		<EsdlArray name='Methods'  type='MethodConfig' item_tag='Method' max_ver='1.3'/>
+		<EsdlElement name='Definition' complex_type='ESDLDefinition' min_ver='1.4'/>
+	</EsdlResponse>
+	<EsdlRequest name='PublishESDLDefinitionRequest'>
+		<EsdlElement name='ServiceName' type='string'/>
+		<EsdlElement name='XMLDefinition' type='string'/>
+		<EsdlElement name='DeletePrevious' type='boolean'/>
+		<EsdlElement name='EchoDefinition' type='boolean' min_ver='1.2'/>
+	</EsdlRequest>
+	<EsdlResponse name='PublishESDLDefinitionResponse' exceptions_inline='1' nil_remove='1'>
+		<EsdlElement name='ServiceName' type='string'/>
+		<EsdlElement name='EsdlVersion' type='int'/>
+		<EsdlElement name='DeletePrevious' type='boolean'/>
+		<EsdlElement name='status' complex_type='BaseESDLStatus'/>
+		<EsdlArray name='ESDLServices'  type='string' item_tag='Name' max_ver='1.3' min_ver='1.2'/>
+		<EsdlElement name='XMLDefinition' type='string' max_ver='1.3' min_ver='1.2'/>
+		<EsdlArray name='Methods'  type='MethodConfig' item_tag='Method' max_ver='1.3' min_ver='1.2'/>
+		<EsdlElement name='Definition' complex_type='ESDLDefinition' min_ver='1.4'/>
+	</EsdlResponse>
+	<EsdlRequest name='PublishESDLBindingRequest' nil_remove='1'>
+		<EsdlElement name='EspProcName' type='string'/>
+		<EsdlElement name='EspBindingName' type='string'/>
+		<EsdlElement name='EspPort' type='string'/>
+		<EsdlElement name='EsdlDefinitionID' type='string'/>
+		<EsdlElement name='EsdlServiceName' type='string'/>
+		<EsdlElement name='EspServiceName' type='string' max_ver='1.3'/>
+		<EsdlElement name='Overwrite' type='boolean'/>
+		<EsdlElement name='Config' type='string'/>
+		<EsdlArray name='Methods'  type='MethodConfig' item_tag='Method' min_ver='1.2'/>
+		<EsdlElement name='EchoBinding' type='boolean' min_ver='1.2'/>
+	</EsdlRequest>
+	<EsdlResponse name='PublishESDLBindingResponse' exceptions_inline='1'>
+		<EsdlElement name='EsdlDefinitionID' type='string'/>
+		<EsdlElement name='Overwrite' type='boolean'/>
+		<EsdlElement name='EspProcName' type='string'/>
+		<EsdlElement name='EspPort' type='string'/>
+		<EsdlElement name='status' complex_type='BaseESDLStatus'/>
+		<EsdlElement name='ESDLBinding' complex_type='ESDLBindingContents' min_ver='1.2'/>
+	</EsdlResponse>
+	<EsdlRequest name='ListDESDLEspBindingsReq' nil_remove='1'>
+		<EsdlElement name='IncludeESDLBindingInfo' type='boolean'/>
+	</EsdlRequest>
+	<EsdlStruct name='TpBindingEx' nil_remove='1'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Service' type='string'/>
+		<EsdlElement name='ServiceType' type='string'/>
+		<EsdlElement name='BindingType' type='string'/>
+		<EsdlElement name='ServiceBuildSet' type='string'/>
+		<EsdlElement name='Port' type='string'/>
+		<EsdlElement name='Protocol' type='string'/>
+		<EsdlElement name='ESDLBinding' complex_type='ESDLBindingContents'/>
+	</EsdlStruct>
+	<EsdlStruct name='ESPServerEx'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Description' type='string'/>
+		<EsdlElement name='Build' type='string'/>
+		<EsdlElement name='Type' type='string'/>
+		<EsdlElement name='Path' type='string'/>
+		<EsdlElement name='LogDirectory' type='string'/>
+		<EsdlArray name='TpBindingEx'  type='TpBindingEx'/>
+	</EsdlStruct>
+	<EsdlResponse name='ListDESDLEspBindingsResp'>
+		<EsdlArray name='ESPServers'  type='ESPServerEx' item_tag='ESPServer'/>
+	</EsdlResponse>
+	<EsdlRequest name='ConfigureESDLBindingMethodRequest' nil_remove='1'>
+		<EsdlElement name='EsdlBindingId' type='string' min_ver='1.4'/>
+		<EsdlElement name='MethodName' type='string' min_ver='1.4'/>
+		<EsdlElement name='EspProcName' type='string' max_ver='1.3'/>
+		<EsdlElement name='EspBindingName' type='string' max_ver='1.3'/>
+		<EsdlElement name='EspPort' type='string' max_ver='1.3'/>
+		<EsdlElement name='EsdlDefinitionID' type='string' max_ver='1.3'/>
+		<EsdlElement name='EsdlServiceName' type='string' max_ver='1.3'/>
+		<EsdlElement name='Overwrite' type='boolean'/>
+		<EsdlElement name='Config' type='string'/>
+		<EsdlElement name='MethodStructure' complex_type='MethodConfig' min_ver='1.2'/>
+		<EsdlElement name='EchoBinding' type='boolean' min_ver='1.2'/>
+	</EsdlRequest>
+	<EsdlResponse name='ConfigureESDLBindingMethodResponse' exceptions_inline='1' nil_remove='1'>
+		<EsdlElement name='EspProcName' type='string'/>
+		<EsdlElement name='ServiceName' type='string' max_ver='1.1'/>
+		<EsdlElement name='ServiceEsdlVersion' type='int' max_ver='1.1'/>
+		<EsdlElement name='EspBindingName' type='string' min_ver='1.2'/>
+		<EsdlElement name='EsdlDefinitionID' type='string' min_ver='1.2'/>
+		<EsdlElement name='EsdlServiceName' type='string' min_ver='1.2'/>
+		<EsdlElement name='status' complex_type='BaseESDLStatus'/>
+		<EsdlElement name='ESDLBinding' complex_type='ESDLBindingContents' min_ver='1.2'/>
+	</EsdlResponse>
+	<EsdlRequest name='ConfigureESDLBindingLogTransformRequest' nil_remove='1'>
+		<EsdlElement name='EsdlBindingId' type='string'/>
+		<EsdlElement name='LogTransformName' type='string'/>
+		<EsdlElement name='Overwrite' type='boolean'/>
+		<EsdlElement name='Encoded' type='boolean' default='0'/>
+		<EsdlElement name='Config' type='string'/>
+		<EsdlElement name='EchoBinding' type='boolean'/>
+	</EsdlRequest>
+	<EsdlResponse name='ConfigureESDLBindingLogTransformResponse' exceptions_inline='1' nil_remove='1'>
+		<EsdlElement name='EspProcName' type='string'/>
+		<EsdlElement name='EspBindingName' type='string'/>
+		<EsdlElement name='EsdlDefinitionID' type='string'/>
+		<EsdlElement name='EsdlServiceName' type='string'/>
+		<EsdlElement name='status' complex_type='BaseESDLStatus'/>
+		<EsdlElement name='ESDLBinding' complex_type='ESDLBindingContents'/>
+	</EsdlResponse>
+	<EsdlRequest name='GetESDLBindingRequest'>
+		<EsdlElement name='EsdlBindingId' type='string'/>
+		<EsdlElement name='EspProcName' type='string' max_ver='1.3'/>
+		<EsdlElement name='EspBindingName' type='string' max_ver='1.3'/>
+		<EsdlElement name='EspPort' type='string' max_ver='1.3'/>
+		<EsdlElement name='IncludeInterfaceDefinition' type='bool' min_ver='1.1'/>
+		<EsdlElement name='ReportMethodsAvailable' type='boolean' min_ver='1.2'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetESDLBindingResponse' exceptions_inline='1'>
+		<EsdlElement name='ServiceName' type='string'/>
+		<EsdlElement name='EspProcName' type='string'/>
+		<EsdlElement name='BindingName' type='string'/>
+		<EsdlElement name='EspPort' type='string'/>
+		<EsdlElement name='ConfigXML' type='string'/>
+		<EsdlElement name='ESDLBinding' complex_type='ESDLBindingContents' min_ver='1.1'/>
+		<EsdlElement name='status' complex_type='BaseESDLStatus'/>
+	</EsdlResponse>
+	<EsdlRequest name='DeleteESDLDefinitionRequest'>
+		<EsdlElement name='Id' type='string'/>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Version' type='string'/>
+	</EsdlRequest>
+	<EsdlRequest name='DeleteESDLBindingRequest'>
+		<EsdlElement name='Id' type='string'/>
+		<EsdlElement name='EspProcess' type='string'/>
+		<EsdlElement name='EspBinding' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DeleteESDLRegistryEntryResponse' exceptions_inline='1'>
+		<EsdlElement name='DeletedTree' type='string'/>
+		<EsdlElement name='status' complex_type='BaseESDLStatus'/>
+	</EsdlResponse>
+	<EsdlRequest name='ListESDLDefinitionsRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='ListESDLDefinitionsResponse' exceptions_inline='1'>
+		<EsdlArray name='Definitions'  type='ESDLDefinition' item_tag='Definition'/>
+	</EsdlResponse>
+	<EsdlStruct name='EspPortStruct'>
+		<EsdlElement name='Value' type='int'/>
+		<EsdlArray name='Bindings'  type='ESDLBinding' item_tag='Binding'/>
+	</EsdlStruct>
+	<EsdlStruct name='EspProcessStruct'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlArray name='Ports'  type='EspPortStruct' item_tag='Port'/>
+	</EsdlStruct>
+	<EsdlRequest name='ListESDLBindingsRequest' exceptions_inline='1'>
+	</EsdlRequest>
+	<EsdlResponse name='ListESDLBindingsResponse' exceptions_inline='1'>
+		<EsdlElement name='BindingsXML' type='string'/>
+		<EsdlArray name='Bindings'  type='ESDLBinding' item_tag='Binding' max_ver='1.3'/>
+		<EsdlArray name='EspProcesses'  type='EspProcessStruct' item_tag='EspProcess' min_ver='1.4'/>
+	</EsdlResponse>
+	<EsdlRequest name='WsESDLConfigPingRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='WsESDLConfigPingResponse'>
+	</EsdlResponse>
+		<EsdlService name='WsESDLConfig'  exceptions_inline='./smc_xslt/exceptions.xslt' version='1.5' auth_feature='ESDLConfigAccess:ACCESS'>
+	<EsdlMethod name='ConfigureESDLBindingLogTransform' request_type='ConfigureESDLBindingLogTransformRequest' response_type='ConfigureESDLBindingLogTransformResponse'  min_ver='1.5' auth_feature='ESDLConfigAccess:WRITE'/>
+	<EsdlMethod name='ConfigureESDLBindingMethod' request_type='ConfigureESDLBindingMethodRequest' response_type='ConfigureESDLBindingMethodResponse'  auth_feature='ESDLConfigAccess:WRITE'/>
+	<EsdlMethod name='DeleteESDLBinding' request_type='DeleteESDLBindingRequest' response_type='DeleteESDLRegistryEntryResponse'  auth_feature='ESDLConfigAccess:FULL'/>
+	<EsdlMethod name='DeleteESDLDefinition' request_type='DeleteESDLDefinitionRequest' response_type='DeleteESDLRegistryEntryResponse'  auth_feature='ESDLConfigAccess:FULL'/>
+	<EsdlMethod name='Echo' request_type='EchoRequest' response_type='EchoResponse' />
+	<EsdlMethod name='GetESDLBinding' request_type='GetESDLBindingRequest' response_type='GetESDLBindingResponse'  auth_feature='ESDLConfigAccess:READ'/>
+	<EsdlMethod name='GetESDLDefinition' request_type='GetESDLDefinitionRequest' response_type='GetESDLDefinitionResponse'  auth_feature='ESDLConfigAccess:READ'/>
+	<EsdlMethod name='ListDESDLEspBindings' request_type='ListDESDLEspBindingsReq' response_type='ListDESDLEspBindingsResp'  min_ver='1.2' auth_feature='ESDLConfigAccess:READ,ClusterTopologyAccess:READ'/>
+	<EsdlMethod name='ListESDLBindings' request_type='ListESDLBindingsRequest' response_type='ListESDLBindingsResponse'  auth_feature='ESDLConfigAccess:READ'/>
+	<EsdlMethod name='ListESDLDefinitions' request_type='ListESDLDefinitionsRequest' response_type='ListESDLDefinitionsResponse'  auth_feature='ESDLConfigAccess:READ'/>
+	<EsdlMethod name='Ping' request_type='WsESDLConfigPingRequest' response_type='WsESDLConfigPingResponse' />
+	<EsdlMethod name='PublishESDLBinding' request_type='PublishESDLBindingRequest' response_type='PublishESDLBindingResponse'  auth_feature='ESDLConfigAccess:WRITE'/>
+	<EsdlMethod name='PublishESDLDefinition' request_type='PublishESDLDefinitionRequest' response_type='PublishESDLDefinitionResponse'  auth_feature='ESDLConfigAccess:WRITE'/>
+		</EsdlService></esxdl>

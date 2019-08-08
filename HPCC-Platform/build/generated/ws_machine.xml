@@ -1,0 +1,347 @@
+<esxdl name="ws_machine">
+	<EsdlStruct name='DiskUsage' nil_remove='1'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Path' type='string'/>
+		<EsdlElement name='Description' type='string'/>
+		<EsdlElement name='InUse' type='int64'/>
+		<EsdlElement name='Available' type='int64'/>
+		<EsdlElement name='PercentAvailable' type='int'/>
+	</EsdlStruct>
+	<EsdlStruct name='MachineUsage' nil_remove='1'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='NetAddress' type='string'/>
+		<EsdlElement name='Description' type='string'/>
+		<EsdlArray name='DiskUsages'  type='DiskUsage'/>
+	</EsdlStruct>
+	<EsdlStruct name='Component' nil_remove='1'>
+		<EsdlElement name='Type' type='string'/>
+		<EsdlElement name='Name' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='ComponentUsage' nil_remove='1'>
+		<EsdlElement name='Type' type='string'/>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Description' type='string'/>
+		<EsdlArray name='MachineUsages'  type='MachineUsage'/>
+	</EsdlStruct>
+	<EsdlStruct name='TargetClusterUsage' nil_remove='1'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Description' type='string'/>
+		<EsdlArray name='ComponentUsages'  type='ComponentUsage'/>
+	</EsdlStruct>
+	<EsdlStruct name='NodeGroupUsage' nil_remove='1'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Description' type='string'/>
+		<EsdlArray name='ComponentUsages'  type='ComponentUsage'/>
+	</EsdlStruct>
+	<EsdlRequest name='GetMachineInfoRequest'>
+		<EsdlArray name='Addresses'  type='string'/>
+		<EsdlElement name='SortBy' type='string' hidden='1'/>
+		<EsdlElement name='ClusterType' type='TpMachineType'/>
+		<EsdlElement name='Cluster' type='string'/>
+		<EsdlElement name='OldIP' type='string'/>
+		<EsdlElement name='Path' type='string'/>
+		<EsdlElement name='AddProcessesToFilter' type='string'/>
+		<EsdlElement name='ApplyProcessFilter' type='bool'/>
+		<EsdlElement name='GetProcessorInfo' type='bool'/>
+		<EsdlElement name='GetStorageInfo' type='bool'/>
+		<EsdlElement name='LocalFileSystemsOnly' type='bool' min_ver='1.11'/>
+		<EsdlElement name='GetSoftwareInfo' type='bool'/>
+		<EsdlElement name='MemThreshold' type='int'/>
+		<EsdlElement name='DiskThreshold' type='int'/>
+		<EsdlElement name='CpuThreshold' type='int'/>
+		<EsdlElement name='AutoRefresh' type='int'/>
+		<EsdlElement name='MemThresholdType' type='ThresholdType'/>
+		<EsdlElement name='DiskThresholdType' type='ThresholdType'/>
+		<EsdlElement name='UserName' type='string'/>
+		<EsdlElement name='Password' type='string' cols='20' password='1'/>
+		<EsdlElement name='SecurityString' type='string' cols='20' password='1'/>
+	</EsdlRequest>
+	<EsdlStruct name='RequestInfoStruct'>
+		<EsdlArray name='Addresses'  type='string'/>
+		<EsdlElement name='SortBy' type='string' hidden='1'/>
+		<EsdlElement name='ClusterType' type='TpMachineType'/>
+		<EsdlElement name='Cluster' type='string'/>
+		<EsdlElement name='OldIP' type='string'/>
+		<EsdlElement name='Path' type='string'/>
+		<EsdlElement name='AddProcessesToFilter' type='string'/>
+		<EsdlElement name='ApplyProcessFilter' type='bool'/>
+		<EsdlElement name='GetProcessorInfo' type='bool'/>
+		<EsdlElement name='GetStorageInfo' type='bool'/>
+		<EsdlElement name='LocalFileSystemsOnly' type='bool' min_ver='1.11'/>
+		<EsdlElement name='GetSoftwareInfo' type='bool'/>
+		<EsdlElement name='MemThreshold' type='int'/>
+		<EsdlElement name='DiskThreshold' type='int'/>
+		<EsdlElement name='CpuThreshold' type='int'/>
+		<EsdlElement name='AutoRefresh' type='int'/>
+		<EsdlElement name='MemThresholdType' type='ThresholdType'/>
+		<EsdlElement name='DiskThresholdType' type='ThresholdType'/>
+		<EsdlElement name='SecurityString' type='string' cols='20' password='1'/>
+		<EsdlElement name='UserName' type='string' min_ver='1.02'/>
+		<EsdlElement name='Password' type='string' cols='20' password='1' min_ver='1.02'/>
+		<EsdlElement name='EnableSNMP' type='bool' min_ver='1.03'/>
+	</EsdlStruct>
+	<EsdlStruct name='ProcessorInfo'>
+		<EsdlElement name='Type' type='string'/>
+		<EsdlElement name='Load' type='int'/>
+	</EsdlStruct>
+	<EsdlStruct name='StorageInfo'>
+		<EsdlElement name='Description' type='string'/>
+		<EsdlElement name='Type' type='string'/>
+		<EsdlElement name='Available' type='int64'/>
+		<EsdlElement name='PercentAvail' type='int'/>
+		<EsdlElement name='Total' type='int64'/>
+		<EsdlElement name='Failures' type='int'/>
+	</EsdlStruct>
+	<EsdlStruct name='SWRunInfo'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Instances' type='int'/>
+		<EsdlElement name='State' type='int'/>
+	</EsdlStruct>
+	<EsdlStruct name='ProcessInfo'>
+		<EsdlElement name='PID' type='int'/>
+		<EsdlElement name='Description' type='string'/>
+		<EsdlElement name='Parameter' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='ComponentInfo' nil_remove='1'>
+		<EsdlElement name='Condition' type='int'/>
+		<EsdlElement name='State' type='int'/>
+		<EsdlElement name='UpTime' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='MachineInfoEx'>
+		<EsdlElement name='Address' type='string'/>
+		<EsdlElement name='ConfigAddress' type='string' min_ver='1.04'/>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='ProcessType' type='string'/>
+		<EsdlElement name='DisplayType' type='string'/>
+		<EsdlElement name='Description' type='string'/>
+		<EsdlElement name='AgentVersion' type='string'/>
+		<EsdlElement name='Contact' type='string'/>
+		<EsdlElement name='Location' type='string'/>
+		<EsdlElement name='UpTime' type='string'/>
+		<EsdlElement name='ComponentName' type='string'/>
+		<EsdlElement name='ComponentPath' type='string'/>
+		<EsdlElement name='RoxieState' type='string' min_ver='1.13'/>
+		<EsdlElement name='RoxieStateDetails' type='string' min_ver='1.13'/>
+		<EsdlElement name='OS' type='int'/>
+		<EsdlElement name='ProcessNumber' type='int' min_ver='1.10'/>
+		<EsdlArray name='Processors'  type='ProcessorInfo'/>
+		<EsdlArray name='Storage'  type='StorageInfo'/>
+		<EsdlArray name='Running'  type='SWRunInfo'/>
+		<EsdlElement name='PhysicalMemory' complex_type='StorageInfo'/>
+		<EsdlElement name='VirtualMemory' complex_type='StorageInfo'/>
+		<EsdlElement name='ComponentInfo' complex_type='ComponentInfo'/>
+	</EsdlStruct>
+	<EsdlResponse name='GetMachineInfoResponse' exceptions_inline='1' encode='0'>
+		<EsdlElement name='RequestInfo' complex_type='RequestInfoStruct'/>
+		<EsdlArray name='Columns'  type='string'/>
+		<EsdlArray name='Machines'  type='MachineInfoEx'/>
+		<EsdlElement name='TimeStamp' type='string'/>
+		<EsdlElement name='UserName' type='string' min_ver='1.02'/>
+		<EsdlElement name='Password' type='string' cols='20' password='1' min_ver='1.02'/>
+		<EsdlElement name='AcceptLanguage' type='string' min_ver='1.12'/>
+	</EsdlResponse>
+	<EsdlRequest name='GetMachineInfoRequestEx'>
+		<EsdlArray name='Addresses'  type='string'/>
+		<EsdlElement name='ClusterType' type='TpMachineType'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetMachineInfoResponseEx' exceptions_inline='1' encode='0'>
+		<EsdlElement name='AcceptLanguage' type='string' min_ver='1.12'/>
+		<EsdlArray name='Machines'  type='MachineInfoEx'/>
+	</EsdlResponse>
+	<EsdlRequest name='MetricsRequest'>
+		<EsdlElement name='SecurityString' type='string' cols='20' password='1'/>
+		<EsdlArray name='Addresses'  type='string'/>
+		<EsdlArray name='ShowColumns'  type='string'/>
+		<EsdlElement name='AutoRefresh' type='int'/>
+		<EsdlElement name='SelectAllChecked' type='bool' default='0'/>
+		<EsdlElement name='Cluster' type='string' min_ver='1.02'/>
+		<EsdlElement name='AutoUpdate' type='bool' default='1' min_ver='1.07'/>
+	</EsdlRequest>
+	<EsdlResponse name='MetricsResponse' exceptions_inline='1' encode='0'>
+		<EsdlElement name='FieldInformation' type='string'/>
+		<EsdlElement name='Metrics' type='string'/>
+		<EsdlElement name='AutoRefresh' type='int'/>
+		<EsdlElement name='Cluster' type='string' min_ver='1.02'/>
+		<EsdlElement name='SelectAllChecked' type='bool' default='0' min_ver='1.06'/>
+		<EsdlElement name='AutoUpdate' type='bool' default='1' min_ver='1.07'/>
+		<EsdlElement name='AcceptLanguage' type='string' min_ver='1.12'/>
+	</EsdlResponse>
+	<EsdlStruct name='RemoteExecResult'>
+		<EsdlElement name='ClusterType' type='TpMachineType'/>
+		<EsdlElement name='AddressOrig' type='string' min_ver='1.01'/>
+		<EsdlElement name='Address' type='string'/>
+		<EsdlElement name='Response' type='string'/>
+		<EsdlElement name='ResultCode' type='int'/>
+	</EsdlStruct>
+	<EsdlRequest name='StartStopBeginRequest'>
+		<EsdlArray name='Addresses'  type='string'/>
+		<EsdlElement name='Key1' type='string'/>
+		<EsdlElement name='Key2' type='string' cols='20' password='1'/>
+		<EsdlElement name='Stop' type='bool'/>
+		<EsdlElement name='MemThreshold' type='int' min_ver='1.08'/>
+		<EsdlElement name='DiskThreshold' type='int' min_ver='1.08'/>
+		<EsdlElement name='CpuThreshold' type='int' min_ver='1.08'/>
+		<EsdlElement name='AutoRefresh' type='int' min_ver='1.08'/>
+		<EsdlElement name='MemThresholdType' type='ThresholdType' min_ver='1.08'/>
+		<EsdlElement name='DiskThresholdType' type='ThresholdType' min_ver='1.08'/>
+	</EsdlRequest>
+	<EsdlResponse name='StartStopBeginResponse' exceptions_inline='1'>
+		<EsdlElement name='Addresses' type='string'/>
+		<EsdlElement name='Key1' type='string'/>
+		<EsdlElement name='Key2' type='string' cols='20' password='1'/>
+		<EsdlElement name='Stop' type='bool'/>
+		<EsdlElement name='MemThreshold' type='int' min_ver='1.08'/>
+		<EsdlElement name='DiskThreshold' type='int' min_ver='1.08'/>
+		<EsdlElement name='CpuThreshold' type='int' min_ver='1.08'/>
+		<EsdlElement name='AutoRefresh' type='int' min_ver='1.08'/>
+		<EsdlElement name='MemThresholdType' type='ThresholdType' min_ver='1.08'/>
+		<EsdlElement name='DiskThresholdType' type='ThresholdType' min_ver='1.08'/>
+	</EsdlResponse>
+	<EsdlRequest name='StartStopDoneRequest'>
+		<EsdlElement name='Addresses' type='string'/>
+		<EsdlElement name='Key1' type='string'/>
+		<EsdlElement name='Key2' type='string' cols='20' password='1'/>
+		<EsdlElement name='Stop' type='bool'/>
+		<EsdlElement name='MemThreshold' type='int' min_ver='1.08'/>
+		<EsdlElement name='DiskThreshold' type='int' min_ver='1.08'/>
+		<EsdlElement name='CpuThreshold' type='int' min_ver='1.08'/>
+		<EsdlElement name='AutoRefresh' type='int' min_ver='1.08'/>
+		<EsdlElement name='MemThresholdType' type='ThresholdType' min_ver='1.08'/>
+		<EsdlElement name='DiskThresholdType' type='ThresholdType' min_ver='1.08'/>
+	</EsdlRequest>
+	<EsdlRequest name='StartStopRequest'>
+		<EsdlArray name='Addresses'  type='string'/>
+		<EsdlElement name='Key1' type='string' min_ver='1.01'/>
+		<EsdlElement name='Key2' type='string' cols='20' password='1' min_ver='1.01'/>
+		<EsdlElement name='Stop' type='bool'/>
+	</EsdlRequest>
+	<EsdlStruct name='StartStopResult'>
+		<EsdlElement name='AddressOrig' type='string'/>
+		<EsdlElement name='Address' type='string'/>
+		<EsdlElement name='CompType' type='string'/>
+		<EsdlElement name='Name' type='string' min_ver='1.05'/>
+		<EsdlElement name='Path' type='string'/>
+		<EsdlElement name='Command' type='string'/>
+		<EsdlElement name='Response' type='string'/>
+		<EsdlElement name='ResultCode' type='int'/>
+		<EsdlElement name='OS' type='int'/>
+	</EsdlStruct>
+	<EsdlResponse name='StartStopResponse' exceptions_inline='1' encode='0'>
+		<EsdlArray name='StartStopResults'  type='StartStopResult'/>
+		<EsdlElement name='Stop' type='bool'/>
+		<EsdlElement name='ContainCluster' type='bool' min_ver='1.09'/>
+		<EsdlElement name='MemThreshold' type='int' min_ver='1.08'/>
+		<EsdlElement name='DiskThreshold' type='int' min_ver='1.08'/>
+		<EsdlElement name='CpuThreshold' type='int' min_ver='1.08'/>
+		<EsdlElement name='AutoRefresh' type='int' min_ver='1.08'/>
+		<EsdlElement name='MemThresholdType' type='ThresholdType' min_ver='1.08'/>
+		<EsdlElement name='DiskThresholdType' type='ThresholdType' min_ver='1.08'/>
+	</EsdlResponse>
+	<EsdlRequest name='GetTargetClusterInfoRequest'>
+		<EsdlArray name='TargetClusters'  type='string'/>
+		<EsdlElement name='AddProcessesToFilter' type='string'/>
+		<EsdlElement name='ApplyProcessFilter' type='bool'/>
+		<EsdlElement name='GetProcessorInfo' type='bool'/>
+		<EsdlElement name='GetStorageInfo' type='bool'/>
+		<EsdlElement name='LocalFileSystemsOnly' type='bool' min_ver='1.11'/>
+		<EsdlElement name='GetSoftwareInfo' type='bool'/>
+		<EsdlElement name='MemThreshold' type='int'/>
+		<EsdlElement name='DiskThreshold' type='int'/>
+		<EsdlElement name='CpuThreshold' type='int'/>
+		<EsdlElement name='AutoRefresh' type='int'/>
+		<EsdlElement name='MemThresholdType' type='ThresholdType'/>
+		<EsdlElement name='DiskThresholdType' type='ThresholdType'/>
+	</EsdlRequest>
+	<EsdlStruct name='TargetClusterInfo'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Type' type='string'/>
+		<EsdlArray name='Processes'  type='MachineInfoEx'/>
+	</EsdlStruct>
+	<EsdlResponse name='GetTargetClusterInfoResponse' exceptions_inline='1' encode='0'>
+		<EsdlArray name='Columns'  type='string'/>
+		<EsdlElement name='RequestInfo' complex_type='RequestInfoStruct'/>
+		<EsdlArray name='TargetClusterInfoList'  type='TargetClusterInfo'/>
+		<EsdlElement name='TimeStamp' type='string'/>
+		<EsdlElement name='AcceptLanguage' type='string' min_ver='1.12'/>
+	</EsdlResponse>
+	<EsdlStruct name='StatusReport' nil_remove='1'>
+		<EsdlElement name='StatusID' type='int'/>
+		<EsdlElement name='Status' type='string'/>
+		<EsdlElement name='StatusDetails' type='string'/>
+		<EsdlElement name='Reporter' type='string'/>
+		<EsdlElement name='TimeReported' type='int64'/>
+		<EsdlElement name='TimeReportedStr' type='string'/>
+		<EsdlElement name='TimeCached' type='string'/>
+		<EsdlElement name='URL' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='ComponentStatus' nil_remove='1'>
+		<EsdlElement name='ComponentTypeID' type='int'/>
+		<EsdlElement name='ComponentType' type='string'/>
+		<EsdlElement name='EndPoint' type='string'/>
+		<EsdlElement name='StatusID' type='int'/>
+		<EsdlElement name='Status' type='string'/>
+		<EsdlElement name='TimeReported' type='int64'/>
+		<EsdlElement name='TimeReportedStr' type='string'/>
+		<EsdlElement name='Reporter' type='string'/>
+		<EsdlArray name='StatusReports'  type='StatusReport'/>
+	</EsdlStruct>
+	<EsdlRequest name='GetComponentStatusRequest' nil_remove='1'>
+	</EsdlRequest>
+	<EsdlResponse name='GetComponentStatusResponse' exceptions_inline='1' nil_remove='1' encode='0'>
+		<EsdlElement name='StatusCode' type='int'/>
+		<EsdlElement name='Status' type='string'/>
+		<EsdlElement name='ComponentType' type='string'/>
+		<EsdlElement name='EndPoint' type='string'/>
+		<EsdlElement name='ComponentStatusID' type='int'/>
+		<EsdlElement name='ComponentStatus' type='string'/>
+		<EsdlElement name='TimeReported' type='int64'/>
+		<EsdlElement name='TimeReportedStr' type='string'/>
+		<EsdlElement name='Reporter' type='string'/>
+		<EsdlElement name='StatusReport' complex_type='StatusReport'/>
+		<EsdlArray name='ComponentStatusList'  type='ComponentStatus' item_tag='ComponentStatus'/>
+	</EsdlResponse>
+	<EsdlRequest name='UpdateComponentStatusRequest' nil_remove='1'>
+		<EsdlElement name='Reporter' type='string'/>
+		<EsdlArray name='ComponentStatusList'  type='ComponentStatus' item_tag='ComponentStatus'/>
+	</EsdlRequest>
+	<EsdlResponse name='UpdateComponentStatusResponse' exceptions_inline='1' nil_remove='1' encode='0'>
+		<EsdlElement name='StatusCode' type='int'/>
+		<EsdlElement name='Status' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='GetComponentUsageRequest' nil_remove='1'>
+		<EsdlArray name='Components'  type='Component'/>
+		<EsdlElement name='BypassCachedResult' type='bool' default='0' min_ver='1.15'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetComponentUsageResponse' exceptions_inline='1' nil_remove='1' encode='0'>
+		<EsdlArray name='ComponentUsages'  type='ComponentUsage'/>
+	</EsdlResponse>
+	<EsdlRequest name='GetTargetClusterUsageRequest' nil_remove='1'>
+		<EsdlArray name='TargetClusters'  type='string'/>
+		<EsdlElement name='BypassCachedResult' type='bool' default='0' min_ver='1.15'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetTargetClusterUsageResponse' exceptions_inline='1' nil_remove='1' encode='0'>
+		<EsdlArray name='TargetClusterUsages'  type='TargetClusterUsage'/>
+	</EsdlResponse>
+	<EsdlRequest name='GetNodeGroupUsageRequest' nil_remove='1'>
+		<EsdlArray name='NodeGroups'  type='string'/>
+		<EsdlElement name='BypassCachedResult' type='bool' default='0' min_ver='1.15'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetNodeGroupUsageResponse' exceptions_inline='1' nil_remove='1' encode='0'>
+		<EsdlArray name='NodeGroupUsages'  type='NodeGroupUsage'/>
+	</EsdlResponse>
+	<EsdlRequest name='ws_machinePingRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='ws_machinePingResponse'>
+	</EsdlResponse>
+		<EsdlService name='ws_machine'  version='1.15' auth_feature='DEFERRED'>
+	<EsdlMethod name='GetComponentStatus' request_type='GetComponentStatusRequest' response_type='GetComponentStatusResponse' />
+	<EsdlMethod name='GetComponentUsage' request_type='GetComponentUsageRequest' response_type='GetComponentUsageResponse'  min_ver='1.14'/>
+	<EsdlMethod name='GetMachineInfo' request_type='GetMachineInfoRequest' response_type='GetMachineInfoResponse'  exceptions_inline='./smc_xslt/exceptions.xslt' resp_xsl_default='./smc_xslt/ws_machine/machines.xslt'/>
+	<EsdlMethod name='GetMachineInfoEx' request_type='GetMachineInfoRequestEx' response_type='GetMachineInfoResponseEx'  exceptions_inline='./smc_xslt/exceptions.xslt' resp_xsl_default='./smc_xslt/ws_machine/machines.xslt'/>
+	<EsdlMethod name='GetMetrics' request_type='MetricsRequest' response_type='MetricsResponse'  exceptions_inline='./smc_xslt/exceptions.xslt' resp_xsl_default='./smc_xslt/ws_machine/metrics.xslt'/>
+	<EsdlMethod name='GetNodeGroupUsage' request_type='GetNodeGroupUsageRequest' response_type='GetNodeGroupUsageResponse'  min_ver='1.14'/>
+	<EsdlMethod name='GetTargetClusterInfo' request_type='GetTargetClusterInfoRequest' response_type='GetTargetClusterInfoResponse'  exceptions_inline='./smc_xslt/exceptions.xslt' resp_xsl_default='./smc_xslt/clusterprocesses.xslt'/>
+	<EsdlMethod name='GetTargetClusterUsage' request_type='GetTargetClusterUsageRequest' response_type='GetTargetClusterUsageResponse'  min_ver='1.14'/>
+	<EsdlMethod name='Ping' request_type='ws_machinePingRequest' response_type='ws_machinePingResponse' />
+	<EsdlMethod name='UpdateComponentStatus' request_type='UpdateComponentStatusRequest' response_type='UpdateComponentStatusResponse' />
+		</EsdlService></esxdl>

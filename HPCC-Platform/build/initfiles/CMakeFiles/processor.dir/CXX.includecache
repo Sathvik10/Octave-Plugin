@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/sathvik/hpcc/HPCC-Platform/initfiles/processor.cpp
+string
+-
+vector
+-
+iostream
+-
+fstream
+-
+cstdio
+-
+

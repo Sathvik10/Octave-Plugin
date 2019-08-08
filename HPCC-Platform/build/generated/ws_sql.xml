@@ -1,0 +1,249 @@
+<esxdl name="ws_sql">
+	<EsdlInclude file='ws_workunits'/>
+	<EsdlInclude file='ws_topology'/>
+	<EsdlStruct name='HPCCColumn'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Type' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='HPCCTable'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlArray name='Columns'  type='HPCCColumn' item_tag='Column'/>
+		<EsdlElement name='ECL' type='string'/>
+		<EsdlElement name='Format' type='string'/>
+		<EsdlElement name='ContentType' type='string'/>
+		<EsdlElement name='Description' type='string'/>
+		<EsdlElement name='IsKeyed' type='boolean'/>
+		<EsdlElement name='IsSuper' type='boolean'/>
+		<EsdlElement name='CsvQuote' type='string'/>
+		<EsdlElement name='CsvSeparate' type='string'/>
+		<EsdlElement name='CsvTerminate' type='string'/>
+		<EsdlElement name='Group' type='string'/>
+		<EsdlElement name='MaxRecordSize' type='integer'/>
+		<EsdlElement name='Modified' type='string'/>
+		<EsdlElement name='NumParts' type='integer'/>
+		<EsdlElement name='Owner' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='OutputDataset'>
+		<EsdlElement name='name' type='string'/>
+		<EsdlArray name='OutParams'  type='HPCCColumn' item_tag='OutParam'/>
+	</EsdlStruct>
+	<EsdlStruct name='QuerySignature'>
+		<EsdlArray name='InParams'  type='HPCCColumn' item_tag='InParam'/>
+		<EsdlArray name='ResultSets'  type='OutputDataset' item_tag='ResultSet'/>
+	</EsdlStruct>
+	<EsdlStruct name='PublishedQuery'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Id' type='string'/>
+		<EsdlElement name='Wuid' type='string'/>
+		<EsdlElement name='Suspended' type='boolean'/>
+		<EsdlElement name='Signature' complex_type='QuerySignature'/>
+	</EsdlStruct>
+	<EsdlStruct name='QuerySetAliasMap'>
+		<EsdlElement name='Id' type='string'/>
+		<EsdlElement name='Name' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='HPCCQuerySet'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlArray name='QuerySetQueries'  type='PublishedQuery' item_tag='QuerySetQuery'/>
+		<EsdlArray name='QuerySetAliases'  type='QuerySetAliasMap' item_tag='QuerySetAlias'/>
+	</EsdlStruct>
+	<EsdlStruct name='HPCCTargetCluster'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlArray name='QuerySetQueries'  type='PublishedQuery' item_tag='QuerySetQuery'/>
+		<EsdlArray name='QuerySetAliases'  type='QuerySetAliasMap' item_tag='QuerySetAlias'/>
+	</EsdlStruct>
+	<EsdlRequest name='PrepareSQLRequest'>
+		<EsdlElement name='SqlText' type='string' cols='80' rows='28'/>
+		<EsdlElement name='TargetCluster' type='string'/>
+		<EsdlArray name='AlternateClusters'  type='string' item_tag='AlternateCluster' min_ver='3.04'/>
+		<EsdlElement name='TargetQuerySet' type='string'/>
+		<EsdlElement name='Wait' type='int' default='-1'/>
+	</EsdlRequest>
+	<EsdlResponse name='PrepareSQLResponse' exceptions_inline='1'>
+		<EsdlElement name='Workunit' complex_type='ECLWorkunit'/>
+		<EsdlElement name='Result' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='ExecuteSQLRequest'>
+		<EsdlElement name='SqlText' type='string' cols='80' rows='28'/>
+		<EsdlElement name='UserName' type='string'/>
+		<EsdlElement name='TargetCluster' type='string'/>
+		<EsdlArray name='AlternateClusters'  type='string' item_tag='AlternateCluster' min_ver='3.04'/>
+		<EsdlElement name='TargetQuerySet' type='string'/>
+		<EsdlElement name='SuppressResults' type='boolean' default='0'/>
+		<EsdlElement name='SuppressXmlSchema' type='boolean' default='1'/>
+		<EsdlElement name='Wait' type='int' default='-1'/>
+		<EsdlElement name='resultLimit' type='int' default='0'/>
+		<EsdlElement name='ResultWindowStart' type='int' default='0'/>
+		<EsdlElement name='ResultWindowCount' type='int' default='0'/>
+		<EsdlElement name='IgnoreCache' type='boolean' default='0' min_ver='3.05'/>
+	</EsdlRequest>
+	<EsdlResponse name='ExecuteSQLResponse' exceptions_inline='1'>
+		<EsdlElement name='ParentWuId' type='string'/>
+		<EsdlElement name='Result' type='string'/>
+		<EsdlElement name='Workunit' complex_type='ECLWorkunit'/>
+		<EsdlElement name='resultLimit' type='int'/>
+		<EsdlElement name='ResultWindowStart' type='unsigned'/>
+		<EsdlElement name='ResultWindowCount' type='unsigned'/>
+	</EsdlResponse>
+	<EsdlRequest name='ExecutePreparedSQLRequest'>
+		<EsdlElement name='WuId' type='string'/>
+		<EsdlElement name='UserName' type='string'/>
+		<EsdlElement name='TargetCluster' type='string'/>
+		<EsdlElement name='SuppressResults' type='boolean' default='0'/>
+		<EsdlElement name='SuppressXmlSchema' type='boolean' default='1'/>
+		<EsdlElement name='Wait' type='int' default='-1'/>
+		<EsdlElement name='ResultWindowStart' type='int' default='0'/>
+		<EsdlElement name='ResultWindowCount' type='int' default='0'/>
+		<EsdlArray name='Variables'  type='NamedValue'/>
+	</EsdlRequest>
+	<EsdlResponse name='ExecutePreparedSQLResponse' exceptions_inline='1'>
+		<EsdlElement name='ParentWuId' type='string'/>
+		<EsdlElement name='Result' type='string'/>
+		<EsdlElement name='ResultWindowStart' type='unsigned'/>
+		<EsdlElement name='ResultWindowCount' type='unsigned'/>
+		<EsdlElement name='Workunit' complex_type='ECLWorkunit'/>
+	</EsdlResponse>
+	<EsdlRequest name='GetDBSystemInfoRequest'>
+		<EsdlElement name='IncludeAll' type='boolean' default='1'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetDBSystemInfoResponse' exceptions_inline='1'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='FullVersion' type='string'/>
+		<EsdlElement name='Major' type='string'/>
+		<EsdlElement name='Minor' type='string'/>
+		<EsdlElement name='Point' type='string'/>
+		<EsdlElement name='Project' type='string'/>
+		<EsdlElement name='Maturity' type='string'/>
+		<EsdlElement name='WsSQLFullVersion' type='string' min_ver='3.01'/>
+		<EsdlElement name='WsSQLMajor' type='string' min_ver='3.01'/>
+		<EsdlElement name='WsSQLMinor' type='string' min_ver='3.01'/>
+		<EsdlElement name='WsSQLPoint' type='string' min_ver='3.01'/>
+		<EsdlElement name='WsSQLProject' type='string' min_ver='3.01'/>
+		<EsdlElement name='WsSQLMaturity' type='string' min_ver='3.01'/>
+	</EsdlResponse>
+	<EsdlRequest name='GetDBMetaDataRequest'>
+		<EsdlElement name='IncludeTables' type='boolean'/>
+		<EsdlElement name='TableFilter' type='string'/>
+		<EsdlElement name='IncludeStoredProcedures' type='boolean'/>
+		<EsdlElement name='QuerySet' type='string'/>
+		<EsdlElement name='IncludeTargetClusters' type='boolean'/>
+		<EsdlElement name='ClusterType' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetDBMetaDataResponse' exceptions_inline='1'>
+		<EsdlArray name='Tables'  type='HPCCTable' item_tag='Table'/>
+		<EsdlElement name='TableCount' type='integer'/>
+		<EsdlArray name='QuerySets'  type='HPCCQuerySet' item_tag='QuerySet'/>
+		<EsdlArray name='ClusterNames'  type='string' item_tag='ClusterName'/>
+	</EsdlResponse>
+	<EsdlRequest name='GetResultsRequest'>
+		<EsdlElement name='WuId' type='string'/>
+		<EsdlElement name='SuppressXmlSchema' type='boolean' default='1'/>
+		<EsdlElement name='ResultWindowStart' type='int' default='0'/>
+		<EsdlElement name='ResultWindowCount' type='int' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetResultsResponse' exceptions_inline='1'>
+		<EsdlElement name='Result' type='string'/>
+		<EsdlElement name='ResultWindowStart' type='unsigned'/>
+		<EsdlElement name='ResultWindowCount' type='unsigned'/>
+		<EsdlElement name='Workunit' complex_type='ECLWorkunit'/>
+	</EsdlResponse>
+	<EsdlRequest name='EchoRequest'>
+		<EsdlElement name='Request' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='EchoResponse'>
+		<EsdlElement name='Response' type='string'/>
+	</EsdlResponse>
+	<EsdlStruct name='RelatedIndexSet'>
+		<EsdlElement name='FileName' type='string'/>
+		<EsdlArray name='Indexes'  type='string' item_tag='Index'/>
+	</EsdlStruct>
+	<EsdlRequest name='GetRelatedIndexesRequest'>
+		<EsdlArray name='FileNames'  type='string' item_tag='FileName'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetRelatedIndexesResponse'>
+		<EsdlArray name='RelatedIndexSets'  type='RelatedIndexSet' item_tag='RelatedIndexSet'/>
+	</EsdlResponse>
+	<EsdlRequest name='SetRelatedIndexesRequest'>
+		<EsdlArray name='RelatedIndexSets'  type='RelatedIndexSet' item_tag='RelatedIndexSet'/>
+	</EsdlRequest>
+	<EsdlResponse name='SetRelatedIndexesResponse'>
+		<EsdlArray name='RelatedIndexSets'  type='RelatedIndexSet' item_tag='RelatedIndexSet'/>
+	</EsdlResponse>
+	<EsdlEnumType name='HPCCFieldType' base_type='string'>
+		<EsdlEnumItem name='BOOLEAN' enum='BOOLEAN'/>
+		<EsdlEnumItem name='INTEGER' enum='INTEGER'/>
+		<EsdlEnumItem name='xUNSIGNED' enum='UNSIGNED'/>
+		<EsdlEnumItem name='REAL' enum='REAL'/>
+		<EsdlEnumItem name='DECIMAL' enum='DECIMAL'/>
+		<EsdlEnumItem name='UDECIMAL' enum='UDECIMAL'/>
+		<EsdlEnumItem name='xSTRING' enum='STRING'/>
+		<EsdlEnumItem name='QSTRING' enum='QSTRING'/>
+		<EsdlEnumItem name='UNICODE' enum='UNICODE'/>
+		<EsdlEnumItem name='DATA' enum='DATA'/>
+		<EsdlEnumItem name='VARSTRING' enum='VARSTRING'/>
+		<EsdlEnumItem name='VARUNICODE' enum='VARUNICODE'/>
+	</EsdlEnumType>
+	<EsdlStruct name='EclFieldType'>
+		<EsdlEnum name='Type' enum_type='HPCCFieldType'/>
+		<EsdlElement name='Locale' type='string'/>
+		<EsdlElement name='Length' type='Integer'/>
+		<EsdlElement name='Precision' type='Integer'/>
+	</EsdlStruct>
+	<EsdlStruct name='EclFieldDeclaration'>
+		<EsdlElement name='FieldName' type='string'/>
+		<EsdlElement name='EclFieldType' complex_type='EclFieldType'/>
+	</EsdlStruct>
+	<EsdlStruct name='DataTypeParam'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlArray name='Values'  type='string' item_tag='Value'/>
+	</EsdlStruct>
+	<EsdlEnumType name='HPCCFileType' base_type='string'>
+		<EsdlEnumItem name='FLAT' enum='FLAT'/>
+		<EsdlEnumItem name='CSV' enum='CSV'/>
+		<EsdlEnumItem name='JSON' enum='JSON'/>
+		<EsdlEnumItem name='XML' enum='XML'/>
+	</EsdlEnumType>
+	<EsdlStruct name='DataType'>
+		<EsdlEnum name='Type' enum_type='HPCCFileType'/>
+		<EsdlArray name='Params'  type='DataTypeParam' item_tag='Param'/>
+	</EsdlStruct>
+	<EsdlStruct name='DataSourceInfo'>
+		<EsdlElement name='SprayedFileName' type='string'/>
+		<EsdlElement name='LandingZoneIP' type='string'/>
+		<EsdlElement name='LandingZonePath' type='string'/>
+		<EsdlElement name='LandingZoneFileName' type='string'/>
+	</EsdlStruct>
+	<EsdlRequest name='CreateTableAndLoadRequest'>
+		<EsdlElement name='TableName' type='string'/>
+		<EsdlElement name='TableDescription' type='string'/>
+		<EsdlElement name='Overwrite' type='Boolean'/>
+		<EsdlArray name='EclFields'  type='EclFieldDeclaration' item_tag='EclField'/>
+		<EsdlElement name='TargetCluster' type='string'/>
+		<EsdlElement name='Owner' type='string'/>
+		<EsdlElement name='DataSource' complex_type='DataSourceInfo'/>
+		<EsdlElement name='DataSourceType' complex_type='DataType'/>
+		<EsdlElement name='Wait' type='int' default='-1'/>
+	</EsdlRequest>
+	<EsdlResponse name='CreateTableAndLoadResponse'>
+		<EsdlElement name='TableName' type='string'/>
+		<EsdlElement name='Success' type='Boolean'/>
+		<EsdlElement name='EclRecordDefinition' type='string'/>
+		<EsdlElement name='Workunit' complex_type='ECLWorkunit'/>
+	</EsdlResponse>
+	<EsdlRequest name='wssqlPingRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='wssqlPingResponse'>
+	</EsdlResponse>
+		<EsdlService name='wssql'  exceptions_inline='./smc_xslt/exceptions.xslt' auth_feature='DEFERRED' default_client_version='3.05' version='3.05'>
+	<EsdlMethod name='CreateTableAndLoad' request_type='CreateTableAndLoadRequest' response_type='CreateTableAndLoadResponse'  min_ver='3.03'/>
+	<EsdlMethod name='Echo' request_type='EchoRequest' response_type='EchoResponse' />
+	<EsdlMethod name='ExecutePreparedSQL' request_type='ExecutePreparedSQLRequest' response_type='ExecutePreparedSQLResponse' />
+	<EsdlMethod name='ExecuteSQL' request_type='ExecuteSQLRequest' response_type='ExecuteSQLResponse' />
+	<EsdlMethod name='GetDBMetaData' request_type='GetDBMetaDataRequest' response_type='GetDBMetaDataResponse' />
+	<EsdlMethod name='GetDBSystemInfo' request_type='GetDBSystemInfoRequest' response_type='GetDBSystemInfoResponse' />
+	<EsdlMethod name='GetRelatedIndexes' request_type='GetRelatedIndexesRequest' response_type='GetRelatedIndexesResponse'  min_ver='3.02'/>
+	<EsdlMethod name='GetResults' request_type='GetResultsRequest' response_type='GetResultsResponse' />
+	<EsdlMethod name='Ping' request_type='wssqlPingRequest' response_type='wssqlPingResponse' />
+	<EsdlMethod name='PrepareSQL' request_type='PrepareSQLRequest' response_type='PrepareSQLResponse' />
+	<EsdlMethod name='SetRelatedIndexes' request_type='SetRelatedIndexesRequest' response_type='SetRelatedIndexesResponse'  min_ver='3.02'/>
+		</EsdlService></esxdl>

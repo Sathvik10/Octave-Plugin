@@ -1,0 +1,127 @@
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_26a42/fast 
+/usr/bin/make -f CMakeFiles/cmTC_26a42.dir/build.make CMakeFiles/cmTC_26a42.dir/build
+make[1]: Entering directory '/home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_26a42.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -o CMakeFiles/cmTC_26a42.dir/CheckSymbolExists.c.o   -c /home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_26a42
+/usr/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_26a42.dir/link.txt --verbose=1
+/usr/bin/cc      CMakeFiles/cmTC_26a42.dir/CheckSymbolExists.c.o  -o cmTC_26a42 
+CMakeFiles/cmTC_26a42.dir/CheckSymbolExists.c.o: In function `main':
+CheckSymbolExists.c:(.text+0x1b): undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_26a42.dir/build.make:86: recipe for target 'cmTC_26a42' failed
+make[1]: *** [cmTC_26a42] Error 1
+make[1]: Leaving directory '/home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp'
+Makefile:121: recipe for target 'cmTC_26a42/fast' failed
+make: *** [cmTC_26a42/fast] Error 2
+
+File /home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_ed143/fast 
+/usr/bin/make -f CMakeFiles/cmTC_ed143.dir/build.make CMakeFiles/cmTC_ed143.dir/build
+make[1]: Entering directory '/home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_ed143.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_ed143.dir/CheckFunctionExists.c.o   -c /usr/local/share/cmake-3.14/Modules/CheckFunctionExists.c
+Linking C executable cmTC_ed143
+/usr/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ed143.dir/link.txt --verbose=1
+/usr/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_ed143.dir/CheckFunctionExists.c.o  -o cmTC_ed143 -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_ed143.dir/build.make:86: recipe for target 'cmTC_ed143' failed
+make[1]: *** [cmTC_ed143] Error 1
+make[1]: Leaving directory '/home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp'
+Makefile:121: recipe for target 'cmTC_ed143/fast' failed
+make: *** [cmTC_ed143/fast] Error 2
+
+
+Performing C++ SOURCE FILE Test HAVE_UNORDERED_MAP failed with the following output:
+Change Dir: /home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_b0515/fast 
+/usr/bin/make -f CMakeFiles/cmTC_b0515.dir/build.make CMakeFiles/cmTC_b0515.dir/build
+make[1]: Entering directory '/home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_b0515.dir/src.cxx.o
+/usr/bin/c++    -frtti -fPIC -fmessage-length=0 -Werror=format -Wformat-security -Wformat-nonliteral -pthread -Wuninitialized -Werror=return-type -Werror=format-nonliteral -Wno-psabi -Wparentheses -std=c++11 -DHAVE_UNORDERED_MAP  -std=c++11   -o CMakeFiles/cmTC_b0515.dir/src.cxx.o -c /home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp/src.cxx
+/home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp/src.cxx: In function ‘int main()’:
+/home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp/src.cxx:4:14: error: ‘std::tr1’ has not been declared
+         std::tr1::unordered_map<int,int> m;
+              ^~~
+/home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp/src.cxx:4:33: error: expected primary-expression before ‘int’
+         std::tr1::unordered_map<int,int> m;
+                                 ^~~
+/home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp/src.cxx:5:16: error: ‘m’ was not declared in this scope
+         return m.find(42) == m.end();
+                ^
+/home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp/src.cxx:5:16: note: suggested alternative: ‘tm’
+         return m.find(42) == m.end();
+                ^
+                tm
+CMakeFiles/cmTC_b0515.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_b0515.dir/src.cxx.o' failed
+make[1]: *** [CMakeFiles/cmTC_b0515.dir/src.cxx.o] Error 1
+make[1]: Leaving directory '/home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp'
+Makefile:121: recipe for target 'cmTC_b0515/fast' failed
+make: *** [cmTC_b0515/fast] Error 2
+
+Source file was:
+
+      #include <unordered_map>
+      int main() {
+        std::tr1::unordered_map<int,int> m;
+        return m.find(42) == m.end();
+      }
+      
+Determining if the SO_NOSIGPIPE exist failed with the following output:
+Change Dir: /home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_f0dd3/fast 
+/usr/bin/make -f CMakeFiles/cmTC_f0dd3.dir/build.make CMakeFiles/cmTC_f0dd3.dir/build
+make[1]: Entering directory '/home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_f0dd3.dir/CheckSymbolExists.c.o
+/usr/bin/cc   -D_GNU_SOURCE    -o CMakeFiles/cmTC_f0dd3.dir/CheckSymbolExists.c.o   -c /home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+/home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c: In function ‘main’:
+/home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:9:19: error: ‘SO_NOSIGPIPE’ undeclared (first use in this function); did you mean ‘SO_OOBINLINE’?
+   return ((int*)(&SO_NOSIGPIPE))[argc];
+                   ^~~~~~~~~~~~
+                   SO_OOBINLINE
+/home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:9:19: note: each undeclared identifier is reported only once for each function it appears in
+CMakeFiles/cmTC_f0dd3.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_f0dd3.dir/CheckSymbolExists.c.o' failed
+make[1]: *** [CMakeFiles/cmTC_f0dd3.dir/CheckSymbolExists.c.o] Error 1
+make[1]: Leaving directory '/home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp'
+Makefile:121: recipe for target 'cmTC_f0dd3/fast' failed
+make: *** [cmTC_f0dd3/fast] Error 2
+
+File /home/sathvik/hpcc/HPCC-Platform/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <sys/socket.h>
+#include <sys/types.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef SO_NOSIGPIPE
+  return ((int*)(&SO_NOSIGPIPE))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+

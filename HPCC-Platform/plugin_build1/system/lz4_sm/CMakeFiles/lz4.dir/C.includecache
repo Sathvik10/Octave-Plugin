@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/sathvik/hpcc/HPCC-Platform/system/lz4_sm/lz4/lib/lz4.c
+lz4.h
+/home/sathvik/hpcc/HPCC-Platform/system/lz4_sm/lz4/lib/lz4.h
+intrin.h
+-
+stdlib.h
+-
+string.h
+-
+stdint.h
+-
+
+/home/sathvik/hpcc/HPCC-Platform/system/lz4_sm/lz4/lib/lz4.h
+

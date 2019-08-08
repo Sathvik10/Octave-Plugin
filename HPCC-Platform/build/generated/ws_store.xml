@@ -1,0 +1,114 @@
+<esxdl name="ws_store">
+	<EsdlStruct name='KVPair'>
+		<EsdlElement name='Key' type='string'/>
+		<EsdlElement name='Value' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='NamespaceSet'>
+		<EsdlElement name='Namespace' type='string'/>
+		<EsdlArray name='Entries'  type='KVPair' item_tag='Entry'/>
+	</EsdlStruct>
+	<EsdlRequest name='ListKeysRequest'>
+		<EsdlElement name='StoreName' type='string'/>
+		<EsdlElement name='Namespace' type='string'/>
+		<EsdlElement name='UserSpecific' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='ListKeysResponse' exceptions_inline='1'>
+		<EsdlElement name='StoreName' type='string'/>
+		<EsdlElement name='Namespace' type='string'/>
+		<EsdlArray name='KeySet'  type='string' item_tag='Key'/>
+	</EsdlResponse>
+	<EsdlRequest name='ListNamespacesRequest'>
+		<EsdlElement name='StoreName' type='string'/>
+		<EsdlElement name='UserSpecific' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='ListNamespacesResponse' exceptions_inline='1'>
+		<EsdlElement name='StoreName' type='string'/>
+		<EsdlArray name='Namespaces'  type='string' item_tag='Namespace'/>
+	</EsdlResponse>
+	<EsdlRequest name='DeleteNamespaceRequest'>
+		<EsdlElement name='StoreName' type='string'/>
+		<EsdlElement name='Namespace' type='string'/>
+		<EsdlElement name='UserSpecific' type='bool' default='0'/>
+		<EsdlElement name='TargetUser' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DeleteNamespaceResponse' exceptions_inline='1'>
+		<EsdlElement name='Success' type='bool'/>
+	</EsdlResponse>
+	<EsdlRequest name='DeleteRequest'>
+		<EsdlElement name='StoreName' type='string'/>
+		<EsdlElement name='Namespace' type='string'/>
+		<EsdlElement name='Key' type='string'/>
+		<EsdlElement name='UserSpecific' type='bool' default='0'/>
+		<EsdlElement name='TargetUser' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DeleteResponse' exceptions_inline='1'>
+		<EsdlElement name='Success' type='bool'/>
+	</EsdlResponse>
+	<EsdlRequest name='FetchRequest'>
+		<EsdlElement name='StoreName' type='string'/>
+		<EsdlElement name='Namespace' type='string'/>
+		<EsdlElement name='Key' type='string'/>
+		<EsdlElement name='UserSpecific' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='FetchResponse' exceptions_inline='1'>
+		<EsdlElement name='Value' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='FetchAllRequest'>
+		<EsdlElement name='StoreName' type='string'/>
+		<EsdlElement name='Namespace' type='string'/>
+		<EsdlElement name='UserSpecific' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlRequest name='FetchKeyMDRequest'>
+		<EsdlElement name='StoreName' type='string'/>
+		<EsdlElement name='Namespace' type='string'/>
+		<EsdlElement name='Key' type='string'/>
+		<EsdlElement name='UserSpecific' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='FetchKeyMDResponse' exceptions_inline='1'>
+		<EsdlElement name='StoreName' type='string'/>
+		<EsdlElement name='Namespace' type='string'/>
+		<EsdlElement name='Key' type='string'/>
+		<EsdlArray name='Pairs'  type='KVPair' item_tag='Pair'/>
+	</EsdlResponse>
+	<EsdlResponse name='FetchAllResponse' exceptions_inline='1'>
+		<EsdlElement name='Namespace' type='string'/>
+		<EsdlArray name='Pairs'  type='KVPair' item_tag='Pair'/>
+	</EsdlResponse>
+	<EsdlRequest name='SetRequest'>
+		<EsdlElement name='StoreName' type='string'/>
+		<EsdlElement name='Namespace' type='string'/>
+		<EsdlElement name='Key' type='string'/>
+		<EsdlElement name='Value' type='string'/>
+		<EsdlElement name='UserSpecific' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='SetResponse' exceptions_inline='1'>
+		<EsdlElement name='Success' type='bool'/>
+	</EsdlResponse>
+	<EsdlRequest name='CreateStoreRequest'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Type' type='string'/>
+		<EsdlElement name='Description' type='string'/>
+		<EsdlElement name='UserSpecific' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='CreateStoreResponse' exceptions_inline='1'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Type' type='string'/>
+		<EsdlElement name='Description' type='string'/>
+		<EsdlElement name='Owner' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='wsstorePingRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='wsstorePingResponse'>
+	</EsdlResponse>
+		<EsdlService name='wsstore'  exceptions_inline='./smc_xslt/exceptions.xslt' auth_feature='WsStoreAccess:READ' default_client_version='1.00' version='1.00'>
+	<EsdlMethod name='CreateStore' request_type='CreateStoreRequest' response_type='CreateStoreResponse'  auth_feature='WsStoreAccess:FULL'/>
+	<EsdlMethod name='Delete' request_type='DeleteRequest' response_type='DeleteResponse'  auth_feature='WsStoreAccess:FULL'/>
+	<EsdlMethod name='DeleteNamespace' request_type='DeleteNamespaceRequest' response_type='DeleteNamespaceResponse'  auth_feature='WsStoreAccess:FULL'/>
+	<EsdlMethod name='Fetch' request_type='FetchRequest' response_type='FetchResponse'  auth_feature='WsStoreAccess:READ'/>
+	<EsdlMethod name='FetchAll' request_type='FetchAllRequest' response_type='FetchAllResponse'  auth_feature='WsStoreAccess:READ'/>
+	<EsdlMethod name='FetchKeyMetadata' request_type='FetchKeyMDRequest' response_type='FetchKeyMDResponse'  auth_feature='WsStoreAccess:FULL'/>
+	<EsdlMethod name='ListKeys' request_type='ListKeysRequest' response_type='ListKeysResponse'  auth_feature='WsStoreAccess:READ'/>
+	<EsdlMethod name='ListNamespaces' request_type='ListNamespacesRequest' response_type='ListNamespacesResponse'  auth_feature='WsStoreAccess:READ'/>
+	<EsdlMethod name='Ping' request_type='wsstorePingRequest' response_type='wsstorePingResponse' />
+	<EsdlMethod name='Set' request_type='SetRequest' response_type='SetResponse'  auth_feature='WsStoreAccess:WRITE'/>
+		</EsdlService></esxdl>

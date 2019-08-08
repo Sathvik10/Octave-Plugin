@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/sathvik/hpcc/HPCC-Platform/build/esp/services/ws_sql/CMakeFiles/antlr3c"
+		},
+		{
+			"file" : "/home/sathvik/hpcc/HPCC-Platform/build/esp/services/ws_sql/CMakeFiles/antlr3c.rule"
+		},
+		{
+			"file" : "/home/sathvik/hpcc/HPCC-Platform/build/esp/services/ws_sql/CMakeFiles/antlr3c-complete.rule"
+		},
+		{
+			"file" : "/home/sathvik/hpcc/HPCC-Platform/build/esp/services/ws_sql/antlr3c/src/antlr3c-stamp/antlr3c-install.rule"
+		},
+		{
+			"file" : "/home/sathvik/hpcc/HPCC-Platform/build/esp/services/ws_sql/antlr3c/src/antlr3c-stamp/antlr3c-mkdir.rule"
+		},
+		{
+			"file" : "/home/sathvik/hpcc/HPCC-Platform/build/esp/services/ws_sql/antlr3c/src/antlr3c-stamp/antlr3c-download.rule"
+		},
+		{
+			"file" : "/home/sathvik/hpcc/HPCC-Platform/build/esp/services/ws_sql/antlr3c/src/antlr3c-stamp/antlr3c-update.rule"
+		},
+		{
+			"file" : "/home/sathvik/hpcc/HPCC-Platform/build/esp/services/ws_sql/antlr3c/src/antlr3c-stamp/antlr3c-patch.rule"
+		},
+		{
+			"file" : "/home/sathvik/hpcc/HPCC-Platform/build/esp/services/ws_sql/antlr3c/src/antlr3c-stamp/antlr3c-configure.rule"
+		},
+		{
+			"file" : "/home/sathvik/hpcc/HPCC-Platform/build/esp/services/ws_sql/antlr3c/src/antlr3c-stamp/antlr3c-build.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"antlr3c"
+		],
+		"name" : "antlr3c"
+	}
+}

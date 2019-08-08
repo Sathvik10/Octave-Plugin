@@ -1,0 +1,98 @@
+<esxdl name="ws_espcontrol">
+	<EsdlInclude file='common'/>
+	<EsdlRequest name='SetLoggingRequest' nil_remove='1'>
+		<EsdlElement name='LoggingLevel' type='int'/>
+		<EsdlElement name='LogRequests' type='bool'/>
+		<EsdlElement name='LogResponses' type='bool'/>
+	</EsdlRequest>
+	<EsdlResponse name='SetLoggingResponse' http_encode='0' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='Status' type='int'/>
+		<EsdlElement name='Message' type='string'/>
+	</EsdlResponse>
+	<EsdlStruct name='Session' nil_remove='1'>
+		<EsdlElement name='ID' type='string'/>
+		<EsdlElement name='UserID' type='string'/>
+		<EsdlElement name='NetworkAddress' type='string'/>
+		<EsdlElement name='CreateTime' type='string'/>
+		<EsdlElement name='LastAccessed' type='string'/>
+		<EsdlElement name='TimeoutAt' type='string'/>
+		<EsdlElement name='Port' type='int'/>
+		<EsdlElement name='TimeoutByAdmin' type='bool'/>
+	</EsdlStruct>
+	<EsdlRequest name='SessionQueryRequest' nil_remove='1'>
+		<EsdlElement name='FromIP' type='string'/>
+		<EsdlElement name='UserID' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='SessionQueryResponse' http_encode='0' nil_remove='1' exceptions_inline='1'>
+		<EsdlArray name='Sessions'  type='Session'/>
+	</EsdlResponse>
+	<EsdlRequest name='SessionInfoRequest' nil_remove='1'>
+		<EsdlElement name='Port' type='int'/>
+		<EsdlElement name='ID' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='SessionInfoResponse' http_encode='0' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='Session' complex_type='Session'/>
+	</EsdlResponse>
+	<EsdlRequest name='CleanSessionRequest' nil_remove='1'>
+		<EsdlElement name='ID' type='string'/>
+		<EsdlElement name='UserID' type='string'/>
+		<EsdlElement name='FromIP' type='string'/>
+		<EsdlElement name='AllSessions' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='CleanSessionResponse' http_encode='0' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='Status' type='int'/>
+		<EsdlElement name='Message' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='SetSessionTimeoutRequest' nil_remove='1'>
+		<EsdlElement name='ID' type='string'/>
+		<EsdlElement name='UserID' type='string'/>
+		<EsdlElement name='FromIP' type='string'/>
+		<EsdlElement name='TimeoutMinutes' type='int'/>
+		<EsdlElement name='AllSessions' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='SetSessionTimeoutResponse' http_encode='0' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='Status' type='int'/>
+		<EsdlElement name='Message' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='DisableDaliSubscriptionsRequest' nil_remove='1'>
+	</EsdlRequest>
+	<EsdlResponse name='DisableDaliSubscriptionsResponse' http_encode='0' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='Status' type='int'/>
+		<EsdlElement name='Message' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='EnableDaliSubscriptionsRequest' nil_remove='1'>
+	</EsdlRequest>
+	<EsdlResponse name='EnableDaliSubscriptionsResponse' http_encode='0' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='Status' type='int'/>
+		<EsdlElement name='Message' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='DetachFromDaliRequest' nil_remove='1'>
+		<EsdlElement name='Force' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='DetachFromDaliResponse' http_encode='0' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='Status' type='int'/>
+		<EsdlElement name='Message' type='string'/>
+		<EsdlElement name='Forced' type='bool'/>
+	</EsdlResponse>
+	<EsdlRequest name='AttachToDaliRequest' nil_remove='1'>
+	</EsdlRequest>
+	<EsdlResponse name='AttachToDaliResponse' http_encode='0' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='Status' type='int'/>
+		<EsdlElement name='Message' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='WSESPControlPingRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='WSESPControlPingResponse'>
+	</EsdlResponse>
+		<EsdlService name='WSESPControl'  exceptions_inline='./smc_xslt/exceptions.xslt' default_client_version='1.01' version='1.02' auth_feature='NONE'>
+	<EsdlMethod name='AttachToDali' request_type='AttachToDaliRequest' response_type='AttachToDaliResponse'  min_ver='1.02'/>
+	<EsdlMethod name='CleanSession' request_type='CleanSessionRequest' response_type='CleanSessionResponse'  min_ver='1.01'/>
+	<EsdlMethod name='DetachFromDali' request_type='DetachFromDaliRequest' response_type='DetachFromDaliResponse'  min_ver='1.02'/>
+	<EsdlMethod name='DisableDaliSubscriptions' request_type='DisableDaliSubscriptionsRequest' response_type='DisableDaliSubscriptionsResponse'  min_ver='1.02'/>
+	<EsdlMethod name='EnableDaliSubscriptions' request_type='EnableDaliSubscriptionsRequest' response_type='EnableDaliSubscriptionsResponse'  min_ver='1.02'/>
+	<EsdlMethod name='Ping' request_type='WSESPControlPingRequest' response_type='WSESPControlPingResponse' />
+	<EsdlMethod name='SessionInfo' request_type='SessionInfoRequest' response_type='SessionInfoResponse'  min_ver='1.01'/>
+	<EsdlMethod name='SessionQuery' request_type='SessionQueryRequest' response_type='SessionQueryResponse'  min_ver='1.01'/>
+	<EsdlMethod name='SetLogging' request_type='SetLoggingRequest' response_type='SetLoggingResponse' />
+	<EsdlMethod name='SetSessionTimeout' request_type='SetSessionTimeoutRequest' response_type='SetSessionTimeoutResponse'  min_ver='1.01'/>
+		</EsdlService></esxdl>

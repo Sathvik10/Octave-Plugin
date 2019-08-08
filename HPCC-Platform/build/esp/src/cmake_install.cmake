@@ -1,0 +1,103 @@
+# Install script for directory: /home/sathvik/hpcc/HPCC-Platform/esp/src
+
+# Set the install prefix
+if(NOT DEFINED CMAKE_INSTALL_PREFIX)
+  set(CMAKE_INSTALL_PREFIX "/opt/HPCCSystems")
+endif()
+string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+
+# Set the install configuration name.
+if(NOT DEFINED CMAKE_INSTALL_CONFIG_NAME)
+  if(BUILD_TYPE)
+    string(REGEX REPLACE "^[^A-Za-z0-9_]+" ""
+           CMAKE_INSTALL_CONFIG_NAME "${BUILD_TYPE}")
+  else()
+    set(CMAKE_INSTALL_CONFIG_NAME "Debug")
+  endif()
+  message(STATUS "Install configuration: \"${CMAKE_INSTALL_CONFIG_NAME}\"")
+endif()
+
+# Set the component getting installed.
+if(NOT CMAKE_INSTALL_COMPONENT)
+  if(COMPONENT)
+    message(STATUS "Install component: \"${COMPONENT}\"")
+    set(CMAKE_INSTALL_COMPONENT "${COMPONENT}")
+  else()
+    set(CMAKE_INSTALL_COMPONENT)
+  endif()
+endif()
+
+# Install shared libraries without execute permission?
+if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
+  set(CMAKE_INSTALL_SO_NO_EXE "1")
+endif()
+
+# Is this installation the result of a crosscompile?
+if(NOT DEFINED CMAKE_CROSSCOMPILING)
+  set(CMAKE_CROSSCOMPILING "FALSE")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xRuntimex" OR NOT CMAKE_INSTALL_COMPONENT)
+  
+        if ( ( NOT "" STREQUAL "IF_MISSING" ) OR ( NOT EXISTS "/home/sathvik/hpcc/HPCC-Platform/build/esp/src/build" ) )
+
+            set (NODE_ERROR "")
+            execute_process(COMMAND node --version OUTPUT_VARIABLE _VERSION RESULT_VARIABLE _NODE_VERSION_RESULT)
+            if (NOT _NODE_VERSION_RESULT)
+                string (REPLACE "v" "" NODE_VERSION_STRING "${_VERSION}")
+                string (REPLACE "." ";" _VERSION_LIST "${NODE_VERSION_STRING}")
+                list (GET _VERSION_LIST 0 NODE_VERSION_MAJOR)
+                if (NODE_VERSION_MAJOR LESS 8)
+                    set (NODE_ERROR "Node version ${NODE_VERSION_MAJOR} is too old, please install NodeJS as per https://github.com/hpcc-systems/HPCC-Platform/wiki/Building-HPCC#prerequisites" )
+                endif ()
+            else ()
+                set (NODE_ERROR "Unable to locate node/npm, please install NodeJS as per https://github.com/hpcc-systems/HPCC-Platform/wiki/Building-HPCC#prerequisites" )
+            endif ()
+
+            if ( NOT "${NODE_ERROR}" STREQUAL "")
+                message ( FATAL_ERROR "${NODE_ERROR}" )
+            else ()
+                if ( ("Debug" STREQUAL "Debug") OR ("" STREQUAL "NO_COMPRESS") )
+                    set ( ECLWATCH_BUILD_MODE "dev" )
+                else ()
+                    set ( ECLWATCH_BUILD_MODE "prod" )
+                endif ()
+                message ( "-- ECL Watch:  Rebuilding Site" )
+                message ( "---- Build Target: /home/sathvik/hpcc/HPCC-Platform/build/esp/src/build" )
+                message ( "---- Creating out of source build environment" )
+                execute_process ( COMMAND "/usr/local/bin/cmake" -E remove_directory "/home/sathvik/hpcc/HPCC-Platform/build/esp/src/tmp")
+                execute_process ( COMMAND "/usr/local/bin/cmake" -E copy_directory "/home/sathvik/hpcc/HPCC-Platform/esp/src/." "/home/sathvik/hpcc/HPCC-Platform/build/esp/src/tmp")
+                execute_process ( COMMAND "/usr/local/bin/cmake" -E remove_directory "/home/sathvik/hpcc/HPCC-Platform/build/esp/src/tmp/node_modules" )
+                message ( "---- Installing third party libraries" )
+                execute_process ( WORKING_DIRECTORY "/home/sathvik/hpcc/HPCC-Platform/build/esp/src/tmp" COMMAND "npm" "install" "--loglevel=error" "--prefer-offline" OUTPUT_FILE "/home/sathvik/hpcc/HPCC-Platform/build/esp/src/build_install.txt" RESULT_VARIABLE _BUILD_RESULT )
+                if (_BUILD_RESULT)
+                    message ( FATA_ERROR "npm install failed see above and /home/sathvik/hpcc/HPCC-Platform/build/esp/src/build_install.txt for details." )
+                endif ()
+                message ( "---- Copy resources" ) 
+                execute_process ( WORKING_DIRECTORY "/home/sathvik/hpcc/HPCC-Platform/build/esp/src/tmp" COMMAND "npm" "-s" "run" "copy-res" OUTPUT_FILE "/home/sathvik/hpcc/HPCC-Platform/build/esp/src/build_copy.txt" RESULT_VARIABLE _BUILD_RESULT )
+                if (_BUILD_RESULT)
+                    message ( FATAL_ERROR "npm run copy-res failed see above and /home/sathvik/hpcc/HPCC-Platform/build/esp/src/build_copy.txt for details." )
+                endif ()
+                message ( "---- Build website" )
+                execute_process ( WORKING_DIRECTORY "/home/sathvik/hpcc/HPCC-Platform/build/esp/src/tmp" COMMAND "npm" "-s" "run" "compile" RESULT_VARIABLE _BUILD_RESULT )
+                if (_BUILD_RESULT)
+                    message ( FATAL_ERROR "npm run compile failed see above for details." )
+                endif ()
+                execute_process ( WORKING_DIRECTORY "/home/sathvik/hpcc/HPCC-Platform/build/esp/src/tmp" COMMAND "npm" "-s" "run" "bundle" "--" "--bail" "--display" "errors-only" "--env.build" "" OUTPUT_FILE "/home/sathvik/hpcc/HPCC-Platform/build/esp/src/build_bundle.txt" RESULT_VARIABLE _BUILD_RESULT )
+                if (_BUILD_RESULT)
+                    message ( FATAL_ERROR "npm run bundle failed see above and /home/sathvik/hpcc/HPCC-Platform/build/esp/src/build_bundle.txt for details." )
+                endif ()
+                execute_process ( COMMAND "/usr/local/bin/cmake" -E remove_directory "/home/sathvik/hpcc/HPCC-Platform/build/esp/src/build")
+                execute_process ( COMMAND "/usr/local/bin/cmake" -E copy_directory "/home/sathvik/hpcc/HPCC-Platform/build/esp/src/tmp/build/." "/home/sathvik/hpcc/HPCC-Platform/build/esp/src/build")
+                execute_process ( COMMAND "/usr/local/bin/cmake" -E remove_directory "/home/sathvik/hpcc/HPCC-Platform/build/esp/src/tmp")
+            endif ()
+        else ()
+            message( "-- ECL Watch:  Reusing (old) Site" )
+        endif ()
+    
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xRuntimex" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/componentfiles/files" TYPE DIRECTORY FILES "/home/sathvik/hpcc/HPCC-Platform/build/esp/src/build/" USE_SOURCE_PERMISSIONS)
+endif()
+

@@ -1,0 +1,300 @@
+<esxdl name="ws_smc">
+	<EsdlInclude file='ws_topology'/>
+	<EsdlInclude file='ws_workunits'/>
+	<EsdlStruct name='ActiveWorkunit'>
+		<EsdlElement name='Wuid' type='string'/>
+		<EsdlElement name='State' type='string'/>
+		<EsdlElement name='StateID' type='int'/>
+		<EsdlElement name='Owner' type='string'/>
+		<EsdlElement name='Jobname' type='string'/>
+		<EsdlElement name='Server' type='string'/>
+		<EsdlElement name='Instance' type='strint'/>
+		<EsdlElement name='Priority' type='string'/>
+		<EsdlElement name='Extra' type='string' min_ver='1.01'/>
+		<EsdlElement name='GraphName' type='string' min_ver='1.02'/>
+		<EsdlElement name='Duration' type='string' min_ver='1.02'/>
+		<EsdlElement name='GID' type='string' min_ver='1.02'/>
+		<EsdlElement name='QueueName' type='string' min_ver='1.03'/>
+		<EsdlElement name='MemoryBlocked' type='int' min_ver='1.04'/>
+		<EsdlElement name='IsPausing' type='bool' default='0' min_ver='1.09'/>
+		<EsdlElement name='Warning' type='string' min_ver='1.10'/>
+		<EsdlElement name='ClusterName' type='string' min_ver='1.15'/>
+		<EsdlElement name='ClusterType' type='string' min_ver='1.15'/>
+		<EsdlElement name='ClusterQueueName' type='string' min_ver='1.15'/>
+		<EsdlElement name='TargetClusterName' type='string' min_ver='1.16'/>
+	</EsdlStruct>
+	<EsdlStruct name='TargetCluster'>
+		<EsdlElement name='ClusterName' type='string'/>
+		<EsdlElement name='QueueName' type='string'/>
+		<EsdlElement name='QueueStatus' type='string'/>
+		<EsdlElement name='StatusDetails' type='string'/>
+		<EsdlElement name='Warning' type='string'/>
+		<EsdlElement name='ClusterType' type='int'/>
+		<EsdlElement name='ClusterSize' type='int'/>
+		<EsdlElement name='ClusterStatus' type='int'/>
+	</EsdlStruct>
+	<EsdlStruct name='ThorCluster'>
+		<EsdlElement name='ClusterName' type='string'/>
+		<EsdlElement name='QueueName' type='string' min_ver='1.03'/>
+		<EsdlElement name='QueueStatus' type='string'/>
+		<EsdlElement name='QueueAvailable' type='int' min_ver='1.05'/>
+		<EsdlElement name='JobsRunning' type='int' min_ver='1.05'/>
+		<EsdlElement name='JobsInQueue' type='int' min_ver='1.05'/>
+		<EsdlElement name='QueueStatus2' type='int' min_ver='1.07'/>
+		<EsdlElement name='ThorLCR' type='string' min_ver='1.09'/>
+		<EsdlElement name='ClusterSize' type='int' min_ver='1.11'/>
+	</EsdlStruct>
+	<EsdlStruct name='HThorCluster'>
+		<EsdlElement name='ClusterName' type='string'/>
+		<EsdlElement name='QueueName' type='string'/>
+		<EsdlElement name='QueueStatus' type='string'/>
+		<EsdlElement name='JobsRunning' type='int'/>
+		<EsdlElement name='JobsInQueue' type='int'/>
+		<EsdlElement name='QueueStatus2' type='int'/>
+		<EsdlElement name='ClusterSize' type='int'/>
+	</EsdlStruct>
+	<EsdlStruct name='RoxieCluster'>
+		<EsdlElement name='ClusterName' type='string'/>
+		<EsdlElement name='QueueName' type='string'/>
+		<EsdlElement name='QueueStatus' type='string'/>
+		<EsdlElement name='JobsRunning' type='int'/>
+		<EsdlElement name='JobsInQueue' type='int'/>
+		<EsdlElement name='QueueStatus2' type='int'/>
+		<EsdlElement name='ClusterSize' type='int' min_ver='1.11'/>
+	</EsdlStruct>
+	<EsdlStruct name='DFUJob'>
+		<EsdlElement name='TimeStarted' type='string'/>
+		<EsdlElement name='Done' type='int'/>
+		<EsdlElement name='Total' type='int'/>
+		<EsdlElement name='Command' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='ServerJobQueue'>
+		<EsdlElement name='QueueName' type='string'/>
+		<EsdlArray name='QueueNames'  type='string' item_tag='QueueName' depr_ver='1.21' min_ver='1.20'/>
+		<EsdlArray name='Queues'  type='ServerJobQueue' min_ver='1.21'/>
+		<EsdlElement name='ServerName' type='string'/>
+		<EsdlElement name='ServerType' type='string'/>
+		<EsdlElement name='QueueStatus' type='string'/>
+		<EsdlElement name='StatusDetails' type='string' min_ver='1.17'/>
+		<EsdlElement name='NetworkAddress' type='string' min_ver='1.19'/>
+		<EsdlElement name='Port' type='int' min_ver='1.19'/>
+	</EsdlStruct>
+	<EsdlStruct name='StatusServerInfo' nil_remove='1'>
+		<EsdlElement name='TargetClusterInfo' complex_type='TargetCluster'/>
+		<EsdlElement name='ServerInfo' complex_type='ServerJobQueue'/>
+		<EsdlArray name='Workunits'  type='ActiveWorkunit'/>
+	</EsdlStruct>
+	<EsdlRequest name='ActivityRequest' nil_remove='1'>
+		<EsdlElement name='ChatURL' type='string'/>
+		<EsdlElement name='BannerContent' type='string'/>
+		<EsdlElement name='BannerColor' type='string'/>
+		<EsdlElement name='BannerSize' type='string'/>
+		<EsdlElement name='BannerScroll' type='string'/>
+		<EsdlElement name='BannerAction' type='int' default='0'/>
+		<EsdlElement name='EnableChatURL' type='bool'/>
+		<EsdlElement name='FromSubmitBtn' type='bool' default='0'/>
+		<EsdlElement name='SortBy' type='string'/>
+		<EsdlElement name='Descending' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='ActivityResponse' exceptions_inline='1'>
+		<EsdlElement name='Build' type='string'/>
+		<EsdlArray name='ThorClusters'  type='ThorCluster' depr_ver='1.16'/>
+		<EsdlArray name='RoxieClusters'  type='RoxieCluster' depr_ver='1.16' min_ver='1.07'/>
+		<EsdlArray name='HThorClusters'  type='HThorCluster' depr_ver='1.16' min_ver='1.12'/>
+		<EsdlArray name='ThorClusterList'  type='TargetCluster' min_ver='1.16'/>
+		<EsdlArray name='RoxieClusterList'  type='TargetCluster' min_ver='1.16'/>
+		<EsdlArray name='HThorClusterList'  type='TargetCluster' min_ver='1.16'/>
+		<EsdlArray name='DFUJobs'  type='DFUJob'/>
+		<EsdlArray name='Running'  type='ActiveWorkunit'/>
+		<EsdlElement name='BannerContent' type='string' min_ver='1.06'/>
+		<EsdlElement name='BannerColor' type='string' min_ver='1.06'/>
+		<EsdlElement name='BannerSize' type='string' min_ver='1.06'/>
+		<EsdlElement name='BannerScroll' type='string' min_ver='1.08'/>
+		<EsdlElement name='ChatURL' type='string' min_ver='1.06'/>
+		<EsdlElement name='ShowBanner' type='int' default='0' min_ver='1.06'/>
+		<EsdlElement name='ShowChatURL' type='int' default='0' min_ver='1.06'/>
+		<EsdlElement name='SortBy' type='string' min_ver='1.11'/>
+		<EsdlElement name='Descending' type='bool' default='0' min_ver='1.11'/>
+		<EsdlElement name='SuperUser' type='bool' default='0' min_ver='1.12'/>
+		<EsdlElement name='AccessRight' type='string' min_ver='1.12'/>
+		<EsdlArray name='ServerJobQueues'  type='ServerJobQueue' min_ver='1.14'/>
+	</EsdlResponse>
+	<EsdlRequest name='SMCIndexRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='SMCIndexResponse' exceptions_inline='1'>
+	</EsdlResponse>
+	<EsdlStruct name='Capability'>
+		<EsdlElement name='name' type='string'/>
+		<EsdlElement name='description' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='Permission'>
+		<EsdlElement name='Feature' type='string'/>
+		<EsdlArray name='Capabilities'  type='Capability'/>
+	</EsdlStruct>
+	<EsdlRequest name='SMCPermissionsRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='SMCPermissionsResponse'>
+		<EsdlArray name='Permissions'  type='Permission'/>
+	</EsdlResponse>
+	<EsdlRequest name='SMCQueueRequest'>
+		<EsdlElement name='Cluster' type='string'/>
+		<EsdlElement name='QueueName' type='string'/>
+		<EsdlElement name='Comment' type='string'/>
+		<EsdlElement name='ServerType' type='string' min_ver='1.19'/>
+		<EsdlElement name='NetworkAddress' type='string' min_ver='1.19'/>
+		<EsdlElement name='Port' type='int' min_ver='1.19'/>
+	</EsdlRequest>
+	<EsdlResponse name='SMCQueueResponse' exceptions_inline='1'>
+		<EsdlElement name='StatusServerInfo' complex_type='StatusServerInfo' min_ver='1.19'/>
+	</EsdlResponse>
+	<EsdlRequest name='SMCJobRequest'>
+		<EsdlElement name='ClusterType' type='int'/>
+		<EsdlElement name='Cluster' type='string'/>
+		<EsdlElement name='QueueName' type='string'/>
+		<EsdlElement name='Wuid' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='SMCJobResponse' exceptions_inline='1'>
+	</EsdlResponse>
+	<EsdlStruct name='SMCJob'>
+		<EsdlElement name='Wuid' type='string'/>
+		<EsdlElement name='QueueName' type='string'/>
+	</EsdlStruct>
+	<EsdlRequest name='SMCPriorityRequest'>
+		<EsdlElement name='ClusterType' type='int' depr_ver='1.18'/>
+		<EsdlElement name='Cluster' type='string' depr_ver='1.18'/>
+		<EsdlElement name='QueueName' type='string'/>
+		<EsdlElement name='Wuid' type='string'/>
+		<EsdlElement name='Priority' type='string'/>
+		<EsdlArray name='SMCJobs'  type='SMCJob' min_ver='1.18'/>
+	</EsdlRequest>
+	<EsdlResponse name='SMCPriorityResponse' exceptions_inline='1'>
+	</EsdlResponse>
+	<EsdlRequest name='GetThorQueueAvailabilityRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='GetThorQueueAvailabilityResponse' exceptions_inline='1'>
+		<EsdlArray name='ThorClusters'  type='ThorCluster'/>
+	</EsdlResponse>
+	<EsdlRequest name='SetBannerRequest' nil_remove='1'>
+		<EsdlElement name='ChatURL' type='string'/>
+		<EsdlElement name='BannerContent' type='string'/>
+		<EsdlElement name='BannerColor' type='string'/>
+		<EsdlElement name='BannerSize' type='string'/>
+		<EsdlElement name='BannerScroll' type='string'/>
+		<EsdlElement name='BannerAction' type='int'/>
+		<EsdlElement name='EnableChatURL' type='bool'/>
+		<EsdlElement name='FromSubmitBtn' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='SetBannerResponse' exceptions_inline='1'>
+	</EsdlResponse>
+	<EsdlRequest name='NotInCommunityEditionRequest'>
+		<EsdlElement name='EEPortal' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='NotInCommunityEditionResponse' exceptions_inline='1'>
+	</EsdlResponse>
+	<EsdlStruct name='HPCCResource'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Description' type='string'/>
+		<EsdlElement name='FileName' type='string'/>
+		<EsdlElement name='Version' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='HPCCResourceRepository'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Path' type='string'/>
+		<EsdlArray name='HPCCResources'  type='HPCCResource'/>
+	</EsdlStruct>
+	<EsdlRequest name='BrowseResourcesRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='BrowseResourcesResponse' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='PortalURL' type='string'/>
+		<EsdlElement name='NetAddress' type='string'/>
+		<EsdlElement name='OS' type='int'/>
+		<EsdlElement name='UseResource' type='bool' min_ver='1.13'/>
+		<EsdlArray name='HPCCResourceRepositories'  type='HPCCResourceRepository'/>
+	</EsdlResponse>
+	<EsdlEnumType name='RoxieControlCmdType' base_type='string'>
+		<EsdlEnumItem name='ATTACH' enum='Attach'/>
+		<EsdlEnumItem name='DETACH' enum='Detach'/>
+		<EsdlEnumItem name='STATE' enum='State'/>
+		<EsdlEnumItem name='RELOAD' enum='Reload'/>
+		<EsdlEnumItem name='RELOAD_RETRY' enum='ReloadRetry'/>
+	</EsdlEnumType>
+	<EsdlRequest name='RoxieControlCmdRequest'>
+		<EsdlElement name='ProcessCluster' type='string'/>
+		<EsdlEnum name='Command' enum_type='RoxieControlCmdType'/>
+		<EsdlElement name='Wait' type='int'/>
+	</EsdlRequest>
+	<EsdlStruct name='RoxieControlEndpointInfo' nil_remove='1'>
+		<EsdlElement name='Address' type='string'/>
+		<EsdlElement name='Attached' type='bool'/>
+		<EsdlElement name='StateHash' type='string'/>
+		<EsdlElement name='Status' type='string'/>
+	</EsdlStruct>
+	<EsdlResponse name='RoxieControlCmdResponse' nil_remove='1' exceptions_inline='1'>
+		<EsdlArray name='Endpoints'  type='RoxieControlEndpointInfo' item_tag='Endpoint'/>
+	</EsdlResponse>
+	<EsdlRequest name='GetStatusServerInfoRequest'>
+		<EsdlElement name='ServerName' type='string'/>
+		<EsdlElement name='ServerType' type='string'/>
+		<EsdlElement name='NetworkAddress' type='string'/>
+		<EsdlElement name='Port' type='int'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetStatusServerInfoResponse' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='StatusServerInfo' complex_type='StatusServerInfo'/>
+	</EsdlResponse>
+	<EsdlEnumType name='LockModes' base_type='string'>
+		<EsdlEnumItem name='ALL' enum='ALL'/>
+		<EsdlEnumItem name='READ' enum='READ'/>
+		<EsdlEnumItem name='WRITE' enum='WRITE'/>
+		<EsdlEnumItem name='HOLD' enum='HOLD'/>
+		<EsdlEnumItem name='SUB' enum='SUB'/>
+	</EsdlEnumType>
+	<EsdlStruct name='Lock' nil_remove='1'>
+		<EsdlElement name='EPIP' type='string'/>
+		<EsdlElement name='XPath' type='string'/>
+		<EsdlElement name='LogicalFile' type='string'/>
+		<EsdlElement name='SessionID' type='int64'/>
+		<EsdlElement name='DurationMS' type='unsigned'/>
+		<EsdlElement name='TimeLocked' type='string'/>
+		<EsdlElement name='Modes' type='string'/>
+		<EsdlArray name='ModeNames'  type='string'/>
+	</EsdlStruct>
+	<EsdlRequest name='LockQueryRequest' nil_remove='1'>
+		<EsdlElement name='EPIP' type='string'/>
+		<EsdlElement name='XPath' type='string'/>
+		<EsdlElement name='DurationMSLow' type='unsigned'/>
+		<EsdlElement name='DurationMSHigh' type='unsigned'/>
+		<EsdlElement name='TimeLockedLow' type='string'/>
+		<EsdlElement name='TimeLockedHigh' type='string'/>
+		<EsdlEnum name='Mode' enum_type='LockModes'/>
+		<EsdlElement name='AllFileLocks' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='LockQueryResponse' exceptions_inline='1'>
+		<EsdlArray name='Locks'  type='Lock'/>
+		<EsdlElement name='NumLocks' type='int'/>
+	</EsdlResponse>
+	<EsdlRequest name='WsSMCPingRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='WsSMCPingResponse'>
+	</EsdlResponse>
+		<EsdlService name='WsSMC'  use_method_name='1' exceptions_inline='./smc_xslt/exceptions.xslt' version='1.21' noforms='1' auth_feature='DEFERRED'>
+	<EsdlMethod name='Activity' request_type='ActivityRequest' response_type='ActivityResponse'  resp_xsl_default='/esp/xslt/index.xslt'/>
+	<EsdlMethod name='BrowseResources' request_type='BrowseResourcesRequest' response_type='BrowseResourcesResponse'  resp_xsl_default='/esp/xslt/hpccresourcelist.xslt'/>
+	<EsdlMethod name='ClearQueue' request_type='SMCQueueRequest' response_type='SMCQueueResponse' />
+	<EsdlMethod name='GetStatusServerInfo' request_type='GetStatusServerInfoRequest' response_type='GetStatusServerInfoResponse'  auth_feature='NONE'/>
+	<EsdlMethod name='GetThorQueueAvailability' request_type='GetThorQueueAvailabilityRequest' response_type='GetThorQueueAvailabilityResponse' />
+	<EsdlMethod name='Index' request_type='SMCIndexRequest' response_type='SMCIndexResponse' />
+	<EsdlMethod name='LockQuery' request_type='LockQueryRequest' response_type='LockQueryResponse'  auth_feature='NONE'/>
+	<EsdlMethod name='MoveJobBack' request_type='SMCJobRequest' response_type='SMCJobResponse' />
+	<EsdlMethod name='MoveJobDown' request_type='SMCJobRequest' response_type='SMCJobResponse' />
+	<EsdlMethod name='MoveJobFront' request_type='SMCJobRequest' response_type='SMCJobResponse' />
+	<EsdlMethod name='MoveJobUp' request_type='SMCJobRequest' response_type='SMCJobResponse' />
+	<EsdlMethod name='NotInCommunityEdition' request_type='NotInCommunityEditionRequest' response_type='NotInCommunityEditionResponse'  auth_feature='NONE'/>
+	<EsdlMethod name='PauseQueue' request_type='SMCQueueRequest' response_type='SMCQueueResponse' />
+	<EsdlMethod name='Ping' request_type='WsSMCPingRequest' response_type='WsSMCPingResponse' />
+	<EsdlMethod name='RemoveJob' request_type='SMCJobRequest' response_type='SMCJobResponse' />
+	<EsdlMethod name='ResumeQueue' request_type='SMCQueueRequest' response_type='SMCQueueResponse' />
+	<EsdlMethod name='RoxieControlCmd' request_type='RoxieControlCmdRequest' response_type='RoxieControlCmdResponse' />
+	<EsdlMethod name='SetBanner' request_type='SetBannerRequest' response_type='SetBannerResponse'  auth_feature='NONE'/>
+	<EsdlMethod name='SetJobPriority' request_type='SMCPriorityRequest' response_type='SMCPriorityResponse'  auth_feature='NONE'/>
+	<EsdlMethod name='StopQueue' request_type='SMCQueueRequest' response_type='SMCQueueResponse' />
+		</EsdlService></esxdl>

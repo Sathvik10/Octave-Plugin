@@ -1,0 +1,251 @@
+<esxdl name="ws_packageprocess">
+	<EsdlRequest name='EchoRequest'>
+		<EsdlElement name='Request' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='EchoResponse'>
+		<EsdlElement name='Response' type='string'/>
+	</EsdlResponse>
+	<EsdlStruct name='BasePackageStatus'>
+		<EsdlElement name='Code' type='int'/>
+		<EsdlElement name='Description' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='PackageMapEntry'>
+		<EsdlElement name='Id' type='string'/>
+		<EsdlElement name='Target' type='string'/>
+		<EsdlElement name='Process' type='string'/>
+	</EsdlStruct>
+	<EsdlRequest name='AddPackageRequest'>
+		<EsdlElement name='Info' type='string'/>
+		<EsdlElement name='Activate' type='boolean'/>
+		<EsdlElement name='OverWrite' type='boolean'/>
+		<EsdlElement name='Target' type='string'/>
+		<EsdlElement name='PackageMap' type='string'/>
+		<EsdlElement name='Process' type='string'/>
+		<EsdlElement name='DaliIp' type='string'/>
+		<EsdlElement name='GlobalScope' type='bool' default='0'/>
+		<EsdlElement name='SourceProcess' type='string'/>
+		<EsdlElement name='AllowForeignFiles' type='bool' default='1'/>
+		<EsdlElement name='PreloadAllPackages' type='bool' default='0' min_ver='1.02'/>
+		<EsdlElement name='ReplacePackageMap' type='bool' default='0'/>
+		<EsdlElement name='UpdateSuperFiles' type='bool' default='0'/>
+		<EsdlElement name='UpdateCloneFrom' type='bool' default='0'/>
+		<EsdlElement name='AppendCluster' type='bool' default='1'/>
+	</EsdlRequest>
+	<EsdlResponse name='AddPackageResponse' exceptions_inline='1'>
+		<EsdlElement name='status' complex_type='BasePackageStatus'/>
+		<EsdlArray name='FilesNotFound'  type='string' item_tag='File'/>
+	</EsdlResponse>
+	<EsdlRequest name='CopyPackageMapRequest'>
+		<EsdlElement name='SourcePath' type='string'/>
+		<EsdlElement name='RemoteUserName' type='string'/>
+		<EsdlElement name='RemotePassword' type='string' password='1'/>
+		<EsdlElement name='Target' type='string'/>
+		<EsdlElement name='Process' type='string'/>
+		<EsdlElement name='PMID' type='string'/>
+		<EsdlElement name='Activate' type='boolean'/>
+		<EsdlElement name='DaliIp' type='string'/>
+		<EsdlElement name='GlobalScope' type='bool' default='0'/>
+		<EsdlElement name='SourceProcess' type='string'/>
+		<EsdlElement name='PreloadAllPackages' type='bool' default='0'/>
+		<EsdlElement name='ReplacePackageMap' type='bool' default='0'/>
+		<EsdlElement name='UpdateSuperFiles' type='bool' default='0'/>
+		<EsdlElement name='UpdateCloneFrom' type='bool' default='0'/>
+		<EsdlElement name='AppendCluster' type='bool' default='1'/>
+	</EsdlRequest>
+	<EsdlResponse name='CopyPackageMapResponse' exceptions_inline='1'>
+		<EsdlElement name='status' complex_type='BasePackageStatus'/>
+		<EsdlArray name='FilesNotFound'  type='string' item_tag='File'/>
+	</EsdlResponse>
+	<EsdlRequest name='DeletePackageRequest'>
+		<EsdlElement name='Target' type='string'/>
+		<EsdlElement name='PackageMap' type='string'/>
+		<EsdlElement name='Process' type='string'/>
+		<EsdlElement name='GlobalScope' type='bool' default='0'/>
+		<EsdlArray name='PackageMaps'  type='PackageMapEntry' item_tag='PackageMap'/>
+	</EsdlRequest>
+	<EsdlResponse name='DeletePackageResponse' exceptions_inline='1'>
+		<EsdlElement name='status' complex_type='BasePackageStatus'/>
+	</EsdlResponse>
+	<EsdlRequest name='ActivatePackageRequest'>
+		<EsdlElement name='Target' type='string'/>
+		<EsdlElement name='PackageMap' type='string'/>
+		<EsdlElement name='Process' type='string'/>
+		<EsdlElement name='GlobalScope' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='ActivatePackageResponse' exceptions_inline='1'>
+		<EsdlElement name='status' complex_type='BasePackageStatus'/>
+	</EsdlResponse>
+	<EsdlRequest name='DeActivatePackageRequest'>
+		<EsdlElement name='Target' type='string'/>
+		<EsdlElement name='PackageMap' type='string'/>
+		<EsdlElement name='Process' type='string'/>
+		<EsdlElement name='GlobalScope' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='DeActivatePackageResponse' exceptions_inline='1'>
+		<EsdlElement name='status' complex_type='BasePackageStatus'/>
+	</EsdlResponse>
+	<EsdlRequest name='GetPackageRequest'>
+		<EsdlElement name='Target' type='string'/>
+		<EsdlElement name='Process' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetPackageResponse' exceptions_inline='1'>
+		<EsdlElement name='status' complex_type='BasePackageStatus'/>
+		<EsdlElement name='Info' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='GetPackageMapByIdRequest'>
+		<EsdlElement name='PackageMapId' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetPackageMapByIdResponse' exceptions_inline='1'>
+		<EsdlElement name='status' complex_type='BasePackageStatus'/>
+		<EsdlElement name='Info' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='ListPackageRequest'>
+		<EsdlElement name='Target' type='string'/>
+		<EsdlElement name='Process' type='string'/>
+	</EsdlRequest>
+	<EsdlStruct name='PackageListData'>
+		<EsdlElement name='Id' type='string'/>
+		<EsdlElement name='Queries' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='PackageListMapData'>
+		<EsdlElement name='Id' type='string'/>
+		<EsdlElement name='Target' type='string'/>
+		<EsdlElement name='Process' type='string' min_ver='1.01'/>
+		<EsdlArray name='PkgListData'  type='PackageListData'/>
+		<EsdlElement name='Active' type='boolean'/>
+		<EsdlElement name='Description' type='string' min_ver='1.01'/>
+	</EsdlStruct>
+	<EsdlResponse name='ListPackageResponse' exceptions_inline='1'>
+		<EsdlElement name='status' complex_type='BasePackageStatus'/>
+		<EsdlArray name='PkgListMapData'  type='PackageListMapData'/>
+	</EsdlResponse>
+	<EsdlRequest name='ListPackagesRequest' nil_remove='1'>
+		<EsdlElement name='Target' type='string'/>
+		<EsdlElement name='Process' type='string'/>
+		<EsdlElement name='ProcessFilter' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='ListPackagesResponse' exceptions_inline='1' nil_remove='1'>
+		<EsdlElement name='status' complex_type='BasePackageStatus'/>
+		<EsdlArray name='PackageMapList'  type='PackageListMapData'/>
+	</EsdlResponse>
+	<EsdlRequest name='ValidatePackageRequest'>
+		<EsdlElement name='Info' type='string'/>
+		<EsdlElement name='Target' type='string'/>
+		<EsdlElement name='Process' type='string'/>
+		<EsdlElement name='Active' type='bool'/>
+		<EsdlElement name='PMID' type='string'/>
+		<EsdlElement name='QueryIdToVerify' type='string'/>
+		<EsdlArray name='QueriesToVerify'  type='string'/>
+		<EsdlElement name='CheckDFS' type='bool'/>
+		<EsdlElement name='GlobalScope' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlStruct name='ValidatePackageInfo'>
+		<EsdlArray name='Unmatched'  type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='ValidatePackageQueries'>
+		<EsdlArray name='Unmatched'  type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='ValidatePackageFiles'>
+		<EsdlArray name='Unmatched'  type='string'/>
+		<EsdlArray name='NotInDFS'  type='string' item_tag='File'/>
+	</EsdlStruct>
+	<EsdlResponse name='ValidatePackageResponse' exceptions_inline='1'>
+		<EsdlElement name='PMID' type='string'/>
+		<EsdlElement name='status' complex_type='BasePackageStatus'/>
+		<EsdlArray name='Warnings'  type='string'/>
+		<EsdlArray name='Errors'  type='string'/>
+		<EsdlElement name='packages' complex_type='ValidatePackageInfo'/>
+		<EsdlElement name='queries' complex_type='ValidatePackageQueries'/>
+		<EsdlElement name='files' complex_type='ValidatePackageFiles'/>
+	</EsdlResponse>
+	<EsdlRequest name='GetQueryFileMappingRequest'>
+		<EsdlElement name='Target' type='string'/>
+		<EsdlElement name='PMID' type='string'/>
+		<EsdlElement name='QueryName' type='string'/>
+		<EsdlElement name='GlobalScope' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlStruct name='SuperFile'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlArray name='SubFiles'  type='string' item_tag='File'/>
+	</EsdlStruct>
+	<EsdlResponse name='GetQueryFileMappingResponse' exceptions_inline='1'>
+		<EsdlArray name='UnmappedFiles'  type='string' item_tag='File'/>
+		<EsdlArray name='SuperFiles'  type='SuperFile'/>
+	</EsdlResponse>
+	<EsdlStruct name='TargetData'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Type' type='string'/>
+		<EsdlArray name='Processes'  type='string'/>
+	</EsdlStruct>
+	<EsdlRequest name='GetPackageMapSelectOptionsRequest'>
+		<EsdlElement name='IncludeTargets' type='bool' default='1'/>
+		<EsdlElement name='IncludeProcesses' type='bool' default='1'/>
+		<EsdlElement name='IncludeProcessFilters' type='bool' default='1'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetPackageMapSelectOptionsResponse' exceptions_inline='1'>
+		<EsdlElement name='status' complex_type='BasePackageStatus'/>
+		<EsdlArray name='Targets'  type='TargetData'/>
+		<EsdlArray name='ProcessFilters'  type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='AddPartToPackageMapRequest'>
+		<EsdlElement name='Target' type='string'/>
+		<EsdlElement name='Process' type='string'/>
+		<EsdlElement name='PackageMap' type='string'/>
+		<EsdlElement name='GlobalScope' type='bool' default='0'/>
+		<EsdlElement name='PartName' type='string'/>
+		<EsdlElement name='Content' type='string'/>
+		<EsdlElement name='DeletePrevious' type='boolean'/>
+		<EsdlElement name='DaliIp' type='string'/>
+		<EsdlElement name='SourceProcess' type='string'/>
+		<EsdlElement name='AllowForeignFiles' type='bool' default='1'/>
+		<EsdlElement name='PreloadAllPackages' type='bool' default='0'/>
+		<EsdlElement name='UpdateSuperFiles' type='bool' default='0'/>
+		<EsdlElement name='UpdateCloneFrom' type='bool' default='0'/>
+		<EsdlElement name='AppendCluster' type='bool' default='1'/>
+	</EsdlRequest>
+	<EsdlResponse name='AddPartToPackageMapResponse' exceptions_inline='1'>
+		<EsdlElement name='status' complex_type='BasePackageStatus'/>
+		<EsdlArray name='FilesNotFound'  type='string' item_tag='File'/>
+	</EsdlResponse>
+	<EsdlRequest name='RemovePartFromPackageMapRequest'>
+		<EsdlElement name='Target' type='string'/>
+		<EsdlElement name='PackageMap' type='string'/>
+		<EsdlElement name='GlobalScope' type='bool' default='0'/>
+		<EsdlElement name='PartName' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='RemovePartFromPackageMapResponse' exceptions_inline='1'>
+		<EsdlElement name='status' complex_type='BasePackageStatus'/>
+	</EsdlResponse>
+	<EsdlRequest name='GetPartFromPackageMapRequest'>
+		<EsdlElement name='Target' type='string'/>
+		<EsdlElement name='PackageMap' type='string'/>
+		<EsdlElement name='GlobalScope' type='bool' default='0'/>
+		<EsdlElement name='PartName' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetPartFromPackageMapResponse' exceptions_inline='1'>
+		<EsdlElement name='status' complex_type='BasePackageStatus'/>
+		<EsdlElement name='Content' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='WsPackageProcessPingRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='WsPackageProcessPingResponse'>
+	</EsdlResponse>
+		<EsdlService name='WsPackageProcess'  exceptions_inline='./smc_xslt/exceptions.xslt' version='1.03' auth_feature='NONE'>
+	<EsdlMethod name='ActivatePackage' request_type='ActivatePackageRequest' response_type='ActivatePackageResponse'  auth_feature='PackageMapAccess:WRITE'/>
+	<EsdlMethod name='AddPackage' request_type='AddPackageRequest' response_type='AddPackageResponse'  auth_feature='PackageMapAccess:WRITE'/>
+	<EsdlMethod name='AddPartToPackageMap' request_type='AddPartToPackageMapRequest' response_type='AddPartToPackageMapResponse'  auth_feature='PackageMapAccess:WRITE'/>
+	<EsdlMethod name='CopyPackageMap' request_type='CopyPackageMapRequest' response_type='CopyPackageMapResponse'  auth_feature='PackageMapAccess:WRITE'/>
+	<EsdlMethod name='DeActivatePackage' request_type='DeActivatePackageRequest' response_type='DeActivatePackageResponse'  auth_feature='PackageMapAccess:WRITE'/>
+	<EsdlMethod name='DeletePackage' request_type='DeletePackageRequest' response_type='DeletePackageResponse'  auth_feature='PackageMapAccess:FULL'/>
+	<EsdlMethod name='Echo' request_type='EchoRequest' response_type='EchoResponse' />
+	<EsdlMethod name='GetPackage' request_type='GetPackageRequest' response_type='GetPackageResponse'  auth_feature='PackageMapAccess:READ'/>
+	<EsdlMethod name='GetPackageMapById' request_type='GetPackageMapByIdRequest' response_type='GetPackageMapByIdResponse'  auth_feature='PackageMapAccess:READ'/>
+	<EsdlMethod name='GetPackageMapSelectOptions' request_type='GetPackageMapSelectOptionsRequest' response_type='GetPackageMapSelectOptionsResponse'  auth_feature='PackageMapAccess:READ'/>
+	<EsdlMethod name='GetPartFromPackageMap' request_type='GetPartFromPackageMapRequest' response_type='GetPartFromPackageMapResponse'  auth_feature='PackageMapAccess:READ'/>
+	<EsdlMethod name='GetQueryFileMapping' request_type='GetQueryFileMappingRequest' response_type='GetQueryFileMappingResponse'  auth_feature='PackageMapAccess:READ'/>
+	<EsdlMethod name='ListPackage' request_type='ListPackageRequest' response_type='ListPackageResponse'  auth_feature='PackageMapAccess:READ'/>
+	<EsdlMethod name='ListPackages' request_type='ListPackagesRequest' response_type='ListPackagesResponse'  auth_feature='PackageMapAccess:READ'/>
+	<EsdlMethod name='Ping' request_type='WsPackageProcessPingRequest' response_type='WsPackageProcessPingResponse' />
+	<EsdlMethod name='RemovePartFromPackageMap' request_type='RemovePartFromPackageMapRequest' response_type='RemovePartFromPackageMapResponse'  auth_feature='PackageMapAccess:WRITE'/>
+	<EsdlMethod name='ValidatePackage' request_type='ValidatePackageRequest' response_type='ValidatePackageResponse'  auth_feature='PackageMapAccess:READ'/>
+		</EsdlService></esxdl>

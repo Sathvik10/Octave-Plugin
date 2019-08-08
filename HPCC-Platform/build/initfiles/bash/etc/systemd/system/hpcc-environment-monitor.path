@@ -1,0 +1,8 @@
+[Unit]
+Description=monitor for /etc/HPCCSystems/environment.xml modification
+
+[Path]
+PathModified=/etc/HPCCSystems/environment.xml
+
+[Install]
+WantedBy=multi-user.target

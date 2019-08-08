@@ -1,0 +1,41 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/configmgr.dir/EnvironmentMgr.cpp.o"
+  "CMakeFiles/configmgr.dir/XMLEnvironmentMgr.cpp.o"
+  "CMakeFiles/configmgr.dir/XMLEnvironmentLoader.cpp.o"
+  "CMakeFiles/configmgr.dir/SchemaParser.cpp.o"
+  "CMakeFiles/configmgr.dir/SchemaItem.cpp.o"
+  "CMakeFiles/configmgr.dir/SchemaValue.cpp.o"
+  "CMakeFiles/configmgr.dir/SchemaTypeLimits.cpp.o"
+  "CMakeFiles/configmgr.dir/SchemaTypeIntegerLimits.cpp.o"
+  "CMakeFiles/configmgr.dir/SchemaTypeStringLimits.cpp.o"
+  "CMakeFiles/configmgr.dir/EnvironmentNode.cpp.o"
+  "CMakeFiles/configmgr.dir/EnvironmentValue.cpp.o"
+  "CMakeFiles/configmgr.dir/XSDComponentParser.cpp.o"
+  "CMakeFiles/configmgr.dir/XSDSchemaParser.cpp.o"
+  "CMakeFiles/configmgr.dir/XSDValueSetParser.cpp.o"
+  "CMakeFiles/configmgr.dir/Status.cpp.o"
+  "CMakeFiles/configmgr.dir/EnvironmentEventHandlers.cpp.o"
+  "CMakeFiles/configmgr.dir/Utils.cpp.o"
+  "CMakeFiles/configmgr.dir/InsertableItem.cpp.o"
+  "CMakeFiles/configmgr.dir/ConfigPath.cpp.o"
+  "CMakeFiles/configmgr.dir/EnvSupportLib.cpp.o"
+  "CMakeFiles/configmgr.dir/mod_template_support/EnvModTemplate.cpp.o"
+  "CMakeFiles/configmgr.dir/mod_template_support/Variable.cpp.o"
+  "CMakeFiles/configmgr.dir/mod_template_support/TemplateException.cpp.o"
+  "CMakeFiles/configmgr.dir/mod_template_support/Operation.cpp.o"
+  "CMakeFiles/configmgr.dir/mod_template_support/OperationCreateNode.cpp.o"
+  "CMakeFiles/configmgr.dir/mod_template_support/OperationFindNode.cpp.o"
+  "CMakeFiles/configmgr.dir/mod_template_support/OperationModifyNode.cpp.o"
+  "CMakeFiles/configmgr.dir/mod_template_support/Variables.cpp.o"
+  "CMakeFiles/configmgr.dir/mod_template_support/IPAddressRangeVariable.cpp.o"
+  "CMakeFiles/configmgr.dir/mod_template_support/IPAddressVariable.cpp.o"
+  "CMakeFiles/configmgr.dir/mod_template_support/HostNameVariable.cpp.o"
+  "CMakeFiles/configmgr.dir/mod_template_support/OperationDeleteNode.cpp.o"
+  "../../../Debug/libs/libconfigmgr.pdb"
+  "../../../Debug/libs/libconfigmgr.so"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/configmgr.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

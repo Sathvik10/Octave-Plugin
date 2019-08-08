@@ -1,0 +1,43 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/hqlcpp.dir/hqlalias.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlcatom.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlccommon.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlcfilter.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlckey.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlcpp.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlcppc.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlcppcase.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlcppds.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlcpputil.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlcse.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlcset.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlctrans.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlecl.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlgraph.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlhoist.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlhtcpp.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlinline.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqliproj.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqliter.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqllib.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlnlp.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlpopt.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlregex.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlres.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlresource.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlsource.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlstep.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlstmt.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqltcppc.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqltcppc2.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqltomita.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlttcpp.cpp.o"
+  "CMakeFiles/hqlcpp.dir/hqlwcpp.cpp.o"
+  "../../Debug/libs/libhqlcpp.pdb"
+  "../../Debug/libs/libhqlcpp.so"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/hqlcpp.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

@@ -1,0 +1,11 @@
+[Unit]
+Description=Dropzone Configuration
+After=network.target remote-fs.target configmgr-conf.service
+PartOf=hpccsystems-platform.target
+
+[Service]
+Type=oneshot
+User=hpcc
+Group=hpcc
+WorkingDirectory=/var/lib/HPCCSystems
+ExecStart=/bin/bash -c "for i in $(/opt/HPCCSystems/sbin/configgen -env /etc/HPCCSystems/environment.xml -listdirs); do mkdir -p $i; done"

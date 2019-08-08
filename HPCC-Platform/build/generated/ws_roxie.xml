@@ -1,0 +1,8 @@
+<esxdl name="ws_roxie">
+	<EsdlRequest name='RoxiePingRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='RoxiePingResponse'>
+	</EsdlResponse>
+		<EsdlService name='Roxie'  auth_feature='NONE'>
+	<EsdlMethod name='Ping' request_type='RoxiePingRequest' response_type='RoxiePingResponse' />
+		</EsdlService></esxdl>

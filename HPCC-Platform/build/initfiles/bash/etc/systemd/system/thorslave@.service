@@ -1,0 +1,17 @@
+[Unit]
+Description=%i
+After=network.target remote-fs.target dafilesrv.service
+
+[Service]
+Type=simple
+User=hpcc
+Group=hpcc
+PermissionsStartOnly=false
+PIDFile=/var/run/HPCCSystems/%i.pid
+EnvironmentFile=/var/lib/HPCCSystems/thorslaves/%i.cfg
+
+ExecStart=/opt/HPCCSystems/bin/thorslave_lcr master=${THORMASTER}:${THORMASTERPORT} slave=.:${SLAVEPORT} slavenum=${SLAVENUM} logDir=/var/log/HPCCSystems/${THORNAME}
+
+
+[Install]
+DefaultInstance=mythorslave

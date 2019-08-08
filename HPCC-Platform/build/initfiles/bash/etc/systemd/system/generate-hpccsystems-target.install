@@ -1,0 +1,3 @@
+if [[ -e /bin/systemctl ]]; then
+    /opt/HPCCSystems/sbin/generate-hpccsystems-target.sh 1>/dev/null 2>&1
+fi

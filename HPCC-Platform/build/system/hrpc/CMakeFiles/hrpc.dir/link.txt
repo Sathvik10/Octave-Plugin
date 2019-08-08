@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../../Debug/libs/libhrpc.a  CMakeFiles/hrpc.dir/hrpc.cpp.o CMakeFiles/hrpc.dir/hrpcmp.cpp.o CMakeFiles/hrpc.dir/hrpcsock.cpp.o CMakeFiles/hrpc.dir/hrpcutil.cpp.o
+/usr/bin/ranlib ../../Debug/libs/libhrpc.a

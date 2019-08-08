@@ -1,0 +1,25 @@
+[Unit]
+Description=%i
+After=network.target remote-fs.target hpcc-conf@%i.service dafilesrv.service
+Requires=hpcc-conf@%i.service
+
+[Service]
+Type=forking
+User=hpcc
+Group=hpcc
+PermissionsStartOnly=true
+WorkingDirectory=/var/lib/HPCCSystems/%i
+EnvironmentFile=/var/lib/HPCCSystems/%i/%i.cfg
+PIDFile=/var/run/HPCCSystems/%i.pid
+ExecStart=/opt/HPCCSystems/bin/roxie --topology=RoxieTopology.xml --logfile --restarts=2 --stdlog=0 --daemon %i
+Restart=on-failure
+RestartSec=5
+TimeoutSec=30
+LimitCORE=infinity
+LimitNPROC=4096:8192
+LimitNOFILE=8192:32768
+LimitRTPRIO=0:4
+LimitMEMLOCK=infinity
+
+[Install]
+DefaultInstance=myroxie

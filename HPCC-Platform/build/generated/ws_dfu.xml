@@ -1,0 +1,747 @@
+<esxdl name="ws_dfu">
+	<EsdlEnumType name='DFUArrayActions' base_type='string'>
+		<EsdlEnumItem name='Delete' enum='Delete'/>
+		<EsdlEnumItem name='AddToSuperfile' enum='Add To Superfile'/>
+	</EsdlEnumType>
+	<EsdlEnumType name='DFUChangeProtection' base_type='int'>
+		<EsdlEnumItem name='NoChange' desc='No Change' enum='0'/>
+		<EsdlEnumItem name='Protect' desc='Protect' enum='1'/>
+		<EsdlEnumItem name='Unprotect' desc='Unprotect' enum='2'/>
+	</EsdlEnumType>
+	<EsdlEnumType name='DFUDefFileFormat' base_type='string'>
+		<EsdlEnumItem name='xml' enum='xml'/>
+		<EsdlEnumItem name='def' enum='def'/>
+	</EsdlEnumType>
+	<EsdlEnumType name='SecAccessType' base_type='string'>
+		<EsdlEnumItem name='None' enum='None'/>
+		<EsdlEnumItem name='Access' enum='Access'/>
+		<EsdlEnumItem name='Read' enum='Read'/>
+		<EsdlEnumItem name='Write' enum='Write'/>
+		<EsdlEnumItem name='Full' enum='Full'/>
+	</EsdlEnumType>
+	<EsdlEnumType name='FileAccessRole' base_type='string'>
+		<EsdlEnumItem name='Token' enum='Token'/>
+		<EsdlEnumItem name='Engine' enum='Engine'/>
+		<EsdlEnumItem name='External' enum='External'/>
+	</EsdlEnumType>
+	<EsdlStruct name='SpaceItem'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='LargestFile' type='string'/>
+		<EsdlElement name='SmallestFile' type='string'/>
+		<EsdlElement name='NumOfFilesInt' type='int64'/>
+		<EsdlElement name='NumOfFilesIntUnknown' type='int64'/>
+		<EsdlElement name='TotalSizeInt' type='int64'/>
+		<EsdlElement name='LargestSizeInt' type='int64'/>
+		<EsdlElement name='SmallestSizeInt' type='int64'/>
+	</EsdlStruct>
+	<EsdlStruct name='DFUFilePartition'>
+		<EsdlElement name='FieldMask' type='int64'/>
+		<EsdlArray name='FieldNames'  type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='DFUFileBloom'>
+		<EsdlElement name='FieldMask' type='int64'/>
+		<EsdlArray name='FieldNames'  type='string'/>
+		<EsdlElement name='Limit' type='int64'/>
+		<EsdlElement name='Probability' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='DFULogicalFile'>
+		<EsdlElement name='Prefix' type='string'/>
+		<EsdlElement name='ClusterName' type='string' depr_ver='1.26'/>
+		<EsdlElement name='NodeGroup' type='string' min_ver='1.26'/>
+		<EsdlElement name='Directory' type='string'/>
+		<EsdlElement name='Description' type='string'/>
+		<EsdlElement name='Parts' type='string'/>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Owner' type='string'/>
+		<EsdlElement name='Totalsize' type='string'/>
+		<EsdlElement name='RecordCount' type='string'/>
+		<EsdlElement name='Modified' type='string'/>
+		<EsdlElement name='LongSize' type='string'/>
+		<EsdlElement name='LongRecordCount' type='string'/>
+		<EsdlElement name='isSuperfile' type='bool'/>
+		<EsdlElement name='isZipfile' type='bool' depr_ver='1.22'/>
+		<EsdlElement name='isDirectory' type='bool' default='0'/>
+		<EsdlElement name='Replicate' type='bool' default='0'/>
+		<EsdlElement name='IntSize' type='int64' min_ver='1.01'/>
+		<EsdlElement name='IntRecordCount' type='int64' min_ver='1.01'/>
+		<EsdlElement name='FromRoxieCluster' type='bool' min_ver='1.02'/>
+		<EsdlElement name='BrowseData' type='bool' min_ver='1.03'/>
+		<EsdlElement name='IsKeyFile' type='bool' depr_ver='1.24' min_ver='1.14'/>
+		<EsdlElement name='IsCompressed' type='bool' min_ver='1.22'/>
+		<EsdlElement name='ContentType' type='string' min_ver='1.24'/>
+		<EsdlElement name='CompressedFileSize' type='int64' min_ver='1.22'/>
+		<EsdlElement name='SuperOwners' type='string' min_ver='1.30'/>
+		<EsdlElement name='Persistent' type='bool' default='0' min_ver='1.30'/>
+		<EsdlElement name='IsProtected' type='bool' default='0' min_ver='1.34'/>
+		<EsdlElement name='KeyType' type='string' min_ver='1.41'/>
+	</EsdlStruct>
+	<EsdlStruct name='DFUPart'>
+		<EsdlElement name='Id' type='int'/>
+		<EsdlElement name='Copy' type='int'/>
+		<EsdlElement name='ActualSize' type='string' depr_ver='1.23'/>
+		<EsdlElement name='Ip' type='string'/>
+		<EsdlElement name='Partsize' type='string'/>
+		<EsdlElement name='PartSizeInt64' type='int64' min_ver='1.38'/>
+	</EsdlStruct>
+	<EsdlStruct name='DFUFileStat'>
+		<EsdlElement name='MinSkew' type='string'/>
+		<EsdlElement name='MaxSkew' type='string'/>
+		<EsdlElement name='MinSkewInt64' type='int64' min_ver='1.38'/>
+		<EsdlElement name='MaxSkewInt64' type='int64' min_ver='1.38'/>
+	</EsdlStruct>
+	<EsdlStruct name='DFUFilePartsOnCluster' nil_remove='1'>
+		<EsdlElement name='Cluster' type='string'/>
+		<EsdlElement name='BaseDir' type='string' min_ver='1.31'/>
+		<EsdlElement name='ReplicateDir' type='string' min_ver='1.31'/>
+		<EsdlElement name='Replicate' type='bool' min_ver='1.31'/>
+		<EsdlElement name='CanReplicate' type='bool' min_ver='1.32'/>
+		<EsdlArray name='DFUFileParts'  type='DFUPart'/>
+	</EsdlStruct>
+	<EsdlStruct name='DFUFileProtect' nil_remove='1'>
+		<EsdlElement name='Owner' type='string'/>
+		<EsdlElement name='Count' type='int'/>
+		<EsdlElement name='Modified' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='DFUFileDetail' nil_remove='1'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Filename' type='string'/>
+		<EsdlElement name='Prefix' type='string' min_ver='1.28'/>
+		<EsdlElement name='NodeGroup' type='string' min_ver='1.28'/>
+		<EsdlElement name='NumParts' type='int' min_ver='1.28'/>
+		<EsdlElement name='Description' type='string'/>
+		<EsdlElement name='Dir' type='string'/>
+		<EsdlElement name='PathMask' type='string'/>
+		<EsdlElement name='Filesize' type='string'/>
+		<EsdlElement name='FileSizeInt64' type='int64' min_ver='1.38'/>
+		<EsdlElement name='ActualSize' type='string' depr_ver='1.23'/>
+		<EsdlElement name='RecordSize' type='string'/>
+		<EsdlElement name='RecordCount' type='string'/>
+		<EsdlElement name='RecordSizeInt64' type='int64' min_ver='1.38'/>
+		<EsdlElement name='RecordCountInt64' type='int64' min_ver='1.38'/>
+		<EsdlElement name='Wuid' type='string'/>
+		<EsdlElement name='Owner' type='string'/>
+		<EsdlElement name='Cluster' type='string' depr_ver='1.25'/>
+		<EsdlElement name='JobName' type='string'/>
+		<EsdlElement name='Persistent' type='string'/>
+		<EsdlElement name='Format' type='string'/>
+		<EsdlElement name='MaxRecordSize' type='string'/>
+		<EsdlElement name='CsvSeparate' type='string'/>
+		<EsdlElement name='CsvQuote' type='string'/>
+		<EsdlElement name='CsvTerminate' type='string'/>
+		<EsdlElement name='CsvEscape' type='string' min_ver='1.20'/>
+		<EsdlElement name='Modified' type='string'/>
+		<EsdlElement name='Ecl' type='string'/>
+		<EsdlElement name='ZipFile' type='bool' default='0' depr_ver='1.22'/>
+		<EsdlElement name='Stat' complex_type='DFUFileStat'/>
+		<EsdlArray name='DFUFileParts'  type='DFUPart' depr_ver='1.25'/>
+		<EsdlArray name='DFUFilePartsOnClusters'  type='DFUFilePartsOnCluster' min_ver='1.25'/>
+		<EsdlElement name='isSuperfile' type='bool' default='0'/>
+		<EsdlElement name='ShowFileContent' type='bool' default='1'/>
+		<EsdlArray name='subfiles'  type='string'/>
+		<EsdlArray name='Superfiles'  type='DFULogicalFile' min_ver='1.01'/>
+		<EsdlArray name='ProtectList'  type='DFUFileProtect' min_ver='1.34'/>
+		<EsdlElement name='FromRoxieCluster' type='bool' min_ver='1.06'/>
+		<EsdlArray name='Graphs'  type='string' item_tag='ECLGraph' min_ver='1.07'/>
+		<EsdlElement name='UserPermission' type='string' min_ver='1.09'/>
+		<EsdlElement name='ContentType' type='string' min_ver='1.21'/>
+		<EsdlElement name='CompressedFileSize' type='int64' min_ver='1.22'/>
+		<EsdlElement name='PercentCompressed' type='string' min_ver='1.34'/>
+		<EsdlElement name='IsCompressed' type='bool' default='0' min_ver='1.22'/>
+		<EsdlElement name='BrowseData' type='bool' default='1' min_ver='1.28'/>
+		<EsdlElement name='jsonInfo' type='string' json_inline='1' min_ver='1.37'/>
+		<EsdlElement name='binInfo' type='binary' min_ver='1.37'/>
+		<EsdlElement name='PackageID' type='string' min_ver='1.38'/>
+		<EsdlElement name='Partition' complex_type='DFUFilePartition' min_ver='1.39'/>
+		<EsdlArray name='Blooms'  type='DFUFileBloom' min_ver='1.39'/>
+		<EsdlElement name='ExpireDays' type='int' min_ver='1.40'/>
+		<EsdlElement name='KeyType' type='string' min_ver='1.41'/>
+	</EsdlStruct>
+	<EsdlStruct name='DFUSpaceItem'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='NumOfFiles' type='string'/>
+		<EsdlElement name='NumOfFilesUnknown' type='string'/>
+		<EsdlElement name='TotalSize' type='string'/>
+		<EsdlElement name='LargestFile' type='string'/>
+		<EsdlElement name='LargestSize' type='string'/>
+		<EsdlElement name='SmallestFile' type='string'/>
+		<EsdlElement name='SmallestSize' type='string'/>
+		<EsdlElement name='NumOfFilesInt64' type='int64' min_ver='1.38'/>
+		<EsdlElement name='NumOfFilesUnknownInt64' type='int64' min_ver='1.38'/>
+		<EsdlElement name='TotalSizeInt64' type='int64' min_ver='1.38'/>
+		<EsdlElement name='LargestSizeInt64' type='int64' min_ver='1.38'/>
+		<EsdlElement name='SmallestSizeInt64' type='int64' min_ver='1.38'/>
+	</EsdlStruct>
+	<EsdlStruct name='DFUActionInfo'>
+		<EsdlElement name='FileName' type='string'/>
+		<EsdlElement name='NodeGroup' type='string'/>
+		<EsdlElement name='ActionResult' type='string'/>
+		<EsdlElement name='Failed' type='bool'/>
+	</EsdlStruct>
+	<EsdlRequest name='DFUQueryRequest' nil_remove='1'>
+		<EsdlElement name='Prefix' type='string'/>
+		<EsdlElement name='ClusterName' type='string' depr_ver='1.26'/>
+		<EsdlElement name='NodeGroup' type='string' min_ver='1.26'/>
+		<EsdlElement name='ContentType' type='string' min_ver='1.30'/>
+		<EsdlElement name='LogicalName' type='string'/>
+		<EsdlElement name='Owner' type='string'/>
+		<EsdlElement name='StartDate' type='string'/>
+		<EsdlElement name='EndDate' type='string'/>
+		<EsdlElement name='FileType' type='string'/>
+		<EsdlElement name='FileSizeFrom' type='int64' default='-1'/>
+		<EsdlElement name='FileSizeTo' type='int64' default='-1'/>
+		<EsdlElement name='FirstN' type='int' default='-1'/>
+		<EsdlElement name='FirstNType' type='string' depr_ver='1.24'/>
+		<EsdlElement name='PageSize' type='int'/>
+		<EsdlElement name='PageStartFrom' type='int'/>
+		<EsdlElement name='Sortby' type='string'/>
+		<EsdlElement name='Descending' type='bool' default='0'/>
+		<EsdlElement name='OneLevelDirFileReturn' type='bool' default='0'/>
+		<EsdlElement name='CacheHint' type='int64' min_ver='1.24'/>
+		<EsdlElement name='MaxNumberOfFiles' type='int' min_ver='1.30'/>
+		<EsdlElement name='IncludeSuperOwner' type='bool' min_ver='1.30'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUQueryResponse' exceptions_inline='1'>
+		<EsdlArray name='DFULogicalFiles'  type='DFULogicalFile'/>
+		<EsdlElement name='Prefix' type='string'/>
+		<EsdlElement name='ClusterName' type='string' depr_ver='1.26'/>
+		<EsdlElement name='NodeGroup' type='string' min_ver='1.26'/>
+		<EsdlElement name='LogicalName' type='string'/>
+		<EsdlElement name='Description' type='string'/>
+		<EsdlElement name='Owner' type='string'/>
+		<EsdlElement name='StartDate' type='string'/>
+		<EsdlElement name='EndDate' type='string'/>
+		<EsdlElement name='FileType' type='string'/>
+		<EsdlElement name='FileSizeFrom' type='int64' default='-1'/>
+		<EsdlElement name='FileSizeTo' type='int64' default='-1'/>
+		<EsdlElement name='FirstN' type='int' default='-1'/>
+		<EsdlElement name='FirstNType' type='string' depr_ver='1.24'/>
+		<EsdlElement name='PageSize' type='int' default='20'/>
+		<EsdlElement name='PageStartFrom' type='int64' default='1'/>
+		<EsdlElement name='LastPageFrom' type='int64' default='-1'/>
+		<EsdlElement name='PageEndAt' type='int64'/>
+		<EsdlElement name='PrevPageFrom' type='int64' default='-1'/>
+		<EsdlElement name='NextPageFrom' type='int64' default='-1'/>
+		<EsdlElement name='NumFiles' type='int64'/>
+		<EsdlElement name='Sortby' type='string'/>
+		<EsdlElement name='Descending' type='bool' default='0'/>
+		<EsdlElement name='BasicQuery' type='string'/>
+		<EsdlElement name='ParametersForPaging' type='string'/>
+		<EsdlElement name='Filters' type='string'/>
+		<EsdlElement name='CacheHint' type='int64' min_ver='1.24'/>
+		<EsdlElement name='IsSubsetOfFiles' type='bool' min_ver='1.30'/>
+		<EsdlElement name='Warning' type='string' min_ver='1.30'/>
+	</EsdlResponse>
+	<EsdlRequest name='DFUSearchRequest'>
+		<EsdlElement name='ShowExample' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUSearchResponse' exceptions_inline='1'>
+		<EsdlElement name='ShowExample' type='string'/>
+		<EsdlArray name='ClusterNames'  type='string' item_tag='ClusterName'/>
+		<EsdlArray name='FileTypes'  type='string' item_tag='FileType'/>
+	</EsdlResponse>
+	<EsdlRequest name='DFUArrayActionRequest'>
+		<EsdlEnum name='Type' enum_type='DFUArrayActions'/>
+		<EsdlElement name='NoDelete' type='bool'/>
+		<EsdlElement name='BackToPage' type='string' min_ver='1.04'/>
+		<EsdlArray name='LogicalFiles'  type='string'/>
+		<EsdlElement name='removeFromSuperfiles' type='bool' default='0'/>
+		<EsdlElement name='removeRecursively' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUArrayActionResponse' encode='0' exceptions_inline='1'>
+		<EsdlElement name='BackToPage' type='string' min_ver='1.04'/>
+		<EsdlElement name='RedirectTo' type='string' min_ver='1.18'/>
+		<EsdlElement name='DFUArrayActionResult' type='string' depr_ver='1.33'/>
+		<EsdlArray name='ActionResults'  type='DFUActionInfo' min_ver='1.27'/>
+	</EsdlResponse>
+	<EsdlRequest name='DFUInfoRequest'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Cluster' type='string'/>
+		<EsdlElement name='UpdateDescription' type='bool' default='0'/>
+		<EsdlElement name='QuerySet' type='string' min_ver='1.38'/>
+		<EsdlElement name='Query' type='string' min_ver='1.38'/>
+		<EsdlElement name='FileName' type='string' depr_ver='1.38'/>
+		<EsdlElement name='FileDesc' type='string'/>
+		<EsdlElement name='IncludeJsonTypeInfo' type='bool' default='0' min_ver='1.37'/>
+		<EsdlElement name='IncludeBinTypeInfo' type='bool' default='0' min_ver='1.37'/>
+		<EsdlEnum name='Protect' enum_type='DFUChangeProtection' default='0' min_ver='1.39'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUInfoResponse' exceptions_inline='1'>
+		<EsdlElement name='FileDetail' complex_type='DFUFileDetail'/>
+	</EsdlResponse>
+	<EsdlRequest name='DFUDefFileRequest'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlEnum name='Format' enum_type='DFUDefFileFormat'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUDefFileResponse' exceptions_inline='1'>
+		<EsdlElement name='defFile' type='binary' http_content='application/octet-stream'/>
+	</EsdlResponse>
+	<EsdlRequest name='DFURecordTypeInfoRequest'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='IncludeJsonTypeInfo' type='bool' default='1'/>
+		<EsdlElement name='IncludeBinTypeInfo' type='bool' default='1'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFURecordTypeInfoResponse'>
+		<EsdlElement name='jsonInfo' type='string' json_inline='1'/>
+		<EsdlElement name='binInfo' type='binary'/>
+	</EsdlResponse>
+	<EsdlRequest name='EclRecordTypeInfoRequest'>
+		<EsdlElement name='Ecl' type='string'/>
+		<EsdlElement name='IncludeJsonTypeInfo' type='bool' default='1'/>
+		<EsdlElement name='IncludeBinTypeInfo' type='bool' default='1'/>
+	</EsdlRequest>
+	<EsdlResponse name='EclRecordTypeInfoResponse'>
+		<EsdlElement name='jsonInfo' type='string' json_inline='1'/>
+		<EsdlElement name='binInfo' type='binary'/>
+	</EsdlResponse>
+	<EsdlRequest name='SuperfileActionRequest'>
+		<EsdlElement name='action' type='string'/>
+		<EsdlElement name='superfile' type='string'/>
+		<EsdlArray name='subfiles'  type='string'/>
+		<EsdlElement name='before' type='string'/>
+		<EsdlElement name='delete' type='bool'/>
+		<EsdlElement name='removeSuperfile' type='bool'/>
+	</EsdlRequest>
+	<EsdlResponse name='SuperfileActionResponse' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='superfile' type='string'/>
+		<EsdlElement name='retcode' type='int'/>
+	</EsdlResponse>
+	<EsdlRequest name='AddtoSuperfileRequest'>
+		<EsdlElement name='Superfile' type='string'/>
+		<EsdlElement name='Subfiles' type='string'/>
+		<EsdlArray name='names'  type='string'/>
+		<EsdlElement name='ExistingFile' type='bool' default='0'/>
+		<EsdlElement name='BackToPage' type='string' min_ver='1.18'/>
+	</EsdlRequest>
+	<EsdlResponse name='AddtoSuperfileResponse' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='Subfiles' type='string'/>
+		<EsdlElement name='BackToPage' type='string' min_ver='1.18'/>
+		<EsdlArray name='SubfileNames'  type='string' item_tag='SubfileName' min_ver='1.16'/>
+	</EsdlResponse>
+	<EsdlRequest name='SuperfileListRequest'>
+		<EsdlElement name='superfile' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='SuperfileListResponse' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='superfile' type='string'/>
+		<EsdlArray name='subfiles'  type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='SuperfileAddRawRequest'>
+		<EsdlElement name='superfile' type='string'/>
+		<EsdlElement name='subfiles' type='string'/>
+		<EsdlElement name='before' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='SuperfileAddRawResponse' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='superfile' type='string'/>
+		<EsdlElement name='retcode' type='int'/>
+	</EsdlResponse>
+	<EsdlRequest name='SavexmlRequest'>
+		<EsdlElement name='name' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='SavexmlResponse' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='xmlmap' type='binary' http_content='text/xml'/>
+	</EsdlResponse>
+	<EsdlRequest name='AddRequest'>
+		<EsdlElement name='dstname' type='string'/>
+		<EsdlElement name='xmlmap' type='binary' http_content='text/xml'/>
+	</EsdlRequest>
+	<EsdlResponse name='AddResponse' nil_remove='1' exceptions_inline='1'>
+	</EsdlResponse>
+	<EsdlRequest name='AddRemoteRequest'>
+		<EsdlElement name='dstname' type='string'/>
+		<EsdlElement name='srcname' type='string'/>
+		<EsdlElement name='srcdali' type='string'/>
+		<EsdlElement name='srcusername' type='string'/>
+		<EsdlElement name='srcpassword' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='AddRemoteResponse' nil_remove='1' exceptions_inline='1'>
+	</EsdlResponse>
+	<EsdlRequest name='DFUSpaceRequest'>
+		<EsdlElement name='CountBy' type='string'/>
+		<EsdlElement name='ScopeUnder' type='string'/>
+		<EsdlElement name='OwnerUnder' type='string'/>
+		<EsdlElement name='Interval' type='string'/>
+		<EsdlElement name='StartDate' type='string'/>
+		<EsdlElement name='EndDate' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUSpaceResponse' exceptions_inline='1'>
+		<EsdlElement name='CountBy' type='string'/>
+		<EsdlElement name='ScopeUnder' type='string'/>
+		<EsdlElement name='OwnerUnder' type='string'/>
+		<EsdlElement name='Interval' type='string'/>
+		<EsdlElement name='StartDate' type='string'/>
+		<EsdlElement name='EndDate' type='string'/>
+		<EsdlArray name='DFUSpaceItems'  type='DFUSpaceItem'/>
+	</EsdlResponse>
+	<EsdlRequest name='DFUFileViewRequest' nil_remove='1'>
+		<EsdlElement name='Scope' type='string'/>
+		<EsdlElement name='IncludeSuperOwner' type='bool' min_ver='1.35'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUFileViewResponse' exceptions_inline='1'>
+		<EsdlElement name='Scope' type='string'/>
+		<EsdlElement name='NumFiles' type='int' default='0'/>
+		<EsdlArray name='DFULogicalFiles'  type='DFULogicalFile'/>
+	</EsdlResponse>
+	<EsdlStruct name='DFUDataColumn' nil_remove='1'>
+		<EsdlElement name='ColumnID' type='int' min_ver='1.29'/>
+		<EsdlElement name='ColumnLabel' type='string'/>
+		<EsdlElement name='ColumnType' type='string'/>
+		<EsdlElement name='ColumnValue' type='string' min_ver='1.05'/>
+		<EsdlElement name='ColumnSize' type='int'/>
+		<EsdlElement name='MaxSize' type='int'/>
+		<EsdlElement name='ColumnEclType' type='string' min_ver='1.29'/>
+		<EsdlElement name='ColumnRawSize' type='int' min_ver='1.29'/>
+		<EsdlElement name='IsNaturalColumn' type='bool' min_ver='1.29'/>
+		<EsdlElement name='IsKeyedColumn' type='bool' min_ver='1.29'/>
+		<EsdlArray name='DataColumns'  type='DFUDataColumn' min_ver='1.31'/>
+	</EsdlStruct>
+	<EsdlRequest name='DFUGetDataColumnsRequest'>
+		<EsdlElement name='OpenLogicalName' type='string'/>
+		<EsdlElement name='LogicalName' type='string'/>
+		<EsdlElement name='FilterBy' type='string' min_ver='1.05'/>
+		<EsdlElement name='ShowColumns' type='string' min_ver='1.05'/>
+		<EsdlElement name='ChooseFile' type='int' default='0' min_ver='1.10'/>
+		<EsdlElement name='Cluster' type='string' min_ver='1.12'/>
+		<EsdlElement name='ClusterType' type='string' min_ver='1.12'/>
+		<EsdlElement name='StartIndex' type='int64' default='0'/>
+		<EsdlElement name='EndIndex' type='int64' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUGetDataColumnsResponse' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='LogicalName' type='string'/>
+		<EsdlElement name='StartIndex' type='int64'/>
+		<EsdlElement name='EndIndex' type='int64'/>
+		<EsdlArray name='DFUDataKeyedColumns1'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataKeyedColumns2'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataKeyedColumns3'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataKeyedColumns4'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataKeyedColumns5'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataKeyedColumns6'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataKeyedColumns7'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataKeyedColumns8'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataKeyedColumns9'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataKeyedColumns10'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataKeyedColumns11'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataKeyedColumns12'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataKeyedColumns13'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataKeyedColumns14'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataKeyedColumns15'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataKeyedColumns16'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataKeyedColumns17'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataKeyedColumns18'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataKeyedColumns19'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataKeyedColumns20'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataNonKeyedColumns1'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataNonKeyedColumns2'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataNonKeyedColumns3'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataNonKeyedColumns4'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataNonKeyedColumns5'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataNonKeyedColumns6'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataNonKeyedColumns7'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataNonKeyedColumns8'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataNonKeyedColumns9'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataNonKeyedColumns10'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataNonKeyedColumns11'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataNonKeyedColumns12'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataNonKeyedColumns13'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataNonKeyedColumns14'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataNonKeyedColumns15'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataNonKeyedColumns16'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataNonKeyedColumns17'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataNonKeyedColumns18'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataNonKeyedColumns19'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataNonKeyedColumns20'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlElement name='RowCount' type='int64'/>
+		<EsdlElement name='ShowColumns' type='string' min_ver='1.05'/>
+		<EsdlElement name='ChooseFile' type='int' default='0' min_ver='1.10'/>
+		<EsdlElement name='Cluster' type='string' min_ver='1.12'/>
+		<EsdlElement name='ClusterType' type='string' min_ver='1.12'/>
+	</EsdlResponse>
+	<EsdlRequest name='DFUBrowseDataRequest'>
+		<EsdlElement name='LogicalName' type='string'/>
+		<EsdlElement name='FilterBy' type='string'/>
+		<EsdlElement name='ShowColumns' type='string' min_ver='1.05'/>
+		<EsdlElement name='SchemaOnly' type='bool' default='0' min_ver='1.11'/>
+		<EsdlElement name='StartForGoback' type='int64' default='0' min_ver='1.05'/>
+		<EsdlElement name='CountForGoback' type='int' min_ver='1.05'/>
+		<EsdlElement name='ChooseFile' type='int' default='0' min_ver='1.10'/>
+		<EsdlElement name='Cluster' type='string' min_ver='1.12'/>
+		<EsdlElement name='ClusterType' type='string' min_ver='1.12'/>
+		<EsdlElement name='ParentName' type='string' min_ver='1.13'/>
+		<EsdlElement name='Start' type='int64' default='0'/>
+		<EsdlElement name='Count' type='int'/>
+		<EsdlElement name='DisableUppercaseTranslation' type='bool' min_ver='1.17'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUBrowseDataResponse' http_encode='0' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='LogicalName' type='string'/>
+		<EsdlElement name='FilterBy' type='string'/>
+		<EsdlElement name='FilterForGoBack' type='string' min_ver='1.05'/>
+		<EsdlArray name='ColumnsHidden'  type='DFUDataColumn' item_tag='ColumnHidden' min_ver='1.05'/>
+		<EsdlElement name='ColumnCount' type='int' min_ver='1.05'/>
+		<EsdlElement name='StartForGoback' type='int64' default='0' min_ver='1.05'/>
+		<EsdlElement name='CountForGoback' type='int' min_ver='1.05'/>
+		<EsdlElement name='ChooseFile' type='int' default='0' min_ver='1.10'/>
+		<EsdlElement name='SchemaOnly' type='bool' default='0' min_ver='1.11'/>
+		<EsdlElement name='Cluster' type='string' min_ver='1.12'/>
+		<EsdlElement name='ClusterType' type='string' min_ver='1.12'/>
+		<EsdlElement name='ParentName' type='string' min_ver='1.13'/>
+		<EsdlElement name='Start' type='int64'/>
+		<EsdlElement name='Count' type='int64'/>
+		<EsdlElement name='PageSize' type='int64'/>
+		<EsdlElement name='Total' type='int64'/>
+		<EsdlElement name='Result' type='string'/>
+		<EsdlElement name='MsgToDisplay' type='string' min_ver='1.08'/>
+		<EsdlElement name='DisableUppercaseTranslation' type='bool' min_ver='1.17'/>
+	</EsdlResponse>
+	<EsdlStruct name='DFUData'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Data' type='string'/>
+		<EsdlElement name='NumRows' type='int64'/>
+	</EsdlStruct>
+	<EsdlRequest name='DFUSearchDataRequest'>
+		<EsdlElement name='Cluster' type='string'/>
+		<EsdlElement name='ClusterType' type='string'/>
+		<EsdlElement name='OpenLogicalName' type='string'/>
+		<EsdlElement name='FilterBy' type='string'/>
+		<EsdlElement name='ShowColumns' type='string'/>
+		<EsdlElement name='ChooseFile' type='int' default='0'/>
+		<EsdlElement name='StartIndex' type='int64' default='0'/>
+		<EsdlElement name='EndIndex' type='int64' default='0'/>
+		<EsdlElement name='LogicalName' type='string'/>
+		<EsdlElement name='ParentName' type='string'/>
+		<EsdlElement name='StartForGoback' type='int64' default='0'/>
+		<EsdlElement name='CountForGoback' type='int'/>
+		<EsdlElement name='Start' type='int64' default='0'/>
+		<EsdlElement name='Count' type='int'/>
+		<EsdlElement name='File' type='string'/>
+		<EsdlElement name='Key' type='string'/>
+		<EsdlElement name='SchemaOnly' type='bool' default='1'/>
+		<EsdlElement name='RoxieSelections' type='bool' default='1' min_ver='1.17'/>
+		<EsdlElement name='DisableUppercaseTranslation' type='bool' min_ver='1.17'/>
+		<EsdlElement name='SelectedKey' type='string' min_ver='1.19'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUSearchDataResponse' http_encode='0' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='OpenLogicalName' type='string'/>
+		<EsdlElement name='LogicalName' type='string'/>
+		<EsdlElement name='ParentName' type='string'/>
+		<EsdlElement name='StartIndex' type='int64'/>
+		<EsdlElement name='EndIndex' type='int64'/>
+		<EsdlArray name='DFUDataKeyedColumns1'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataKeyedColumns2'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataKeyedColumns3'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataKeyedColumns4'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataKeyedColumns5'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataKeyedColumns6'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataKeyedColumns7'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataKeyedColumns8'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataKeyedColumns9'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataKeyedColumns10'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataKeyedColumns11'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataKeyedColumns12'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataKeyedColumns13'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataKeyedColumns14'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataKeyedColumns15'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataKeyedColumns16'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataKeyedColumns17'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataKeyedColumns18'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataKeyedColumns19'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataKeyedColumns20'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataNonKeyedColumns1'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataNonKeyedColumns2'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataNonKeyedColumns3'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataNonKeyedColumns4'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataNonKeyedColumns5'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataNonKeyedColumns6'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataNonKeyedColumns7'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataNonKeyedColumns8'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataNonKeyedColumns9'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataNonKeyedColumns10'  type='DFUDataColumn'/>
+		<EsdlArray name='DFUDataNonKeyedColumns11'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataNonKeyedColumns12'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataNonKeyedColumns13'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataNonKeyedColumns14'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataNonKeyedColumns15'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataNonKeyedColumns16'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataNonKeyedColumns17'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataNonKeyedColumns18'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataNonKeyedColumns19'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlArray name='DFUDataNonKeyedColumns20'  type='DFUDataColumn' min_ver='1.15'/>
+		<EsdlElement name='RowCount' type='int64'/>
+		<EsdlElement name='ShowColumns' type='string'/>
+		<EsdlElement name='ChooseFile' type='int' default='0'/>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='FilterBy' type='string'/>
+		<EsdlElement name='FilterForGoBack' type='string'/>
+		<EsdlArray name='ColumnsHidden'  type='DFUDataColumn' item_tag='ColumnHidden'/>
+		<EsdlElement name='ColumnCount' type='int'/>
+		<EsdlElement name='StartForGoback' type='int64' default='0'/>
+		<EsdlElement name='CountForGoback' type='int'/>
+		<EsdlElement name='Start' type='int64'/>
+		<EsdlElement name='Count' type='int64'/>
+		<EsdlElement name='PageSize' type='int64'/>
+		<EsdlElement name='Total' type='int64'/>
+		<EsdlElement name='Result' type='string'/>
+		<EsdlElement name='MsgToDisplay' type='string'/>
+		<EsdlElement name='Cluster' type='string'/>
+		<EsdlElement name='ClusterType' type='string'/>
+		<EsdlElement name='File' type='string'/>
+		<EsdlElement name='Key' type='string'/>
+		<EsdlElement name='SchemaOnly' type='bool'/>
+		<EsdlElement name='RoxieSelections' type='bool' min_ver='1.17'/>
+		<EsdlElement name='DisableUppercaseTranslation' type='bool' min_ver='1.17'/>
+		<EsdlElement name='AutoUppercaseTranslation' type='bool' min_ver='1.17'/>
+		<EsdlElement name='SelectedKey' type='string' min_ver='1.19'/>
+	</EsdlResponse>
+	<EsdlRequest name='DFUGetFileMetaDataRequest'>
+		<EsdlElement name='LogicalFileName' type='string'/>
+		<EsdlElement name='ClusterName' type='string'/>
+		<EsdlElement name='IncludeXmlSchema' type='bool' default='0'/>
+		<EsdlElement name='AddHeaderInXmlSchema' type='bool' default='0'/>
+		<EsdlElement name='IncludeXmlXPathSchema' type='bool' default='0'/>
+		<EsdlElement name='AddHeaderInXmlXPathSchema' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUGetFileMetaDataResponse' http_encode='0' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='TotalColumnCount' type='int'/>
+		<EsdlElement name='KeyedColumnCount' type='int'/>
+		<EsdlArray name='DataColumns'  type='DFUDataColumn'/>
+		<EsdlElement name='XmlSchema' type='string'/>
+		<EsdlElement name='XmlXPathSchema' type='string'/>
+		<EsdlElement name='TotalResultRows' type='int64'/>
+	</EsdlResponse>
+	<EsdlRequest name='ListHistoryRequest'>
+		<EsdlElement name='Name' type='string'/>
+	</EsdlRequest>
+	<EsdlStruct name='History'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Operation' type='string'/>
+		<EsdlElement name='Timestamp' type='string'/>
+		<EsdlElement name='IP' type='string'/>
+		<EsdlElement name='Path' type='string'/>
+		<EsdlElement name='Owner' type='string'/>
+		<EsdlElement name='Workunit' type='string'/>
+	</EsdlStruct>
+	<EsdlResponse name='ListHistoryResponse' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='xmlmap' type='binary' depr_ver='1.36'/>
+		<EsdlArray name='History'  type='History' item_tag='Origin'/>
+	</EsdlResponse>
+	<EsdlRequest name='EraseHistoryRequest'>
+		<EsdlElement name='Name' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='EraseHistoryResponse' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='xmlmap' type='binary' depr_ver='1.36'/>
+		<EsdlArray name='History'  type='History' item_tag='Origin'/>
+	</EsdlResponse>
+	<EsdlStruct name='DFUFileAccessRequestBase'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Cluster' type='string'/>
+		<EsdlElement name='JobId' type='string'/>
+		<EsdlElement name='ExpirySeconds' type='int' default='60'/>
+		<EsdlEnum name='AccessRole' enum_type='FileAccessRole'/>
+		<EsdlEnum name='AccessType' enum_type='SecAccessType'/>
+		<EsdlElement name='ReturnJsonTypeInfo' type='bool' default='0'/>
+		<EsdlElement name='ReturnBinTypeInfo' type='bool' default='0'/>
+	</EsdlStruct>
+	<EsdlRequest name='DFUFileAccessRequest'>
+		<EsdlElement name='RequestBase' complex_type='DFUFileAccessRequestBase'/>
+	</EsdlRequest>
+	<EsdlRequest name='DFUFileAccessV2Request'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Cluster' type='string'/>
+		<EsdlElement name='RequestId' type='string'/>
+		<EsdlElement name='ExpirySeconds' type='int' default='60'/>
+		<EsdlElement name='ReturnTextResponse' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlStruct name='DFUPartLocation'>
+		<EsdlElement name='LocationIndex' type='int'/>
+		<EsdlElement name='Host' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='DFUFileCopy'>
+		<EsdlElement name='CopyIndex' type='int'/>
+		<EsdlElement name='LocationIndex' type='int'/>
+		<EsdlElement name='Path' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='DFUFilePart'>
+		<EsdlElement name='PartIndex' type='int'/>
+		<EsdlArray name='Copies'  type='DFUFileCopy'/>
+	</EsdlStruct>
+	<EsdlStruct name='DFUFileAccessInfo'>
+		<EsdlElement name='MetaInfoBlob' type='string'/>
+		<EsdlElement name='ExpiryTime' type='string'/>
+		<EsdlElement name='NumParts' type='int'/>
+		<EsdlArray name='FileLocations'  type='DFUPartLocation'/>
+		<EsdlArray name='FileParts'  type='DFUFilePart'/>
+		<EsdlElement name='RecordTypeInfoBin' type='binary' depr_ver='1.50'/>
+		<EsdlElement name='RecordTypeInfoJson' type='string'/>
+		<EsdlElement name='fileAccessPort' type='int'/>
+		<EsdlElement name='fileAccessSSL' type='bool'/>
+	</EsdlStruct>
+	<EsdlResponse name='DFUFileAccessResponse' exceptions_inline='1'>
+		<EsdlElement name='AccessInfo' complex_type='DFUFileAccessInfo'/>
+	</EsdlResponse>
+	<EsdlEnumType name='DFUFileType' base_type='string'>
+		<EsdlEnumItem name='Flat' enum='Flat'/>
+		<EsdlEnumItem name='Index' enum='Index'/>
+		<EsdlEnumItem name='Xml' enum='Xml'/>
+		<EsdlEnumItem name='Csv' enum='Csv'/>
+	</EsdlEnumType>
+	<EsdlRequest name='DFUFileCreateRequest' nil_remove='1'>
+		<EsdlElement name='ECLRecordDefinition' type='string'/>
+		<EsdlArray name='PartLocations'  type='string'/>
+		<EsdlElement name='RequestBase' complex_type='DFUFileAccessRequestBase'/>
+	</EsdlRequest>
+	<EsdlRequest name='DFUFileCreateV2Request' nil_remove='1'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Cluster' type='string'/>
+		<EsdlEnum name='Type' enum_type='DFUFileType'/>
+		<EsdlElement name='ECLRecordDefinition' type='string'/>
+		<EsdlElement name='RequestId' type='string'/>
+		<EsdlElement name='ExpirySeconds' type='int' default='60'/>
+		<EsdlElement name='ReturnTextResponse' type='bool' default='0'/>
+		<EsdlElement name='Compressed' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUFileCreateResponse' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='FileId' type='string'/>
+		<EsdlElement name='Warning' type='string'/>
+		<EsdlElement name='AccessInfo' complex_type='DFUFileAccessInfo'/>
+	</EsdlResponse>
+	<EsdlRequest name='DFUFilePublishRequest' nil_remove='1'>
+		<EsdlElement name='FileId' type='string'/>
+		<EsdlElement name='Overwrite' type='bool' min_ver='1.50'/>
+		<EsdlElement name='FileDescriptorBlob' type='binary' min_ver='1.50'/>
+		<EsdlElement name='ECLRecordDefinition' type='string'/>
+		<EsdlElement name='RecordCount' type='int64'/>
+		<EsdlElement name='FileSize' type='int64'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUFilePublishResponse' nil_remove='1' exceptions_inline='1'>
+	</EsdlResponse>
+	<EsdlRequest name='WsDfuPingRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='WsDfuPingResponse'>
+	</EsdlResponse>
+		<EsdlService name='WsDfu'  exceptions_inline='./smc_xslt/exceptions.xslt' noforms='1' default_client_version='1.50' version='1.50' auth_feature='DEFERRED'>
+	<EsdlMethod name='Add' request_type='AddRequest' response_type='AddResponse'  auth_feature='DfuAccess:WRITE'/>
+	<EsdlMethod name='AddRemote' request_type='AddRemoteRequest' response_type='AddRemoteResponse'  auth_feature='DfuAccess:WRITE'/>
+	<EsdlMethod name='AddtoSuperfile' request_type='AddtoSuperfileRequest' response_type='AddtoSuperfileResponse'  resp_xsl_default='/esp/xslt/addto_superfile.xslt'/>
+	<EsdlMethod name='DFUArrayAction' request_type='DFUArrayActionRequest' response_type='DFUArrayActionResponse'  resp_xsl_default='/esp/xslt/action.xslt'/>
+	<EsdlMethod name='DFUBrowseData' request_type='DFUBrowseDataRequest' response_type='DFUBrowseDataResponse'  resp_xsl_default='/esp/xslt/dfu_viewdata.xslt'/>
+	<EsdlMethod name='DFUDefFile' request_type='DFUDefFileRequest' response_type='DFUDefFileResponse' />
+	<EsdlMethod name='DFUFileAccess' request_type='DFUFileAccessRequest' response_type='DFUFileAccessResponse'  min_ver='1.39' auth_feature='DfuAccess:READ'/>
+	<EsdlMethod name='DFUFileAccessV2' request_type='DFUFileAccessV2Request' response_type='DFUFileAccessResponse'  min_ver='1.50' auth_feature='DfuAccess:READ'/>
+	<EsdlMethod name='DFUFileCreate' request_type='DFUFileCreateRequest' response_type='DFUFileCreateResponse'  min_ver='1.39' auth_feature='DfuAccess:FULL'/>
+	<EsdlMethod name='DFUFileCreateV2' request_type='DFUFileCreateV2Request' response_type='DFUFileCreateResponse'  min_ver='1.50' auth_feature='DfuAccess:FULL'/>
+	<EsdlMethod name='DFUFilePublish' request_type='DFUFilePublishRequest' response_type='DFUFilePublishResponse'  min_ver='1.39' auth_feature='DfuAccess:FULL'/>
+	<EsdlMethod name='DFUFileView' request_type='DFUFileViewRequest' response_type='DFUFileViewResponse'  resp_xsl_default='/esp/xslt/dfu_fileview.xslt'/>
+	<EsdlMethod name='DFUGetDataColumns' request_type='DFUGetDataColumnsRequest' response_type='DFUGetDataColumnsResponse'  resp_xsl_default='/esp/xslt/dfu_getdatacolumns.xslt'/>
+	<EsdlMethod name='DFUGetFileMetaData' request_type='DFUGetFileMetaDataRequest' response_type='DFUGetFileMetaDataResponse'  auth_feature='DfuAccess:READ'/>
+	<EsdlMethod name='DFUInfo' request_type='DFUInfoRequest' response_type='DFUInfoResponse'  resp_xsl_default='/esp/xslt/dfu_file.xslt'/>
+	<EsdlMethod name='DFUQuery' request_type='DFUQueryRequest' response_type='DFUQueryResponse'  resp_xsl_default='/esp/xslt/dfu.xslt'/>
+	<EsdlMethod name='DFURecordTypeInfo' request_type='DFURecordTypeInfoRequest' response_type='DFURecordTypeInfoResponse' />
+	<EsdlMethod name='DFUSearch' request_type='DFUSearchRequest' response_type='DFUSearchResponse'  resp_xsl_default='/esp/xslt/dfu_search.xslt'/>
+	<EsdlMethod name='DFUSearchData' request_type='DFUSearchDataRequest' response_type='DFUSearchDataResponse'  resp_xsl_default='/esp/xslt/dfu_searchdata.xslt'/>
+	<EsdlMethod name='DFUSpace' request_type='DFUSpaceRequest' response_type='DFUSpaceResponse'  resp_xsl_default='/esp/xslt/dfu_file_space.xslt'/>
+	<EsdlMethod name='EclRecordTypeInfo' request_type='EclRecordTypeInfoRequest' response_type='EclRecordTypeInfoResponse' />
+	<EsdlMethod name='EraseHistory' request_type='EraseHistoryRequest' response_type='EraseHistoryResponse' />
+	<EsdlMethod name='ListHistory' request_type='ListHistoryRequest' response_type='ListHistoryResponse' />
+	<EsdlMethod name='Ping' request_type='WsDfuPingRequest' response_type='WsDfuPingResponse' />
+	<EsdlMethod name='Savexml' request_type='SavexmlRequest' response_type='SavexmlResponse'  auth_feature='DfuAccess:READ'/>
+	<EsdlMethod name='SuperfileAction' request_type='SuperfileActionRequest' response_type='SuperfileActionResponse'  resp_xsl_default='/esp/xslt/dfu_superresult.xslt'/>
+	<EsdlMethod name='SuperfileList' request_type='SuperfileListRequest' response_type='SuperfileListResponse'  resp_xsl_default='/esp/xslt/dfu_superedit.xslt' auth_feature='DfuAccess:READ'/>
+		</EsdlService></esxdl>

@@ -1,0 +1,27 @@
+[Unit]
+Description=%i
+After=network.target remote-fs.target dafilesrv.service thor-conf@%i.service
+Requires=thor-conf@%i.service
+
+[Service]
+Type=forking
+User=hpcc
+Group=hpcc
+PermissionsStartOnly=false
+WorkingDirectory=/var/lib/HPCCSystems/%i
+PIDFile=/var/run/HPCCSystems/%i.pid
+EnvironmentFile=/var/lib/HPCCSystems/%i/%i.cfg
+ExecStartPre=/opt/HPCCSystems/sbin/thorslaves-launch.sh -c %i start
+ExecStart=/opt/HPCCSystems/bin/thormaster_lcr --daemon %i MASTER=${THORMASTER}:${THORMASTERPORT}
+ExecStopPost=/opt/HPCCSystems/sbin/thorslaves-launch.sh -c %i stop
+Restart=on-failure
+RestartSec=5
+TimeoutSec=30
+LimitCORE=infinity
+LimitNPROC=4096:8192
+LimitNOFILE=8192:32768
+LimitRTPRIO=0:4
+LimitMEMLOCK=infinity
+
+[Install]
+DefaultInstance=mythor

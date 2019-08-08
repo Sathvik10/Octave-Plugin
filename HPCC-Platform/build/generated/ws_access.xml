@@ -1,0 +1,758 @@
+<esxdl name="ws_access">
+	<EsdlEnumType name='UserSortBy' base_type='string'>
+		<EsdlEnumItem name='Name' enum='username'/>
+		<EsdlEnumItem name='FullName' enum='fullname'/>
+		<EsdlEnumItem name='PasswordExpiration' enum='passwordexpiration'/>
+		<EsdlEnumItem name='EmployeeID' enum='employeeID'/>
+	</EsdlEnumType>
+	<EsdlEnumType name='GroupSortBy' base_type='string'>
+		<EsdlEnumItem name='Name' enum='Name'/>
+		<EsdlEnumItem name='ManagedBy' enum='ManagedBy'/>
+	</EsdlEnumType>
+	<EsdlEnumType name='ResourceSortBy' base_type='string'>
+		<EsdlEnumItem name='Name' enum='Name'/>
+	</EsdlEnumType>
+	<EsdlEnumType name='ResourcePermissionSortBy' base_type='string'>
+		<EsdlEnumItem name='Name' enum='Name'/>
+		<EsdlEnumItem name='Type' enum='Type'/>
+	</EsdlEnumType>
+	<EsdlEnumType name='AccountTypeReq' base_type='string'>
+		<EsdlEnumItem name='Any' enum='Any'/>
+		<EsdlEnumItem name='User' enum='User'/>
+		<EsdlEnumItem name='Group' enum='Group'/>
+	</EsdlEnumType>
+	<EsdlStruct name='UserInfo'>
+		<EsdlElement name='username' type='string'/>
+		<EsdlElement name='fullname' type='string'/>
+		<EsdlElement name='passwordexpiration' type='string' min_ver='1.07'/>
+		<EsdlElement name='employeeID' type='string' min_ver='1.10'/>
+	</EsdlStruct>
+	<EsdlStruct name='GroupInfo'>
+		<EsdlElement name='name' type='string'/>
+		<EsdlElement name='deletable' type='bool'/>
+		<EsdlElement name='groupOwner' type='string' min_ver='1.09'/>
+		<EsdlElement name='groupDesc' type='string' min_ver='1.09'/>
+	</EsdlStruct>
+	<EsdlStruct name='AccountPermission'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='RType' type='string'/>
+		<EsdlElement name='rname' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+		<EsdlElement name='ResourceName' type='string'/>
+		<EsdlElement name='PermissionName' type='string'/>
+		<EsdlElement name='allow_access' type='bool'/>
+		<EsdlElement name='allow_read' type='bool'/>
+		<EsdlElement name='allow_write' type='bool'/>
+		<EsdlElement name='allow_full' type='bool'/>
+		<EsdlElement name='deny_access' type='bool'/>
+		<EsdlElement name='deny_read' type='bool'/>
+		<EsdlElement name='deny_write' type='bool'/>
+		<EsdlElement name='deny_full' type='bool'/>
+	</EsdlStruct>
+	<EsdlStruct name='GroupAccountPermission'>
+		<EsdlElement name='GroupName' type='string'/>
+		<EsdlArray name='BasednNames'  type='string' min_ver='1.06'/>
+		<EsdlArray name='Permissions'  type='AccountPermission' item_tag='Permission'/>
+	</EsdlStruct>
+	<EsdlRequest name='UserRequest'>
+		<EsdlElement name='searchinput' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='UserResponse'>
+		<EsdlElement name='NoSecMngr' type='bool' default='0' min_ver='1.04'/>
+		<EsdlElement name='toomany' type='bool'/>
+		<EsdlElement name='posixok' type='bool'/>
+		<EsdlArray name='Users'  type='UserInfo' item_tag='User'/>
+	</EsdlResponse>
+	<EsdlRequest name='UserQueryRequest' nil_remove='1'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='PageSize' type='unsigned'/>
+		<EsdlElement name='PageStartFrom' type='int64'/>
+		<EsdlEnum name='SortBy' enum_type='UserSortBy'/>
+		<EsdlElement name='Descending' type='bool' default='0'/>
+		<EsdlElement name='CacheHint' type='int64'/>
+	</EsdlRequest>
+	<EsdlResponse name='UserQueryResponse' nil_remove='1'>
+		<EsdlElement name='NoSecMngr' type='bool' default='0'/>
+		<EsdlArray name='Users'  type='UserInfo' item_tag='User'/>
+		<EsdlElement name='TotalUsers' type='int64'/>
+		<EsdlElement name='CacheHint' type='int64'/>
+	</EsdlResponse>
+	<EsdlRequest name='UserEditRequest'>
+		<EsdlElement name='username' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='UserEditResponse'>
+		<EsdlElement name='username' type='string'/>
+		<EsdlArray name='Groups'  type='GroupInfo' item_tag='Group'/>
+	</EsdlResponse>
+	<EsdlRequest name='UserGroupEditInputRequest'>
+		<EsdlElement name='username' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='UserGroupEditInputResponse'>
+		<EsdlElement name='username' type='string'/>
+		<EsdlArray name='Groups'  type='GroupInfo' item_tag='Group'/>
+	</EsdlResponse>
+	<EsdlRequest name='UserGroupEditRequest'>
+		<EsdlElement name='username' type='string'/>
+		<EsdlElement name='action' type='string'/>
+		<EsdlArray name='groupnames'  type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='UserGroupEditResponse'>
+		<EsdlElement name='username' type='string'/>
+		<EsdlElement name='action' type='string'/>
+		<EsdlElement name='retcode' type='int'/>
+		<EsdlElement name='retmsg' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='UserPosixInputRequest'>
+		<EsdlElement name='username' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='UserPosixInputResponse'>
+		<EsdlElement name='username' type='string'/>
+		<EsdlElement name='posixenabled' type='bool'/>
+		<EsdlElement name='gidnumber' type='string'/>
+		<EsdlElement name='uidnumber' type='string'/>
+		<EsdlElement name='homedirectory' type='string'/>
+		<EsdlElement name='loginshell' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='UserPosixRequest'>
+		<EsdlElement name='username' type='string'/>
+		<EsdlElement name='posixenabled' type='bool'/>
+		<EsdlElement name='gidnumber' type='string'/>
+		<EsdlElement name='uidnumber' type='string'/>
+		<EsdlElement name='homedirectory' type='string'/>
+		<EsdlElement name='loginshell' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='UserPosixResponse'>
+		<EsdlElement name='username' type='string'/>
+		<EsdlElement name='retcode' type='int'/>
+		<EsdlElement name='retmsg' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='UserSudoersInputRequest'>
+		<EsdlElement name='username' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='UserSudoersInputResponse'>
+		<EsdlElement name='username' type='string'/>
+		<EsdlElement name='insudoers' type='bool'/>
+		<EsdlElement name='sudoHost' type='string'/>
+		<EsdlElement name='sudoCommand' type='string'/>
+		<EsdlElement name='sudoOption' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='UserSudoersRequest'>
+		<EsdlElement name='username' type='string'/>
+		<EsdlElement name='action' type='string'/>
+		<EsdlElement name='sudoHost' type='string'/>
+		<EsdlElement name='sudoCommand' type='string'/>
+		<EsdlElement name='sudoOption' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='UserSudoersResponse'>
+		<EsdlElement name='username' type='string'/>
+		<EsdlElement name='retcode' type='int'/>
+		<EsdlElement name='retmsg' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='UserInfoEditInputRequest'>
+		<EsdlElement name='username' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='UserInfoEditInputResponse'>
+		<EsdlElement name='username' type='string'/>
+		<EsdlElement name='firstname' type='string'/>
+		<EsdlElement name='lastname' type='string'/>
+		<EsdlElement name='employeeID' type='string' min_ver='1.10'/>
+		<EsdlElement name='PasswordExpiration' type='string' min_ver='1.12'/>
+	</EsdlResponse>
+	<EsdlRequest name='UserInfoEditRequest'>
+		<EsdlElement name='username' type='string'/>
+		<EsdlElement name='firstname' type='string'/>
+		<EsdlElement name='lastname' type='string'/>
+		<EsdlElement name='employeeID' type='string' min_ver='1.10'/>
+	</EsdlRequest>
+	<EsdlResponse name='UserInfoEditResponse'>
+		<EsdlElement name='username' type='string'/>
+		<EsdlElement name='retcode' type='int'/>
+		<EsdlElement name='retmsg' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='AddUserRequest'>
+		<EsdlElement name='username' type='string' cols='20' label='User Name'/>
+		<EsdlElement name='firstname' type='string' cols='20' label='First Name'/>
+		<EsdlElement name='lastname' type='string' cols='20' label='Last Name'/>
+		<EsdlElement name='password1' type='string' cols='20' password='1' label='Password'/>
+		<EsdlElement name='password2' type='string' cols='20' password='1' label='Retype password'/>
+		<EsdlElement name='employeeID' type='string' cols='20' label='Employee ID' min_ver='1.10'/>
+	</EsdlRequest>
+	<EsdlResponse name='AddUserResponse'>
+		<EsdlElement name='retcode' type='int'/>
+		<EsdlElement name='retmsg' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='UserActionRequest'>
+		<EsdlElement name='action' type='string'/>
+		<EsdlElement name='ActionType' type='string'/>
+		<EsdlArray name='usernames'  type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='UserActionResponse'>
+		<EsdlElement name='action' type='string'/>
+		<EsdlElement name='retcode' type='int'/>
+		<EsdlElement name='retmsg' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='UserResetPassInputRequest'>
+		<EsdlElement name='username' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='UserResetPassInputResponse'>
+		<EsdlElement name='username' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='UserResetPassRequest'>
+		<EsdlElement name='username' type='string'/>
+		<EsdlElement name='newPassword' type='string'/>
+		<EsdlElement name='newPasswordRetype' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='UserResetPassResponse'>
+		<EsdlElement name='username' type='string'/>
+		<EsdlElement name='retcode' type='int'/>
+		<EsdlElement name='retmsg' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='GroupRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='GroupResponse'>
+		<EsdlElement name='NoSecMngr' type='bool' default='0' min_ver='1.04'/>
+		<EsdlArray name='Groups'  type='GroupInfo' item_tag='Group'/>
+	</EsdlResponse>
+	<EsdlRequest name='GroupQueryRequest' nil_remove='1'>
+		<EsdlElement name='PageSize' type='unsigned'/>
+		<EsdlElement name='PageStartFrom' type='int64'/>
+		<EsdlEnum name='SortBy' enum_type='GroupSortBy'/>
+		<EsdlElement name='Descending' type='bool' default='0'/>
+		<EsdlElement name='CacheHint' type='int64'/>
+	</EsdlRequest>
+	<EsdlResponse name='GroupQueryResponse' nil_remove='1'>
+		<EsdlElement name='NoSecMngr' type='bool' default='0'/>
+		<EsdlArray name='Groups'  type='GroupInfo' item_tag='Group'/>
+		<EsdlElement name='TotalGroups' type='int64'/>
+		<EsdlElement name='CacheHint' type='int64'/>
+	</EsdlResponse>
+	<EsdlRequest name='GroupAddRequest'>
+		<EsdlElement name='groupname' type='string'/>
+		<EsdlElement name='groupOwner' type='string' min_ver='1.09'/>
+		<EsdlElement name='groupDesc' type='string' min_ver='1.09'/>
+	</EsdlRequest>
+	<EsdlResponse name='GroupAddResponse'>
+		<EsdlElement name='groupname' type='string'/>
+		<EsdlElement name='retcode' type='int'/>
+		<EsdlElement name='retmsg' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='GroupActionRequest' nil_remove='1'>
+		<EsdlArray name='groupnames'  type='string'/>
+		<EsdlElement name='ActionType' type='string'/>
+		<EsdlElement name='DeletePermission' type='bool'/>
+	</EsdlRequest>
+	<EsdlResponse name='GroupActionResponse'>
+		<EsdlElement name='Groupnames' type='string'/>
+		<EsdlArray name='Permissions'  type='AccountPermission' item_tag='Permission'/>
+		<EsdlElement name='retcode' type='int'/>
+		<EsdlElement name='retmsg' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='GroupEditRequest'>
+		<EsdlElement name='groupname' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='GroupEditResponse'>
+		<EsdlElement name='groupname' type='string'/>
+		<EsdlArray name='Users'  type='UserInfo' item_tag='User'/>
+	</EsdlResponse>
+	<EsdlRequest name='GroupMemberQueryRequest' nil_remove='1'>
+		<EsdlElement name='GroupName' type='string'/>
+		<EsdlElement name='PageSize' type='unsigned'/>
+		<EsdlElement name='PageStartFrom' type='int64'/>
+		<EsdlEnum name='SortBy' enum_type='UserSortBy'/>
+		<EsdlElement name='Descending' type='bool' default='0'/>
+		<EsdlElement name='CacheHint' type='int64'/>
+	</EsdlRequest>
+	<EsdlResponse name='GroupMemberQueryResponse' nil_remove='1'>
+		<EsdlElement name='NoSecMngr' type='bool' default='0'/>
+		<EsdlArray name='Users'  type='UserInfo' item_tag='User'/>
+		<EsdlElement name='TotalUsers' type='int64'/>
+		<EsdlElement name='CacheHint' type='int64'/>
+	</EsdlResponse>
+	<EsdlRequest name='GroupMemberEditInputRequest'>
+		<EsdlElement name='searchinput' type='string'/>
+		<EsdlElement name='groupname' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='GroupMemberEditInputResponse'>
+		<EsdlElement name='groupname' type='string'/>
+		<EsdlElement name='toomany' type='bool'/>
+		<EsdlArray name='Users'  type='UserInfo' item_tag='User'/>
+	</EsdlResponse>
+	<EsdlRequest name='GroupMemberEditRequest'>
+		<EsdlElement name='groupname' type='string'/>
+		<EsdlElement name='action' type='string'/>
+		<EsdlArray name='usernames'  type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='GroupMemberEditResponse'>
+		<EsdlElement name='groupname' type='string'/>
+		<EsdlElement name='action' type='string'/>
+		<EsdlElement name='retcode' type='int'/>
+		<EsdlElement name='retmsg' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='BasednsRequest'>
+	</EsdlRequest>
+	<EsdlStruct name='DnStruct'>
+		<EsdlElement name='name' type='string'/>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='templatename' type='string'/>
+	</EsdlStruct>
+	<EsdlResponse name='BasednsResponse'>
+		<EsdlElement name='NoSecMngr' type='bool' default='0' min_ver='1.04'/>
+		<EsdlArray name='Basedns'  type='DnStruct' item_tag='Basedn'/>
+	</EsdlResponse>
+	<EsdlRequest name='ResourcesRequest'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='templatename' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+		<EsdlElement name='searchinput' type='string'/>
+	</EsdlRequest>
+	<EsdlStruct name='Resource'>
+		<EsdlElement name='name' type='string'/>
+		<EsdlElement name='description' type='string'/>
+		<EsdlElement name='isSpecial' type='bool'/>
+	</EsdlStruct>
+	<EsdlStruct name='ScopeScanStatusStruct'>
+		<EsdlElement name='isEnabled' type='bool'/>
+		<EsdlElement name='retcode' type='int'/>
+		<EsdlElement name='retmsg' type='string'/>
+	</EsdlStruct>
+	<EsdlResponse name='ResourcesResponse'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlArray name='Resources'  type='Resource' item_tag='Resource'/>
+		<EsdlElement name='default_basedn' type='string'/>
+		<EsdlElement name='default_name' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+		<EsdlElement name='toomany' type='bool' min_ver='1.05'/>
+		<EsdlElement name='scopeScansStatus' complex_type='ScopeScanStatusStruct' min_ver='1.08'/>
+	</EsdlResponse>
+	<EsdlRequest name='ResourceQueryRequest' nil_remove='1'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='PageSize' type='unsigned'/>
+		<EsdlElement name='PageStartFrom' type='int64'/>
+		<EsdlEnum name='SortBy' enum_type='ResourceSortBy'/>
+		<EsdlElement name='Descending' type='bool' default='0'/>
+		<EsdlElement name='CacheHint' type='int64'/>
+	</EsdlRequest>
+	<EsdlResponse name='ResourceQueryResponse' nil_remove='1'>
+		<EsdlElement name='NoSecMngr' type='bool' default='0'/>
+		<EsdlArray name='Resources'  type='Resource' item_tag='Resource'/>
+		<EsdlElement name='TotalResources' type='int64'/>
+		<EsdlElement name='CacheHint' type='int64'/>
+	</EsdlResponse>
+	<EsdlRequest name='ResourceAddInputRequest'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='ResourceAddInputResponse'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='ResourceAddRequest'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='name' type='string'/>
+		<EsdlElement name='description' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='ResourceAddResponse'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+		<EsdlElement name='retcode' type='int'/>
+		<EsdlElement name='retmsg' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='ResourceDeleteRequest'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+		<EsdlArray name='names'  type='string'/>
+		<EsdlElement name='DoUpdate' type='int' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='ResourceDeleteResponse'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+		<EsdlElement name='retcode' type='int'/>
+		<EsdlElement name='retmsg' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='ResourcePermissionsRequest'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='name' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+	</EsdlRequest>
+	<EsdlStruct name='ResourcePermission'>
+		<EsdlElement name='account_name' type='string'/>
+		<EsdlElement name='escaped_account_name' type='string'/>
+		<EsdlElement name='account_type' type='int'/>
+		<EsdlElement name='allow_access' type='bool'/>
+		<EsdlElement name='allow_read' type='bool'/>
+		<EsdlElement name='allow_write' type='bool'/>
+		<EsdlElement name='allow_full' type='bool'/>
+		<EsdlElement name='deny_access' type='bool'/>
+		<EsdlElement name='deny_read' type='bool'/>
+		<EsdlElement name='deny_write' type='bool'/>
+		<EsdlElement name='deny_full' type='bool'/>
+	</EsdlStruct>
+	<EsdlResponse name='ResourcePermissionsResponse'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='name' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+		<EsdlArray name='Permissions'  type='ResourcePermission' item_tag='Permission'/>
+	</EsdlResponse>
+	<EsdlRequest name='ResourcePermissionQueryRequest' nil_remove='1'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlEnum name='AccountType' enum_type='AccountTypeReq'/>
+		<EsdlElement name='PageSize' type='unsigned'/>
+		<EsdlElement name='PageStartFrom' type='int64'/>
+		<EsdlEnum name='SortBy' enum_type='ResourcePermissionSortBy'/>
+		<EsdlElement name='Descending' type='bool' default='0'/>
+		<EsdlElement name='CacheHint' type='int64'/>
+	</EsdlRequest>
+	<EsdlResponse name='ResourcePermissionQueryResponse' nil_remove='1'>
+		<EsdlElement name='NoSecMngr' type='bool' default='0'/>
+		<EsdlArray name='Permissions'  type='ResourcePermission' item_tag='Permission'/>
+		<EsdlElement name='TotalResourcePermissions' type='int64'/>
+		<EsdlElement name='CacheHint' type='int64'/>
+	</EsdlResponse>
+	<EsdlStruct name='View'>
+		<EsdlElement name='viewname' type='string'/>
+		<EsdlElement name='description' type='string'/>
+	</EsdlStruct>
+	<EsdlRequest name='QueryViewsRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='QueryViewsResponse'>
+		<EsdlArray name='views'  type='View'/>
+	</EsdlResponse>
+	<EsdlRequest name='AddViewRequest'>
+		<EsdlElement name='viewname' type='string'/>
+		<EsdlElement name='description' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='AddViewResponse'>
+		<EsdlElement name='viewname' type='string'/>
+		<EsdlElement name='description' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='DeleteViewRequest'>
+		<EsdlElement name='viewname' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DeleteViewResponse'>
+		<EsdlElement name='viewname' type='string'/>
+	</EsdlResponse>
+	<EsdlStruct name='ViewColumn'>
+		<EsdlElement name='viewname' type='string'/>
+		<EsdlElement name='filename' type='string'/>
+		<EsdlElement name='columnname' type='string'/>
+	</EsdlStruct>
+	<EsdlRequest name='QueryViewColumnsRequest'>
+		<EsdlElement name='viewname' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='QueryViewColumnsResponse'>
+		<EsdlElement name='viewname' type='string'/>
+		<EsdlArray name='viewcolumns'  type='ViewColumn'/>
+	</EsdlResponse>
+	<EsdlRequest name='AddViewColumnRequest'>
+		<EsdlElement name='viewname' type='string'/>
+		<EsdlElement name='filename' type='string'/>
+		<EsdlElement name='columnname' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='AddViewColumnResponse'>
+		<EsdlElement name='viewname' type='string'/>
+		<EsdlElement name='filename' type='string'/>
+		<EsdlElement name='columnname' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='DeleteViewColumnRequest'>
+		<EsdlElement name='viewname' type='string'/>
+		<EsdlElement name='filename' type='string'/>
+		<EsdlElement name='columnname' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DeleteViewColumnResponse'>
+		<EsdlElement name='viewname' type='string'/>
+		<EsdlElement name='filename' type='string'/>
+		<EsdlElement name='columnname' type='string'/>
+	</EsdlResponse>
+	<EsdlEnumType name='ViewMemberType' base_type='string'>
+		<EsdlEnumItem name='User' enum='User'/>
+		<EsdlEnumItem name='Group' enum='Group'/>
+	</EsdlEnumType>
+	<EsdlStruct name='ViewMember'>
+		<EsdlElement name='viewname' type='string'/>
+		<EsdlElement name='name' type='string'/>
+		<EsdlEnum name='membertype' enum_type='ViewMemberType'/>
+	</EsdlStruct>
+	<EsdlRequest name='QueryViewMembersRequest'>
+		<EsdlElement name='viewname' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='QueryViewMembersResponse'>
+		<EsdlElement name='viewname' type='string'/>
+		<EsdlArray name='viewmembers'  type='ViewMember'/>
+	</EsdlResponse>
+	<EsdlRequest name='AddViewMemberRequest'>
+		<EsdlElement name='viewname' type='string'/>
+		<EsdlElement name='membername' type='string'/>
+		<EsdlEnum name='membertype' enum_type='ViewMemberType'/>
+	</EsdlRequest>
+	<EsdlResponse name='AddViewMemberResponse'>
+		<EsdlElement name='viewname' type='string'/>
+		<EsdlElement name='membername' type='string'/>
+		<EsdlEnum name='membertype' enum_type='ViewMemberType'/>
+	</EsdlResponse>
+	<EsdlRequest name='DeleteViewMemberRequest'>
+		<EsdlElement name='viewname' type='string'/>
+		<EsdlElement name='membername' type='string'/>
+		<EsdlEnum name='membertype' enum_type='ViewMemberType'/>
+	</EsdlRequest>
+	<EsdlResponse name='DeleteViewMemberResponse'>
+		<EsdlElement name='viewname' type='string'/>
+		<EsdlElement name='membername' type='string'/>
+		<EsdlEnum name='membertype' enum_type='ViewMemberType'/>
+	</EsdlResponse>
+	<EsdlRequest name='QueryUserViewColumnsRequest'>
+		<EsdlElement name='username' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='QueryUserViewColumnsResponse'>
+		<EsdlElement name='username' type='string'/>
+		<EsdlArray name='viewcolumns'  type='ViewColumn'/>
+	</EsdlResponse>
+	<EsdlRequest name='PermissionAddRequest'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='rname' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+		<EsdlElement name='BasednName' type='string' min_ver='1.01'/>
+		<EsdlElement name='AccountName' type='string' min_ver='1.01'/>
+		<EsdlElement name='AccountType' type='int' min_ver='1.01'/>
+	</EsdlRequest>
+	<EsdlResponse name='PermissionAddResponse'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='rname' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+		<EsdlElement name='BasednName' type='string' min_ver='1.01'/>
+		<EsdlElement name='AccountName' type='string' min_ver='1.01'/>
+		<EsdlElement name='AccountType' type='int' min_ver='1.01'/>
+		<EsdlElement name='toomany' type='bool'/>
+		<EsdlArray name='Users'  type='UserInfo' item_tag='User'/>
+		<EsdlArray name='Groups'  type='GroupInfo' item_tag='Group'/>
+		<EsdlArray name='Resources'  type='string' min_ver='1.01'/>
+	</EsdlResponse>
+	<EsdlRequest name='PermissionsResetInputRequest'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='rname' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+		<EsdlArray name='names'  type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='PermissionsResetInputResponse'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='rname' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+		<EsdlElement name='toomany' type='bool'/>
+		<EsdlArray name='Users'  type='UserInfo' item_tag='User'/>
+		<EsdlArray name='Groups'  type='GroupInfo' item_tag='Group'/>
+		<EsdlArray name='Resources'  type='string' item_tag='Resource'/>
+		<EsdlElement name='ResourceList' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='PermissionsResetRequest'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='rname' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+		<EsdlArray name='names'  type='string'/>
+		<EsdlElement name='allow_access' type='bool'/>
+		<EsdlElement name='allow_read' type='bool'/>
+		<EsdlElement name='allow_write' type='bool'/>
+		<EsdlElement name='allow_full' type='bool'/>
+		<EsdlElement name='deny_access' type='bool'/>
+		<EsdlElement name='deny_read' type='bool'/>
+		<EsdlElement name='deny_write' type='bool'/>
+		<EsdlElement name='deny_full' type='bool'/>
+		<EsdlElement name='userarray' type='string'/>
+		<EsdlElement name='grouparray' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='PermissionsResetResponse'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='rname' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+		<EsdlElement name='retcode' type='int'/>
+		<EsdlElement name='retmsg' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='ClearPermissionsCacheRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='ClearPermissionsCacheResponse'>
+		<EsdlElement name='retcode' type='int'/>
+	</EsdlResponse>
+	<EsdlRequest name='QueryScopeScansEnabledRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='QueryScopeScansEnabledResponse'>
+		<EsdlElement name='scopeScansStatus' complex_type='ScopeScanStatusStruct' min_ver='1.08'/>
+	</EsdlResponse>
+	<EsdlRequest name='EnableScopeScansRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='EnableScopeScansResponse'>
+		<EsdlElement name='scopeScansStatus' complex_type='ScopeScanStatusStruct' min_ver='1.08'/>
+	</EsdlResponse>
+	<EsdlRequest name='DisableScopeScansRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='DisableScopeScansResponse'>
+		<EsdlElement name='scopeScansStatus' complex_type='ScopeScanStatusStruct' min_ver='1.08'/>
+	</EsdlResponse>
+	<EsdlRequest name='PermissionActionRequest'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='rname' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+		<EsdlElement name='action' type='string'/>
+		<EsdlElement name='account_name' type='string'/>
+		<EsdlElement name='account_type' type='int'/>
+		<EsdlElement name='allow_access' type='bool'/>
+		<EsdlElement name='allow_read' type='bool'/>
+		<EsdlElement name='allow_write' type='bool'/>
+		<EsdlElement name='allow_full' type='bool'/>
+		<EsdlElement name='deny_access' type='bool'/>
+		<EsdlElement name='deny_read' type='bool'/>
+		<EsdlElement name='deny_write' type='bool'/>
+		<EsdlElement name='deny_full' type='bool'/>
+		<EsdlElement name='user' type='string'/>
+		<EsdlElement name='group' type='string'/>
+		<EsdlElement name='BasednName' type='string' min_ver='1.01'/>
+		<EsdlElement name='ResourceName' type='string' min_ver='1.01'/>
+	</EsdlRequest>
+	<EsdlResponse name='PermissionActionResponse'>
+		<EsdlElement name='basedn' type='string'/>
+		<EsdlElement name='rtype' type='string'/>
+		<EsdlElement name='rname' type='string'/>
+		<EsdlElement name='rtitle' type='string'/>
+		<EsdlElement name='prefix' type='string'/>
+		<EsdlElement name='AccountName' type='string' min_ver='1.01'/>
+		<EsdlElement name='IsGroup' type='bool' min_ver='1.01'/>
+		<EsdlElement name='retcode' type='int'/>
+		<EsdlElement name='retmsg' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='AccountPermissionsRequest'>
+		<EsdlElement name='AccountName' type='string'/>
+		<EsdlElement name='IsGroup' type='bool'/>
+		<EsdlElement name='IncludeGroup' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='AccountPermissionsResponse'>
+		<EsdlElement name='AccountName' type='string'/>
+		<EsdlElement name='IsGroup' type='bool'/>
+		<EsdlElement name='IncludeGroup' type='bool' min_ver='1.03'/>
+		<EsdlArray name='BasednNames'  type='string'/>
+		<EsdlArray name='Permissions'  type='AccountPermission' item_tag='Permission'/>
+		<EsdlArray name='GroupPermissions'  type='GroupAccountPermission' item_tag='GroupPermission' min_ver='1.03'/>
+	</EsdlResponse>
+	<EsdlRequest name='FilePermissionRequest' nil_remove='1'>
+		<EsdlElement name='FileName' type='string'/>
+		<EsdlElement name='UserName' type='string'/>
+		<EsdlElement name='GroupName' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='FilePermissionResponse' nil_remove='1'>
+		<EsdlElement name='NoSecMngr' type='bool' default='0' min_ver='1.04'/>
+		<EsdlElement name='FileName' type='string'/>
+		<EsdlElement name='UserName' type='string'/>
+		<EsdlElement name='GroupName' type='string'/>
+		<EsdlElement name='toomany' type='bool'/>
+		<EsdlArray name='Users'  type='UserInfo' item_tag='User'/>
+		<EsdlArray name='Groups'  type='GroupInfo' item_tag='Group'/>
+		<EsdlElement name='UserPermission' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='UserAccountExportRequest' nil_remove='1'>
+		<EsdlArray name='usernames'  type='string'/>
+		<EsdlArray name='groupnames'  type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='UserAccountExportResponse' nil_remove='1'>
+		<EsdlElement name='Result' type='binary' http_content='application/octet-stream'/>
+	</EsdlResponse>
+	<EsdlRequest name='ws_accessPingRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='ws_accessPingResponse'>
+	</EsdlResponse>
+		<EsdlService name='ws_access'  exceptions_inline='./smc_xslt/exceptions.xslt' auth_feature='NONE' version='1.12'>
+	<EsdlMethod name='AccountPermissions' request_type='AccountPermissionsRequest' response_type='AccountPermissionsResponse'  client_xslt='/esp/xslt/access_accountpermissions.xslt'/>
+	<EsdlMethod name='AddUser' request_type='AddUserRequest' response_type='AddUserResponse'  client_xslt='/esp/xslt/access_adduser.xslt'/>
+	<EsdlMethod name='AddView' request_type='AddViewRequest' response_type='AddViewResponse'  min_ver='1.10'/>
+	<EsdlMethod name='AddViewColumn' request_type='AddViewColumnRequest' response_type='AddViewColumnResponse'  min_ver='1.10'/>
+	<EsdlMethod name='AddViewMember' request_type='AddViewMemberRequest' response_type='AddViewMemberResponse'  min_ver='1.10'/>
+	<EsdlMethod name='ClearPermissionsCache' request_type='ClearPermissionsCacheRequest' response_type='ClearPermissionsCacheResponse'  client_xslt='/esp/xslt/access_clearpermissionscache.xslt'/>
+	<EsdlMethod name='DeleteView' request_type='DeleteViewRequest' response_type='DeleteViewResponse'  min_ver='1.10'/>
+	<EsdlMethod name='DeleteViewColumn' request_type='DeleteViewColumnRequest' response_type='DeleteViewColumnResponse'  min_ver='1.10'/>
+	<EsdlMethod name='DeleteViewMember' request_type='DeleteViewMemberRequest' response_type='DeleteViewMemberResponse'  min_ver='1.10'/>
+	<EsdlMethod name='DisableScopeScans' request_type='DisableScopeScansRequest' response_type='DisableScopeScansResponse'  client_xslt='/esp/xslt/access_disablescopescans.xslt'/>
+	<EsdlMethod name='EnableScopeScans' request_type='EnableScopeScansRequest' response_type='EnableScopeScansResponse'  client_xslt='/esp/xslt/access_enablescopescans.xslt'/>
+	<EsdlMethod name='FilePermission' request_type='FilePermissionRequest' response_type='FilePermissionResponse'  client_xslt='/esp/xslt/access_filepermission.xslt'/>
+	<EsdlMethod name='GroupAction' request_type='GroupActionRequest' response_type='GroupActionResponse'  client_xslt='/esp/xslt/access_groupdelete.xslt'/>
+	<EsdlMethod name='GroupAdd' request_type='GroupAddRequest' response_type='GroupAddResponse'  client_xslt='/esp/xslt/access_groupadd.xslt'/>
+	<EsdlMethod name='GroupEdit' request_type='GroupEditRequest' response_type='GroupEditResponse'  client_xslt='/esp/xslt/access_groupedit.xslt'/>
+	<EsdlMethod name='GroupMemberEdit' request_type='GroupMemberEditRequest' response_type='GroupMemberEditResponse'  client_xslt='/esp/xslt/access_groupmemberedit.xslt'/>
+	<EsdlMethod name='GroupMemberEditInput' request_type='GroupMemberEditInputRequest' response_type='GroupMemberEditInputResponse'  client_xslt='/esp/xslt/access_groupmembereditinput.xslt'/>
+	<EsdlMethod name='GroupMemberQuery' request_type='GroupMemberQueryRequest' response_type='GroupMemberQueryResponse' />
+	<EsdlMethod name='GroupQuery' request_type='GroupQueryRequest' response_type='GroupQueryResponse' />
+	<EsdlMethod name='Groups' request_type='GroupRequest' response_type='GroupResponse'  client_xslt='/esp/xslt/access_groups.xslt'/>
+	<EsdlMethod name='PermissionAction' request_type='PermissionActionRequest' response_type='PermissionActionResponse'  client_xslt='/esp/xslt/access_permissionchange.xslt'/>
+	<EsdlMethod name='PermissionAddInput' request_type='PermissionAddRequest' response_type='PermissionAddResponse'  client_xslt='/esp/xslt/access_permissionaddinput.xslt'/>
+	<EsdlMethod name='Permissions' request_type='BasednsRequest' response_type='BasednsResponse'  client_xslt='/esp/xslt/access_basedns.xslt'/>
+	<EsdlMethod name='PermissionsReset' request_type='PermissionsResetRequest' response_type='PermissionsResetResponse'  client_xslt='/esp/xslt/access_permissionsreset.xslt'/>
+	<EsdlMethod name='PermissionsResetInput' request_type='PermissionsResetInputRequest' response_type='PermissionsResetInputResponse'  client_xslt='/esp/xslt/access_permissionresetinput.xslt'/>
+	<EsdlMethod name='Ping' request_type='ws_accessPingRequest' response_type='ws_accessPingResponse' />
+	<EsdlMethod name='QueryScopeScansEnabled' request_type='QueryScopeScansEnabledRequest' response_type='QueryScopeScansEnabledResponse' />
+	<EsdlMethod name='QueryUserViewColumns' request_type='QueryUserViewColumnsRequest' response_type='QueryUserViewColumnsResponse'  min_ver='1.10'/>
+	<EsdlMethod name='QueryViewColumns' request_type='QueryViewColumnsRequest' response_type='QueryViewColumnsResponse'  min_ver='1.10'/>
+	<EsdlMethod name='QueryViewMembers' request_type='QueryViewMembersRequest' response_type='QueryViewMembersResponse'  min_ver='1.10'/>
+	<EsdlMethod name='QueryViews' request_type='QueryViewsRequest' response_type='QueryViewsResponse'  min_ver='1.10'/>
+	<EsdlMethod name='ResourceAdd' request_type='ResourceAddRequest' response_type='ResourceAddResponse'  client_xslt='/esp/xslt/access_resourceadd.xslt'/>
+	<EsdlMethod name='ResourceAddInput' request_type='ResourceAddInputRequest' response_type='ResourceAddInputResponse'  client_xslt='/esp/xslt/access_resourceaddinput.xslt'/>
+	<EsdlMethod name='ResourceDelete' request_type='ResourceDeleteRequest' response_type='ResourceDeleteResponse'  client_xslt='/esp/xslt/access_resourcedelete.xslt'/>
+	<EsdlMethod name='ResourcePermissionQuery' request_type='ResourcePermissionQueryRequest' response_type='ResourcePermissionQueryResponse'  min_ver='1.11'/>
+	<EsdlMethod name='ResourcePermissions' request_type='ResourcePermissionsRequest' response_type='ResourcePermissionsResponse'  client_xslt='/esp/xslt/access_permissions.xslt'/>
+	<EsdlMethod name='ResourceQuery' request_type='ResourceQueryRequest' response_type='ResourceQueryResponse' />
+	<EsdlMethod name='Resources' request_type='ResourcesRequest' response_type='ResourcesResponse'  client_xslt='/esp/xslt/access_resources.xslt'/>
+	<EsdlMethod name='UserAccountExport' request_type='UserAccountExportRequest' response_type='UserAccountExportResponse' />
+	<EsdlMethod name='UserAction' request_type='UserActionRequest' response_type='UserActionResponse'  client_xslt='/esp/xslt/access_useraction.xslt'/>
+	<EsdlMethod name='UserEdit' request_type='UserEditRequest' response_type='UserEditResponse'  client_xslt='/esp/xslt/access_useredit.xslt'/>
+	<EsdlMethod name='UserGroupEdit' request_type='UserGroupEditRequest' response_type='UserGroupEditResponse'  client_xslt='/esp/xslt/access_usergroupedit.xslt'/>
+	<EsdlMethod name='UserGroupEditInput' request_type='UserGroupEditInputRequest' response_type='UserGroupEditInputResponse'  client_xslt='/esp/xslt/access_usergroupeditinput.xslt'/>
+	<EsdlMethod name='UserInfoEdit' request_type='UserInfoEditRequest' response_type='UserInfoEditResponse'  client_xslt='/esp/xslt/access_userinfoedit.xslt'/>
+	<EsdlMethod name='UserInfoEditInput' request_type='UserInfoEditInputRequest' response_type='UserInfoEditInputResponse'  client_xslt='/esp/xslt/access_userinfoeditinput.xslt'/>
+	<EsdlMethod name='UserPosix' request_type='UserPosixRequest' response_type='UserPosixResponse'  client_xslt='/esp/xslt/access_posix.xslt'/>
+	<EsdlMethod name='UserPosixInput' request_type='UserPosixInputRequest' response_type='UserPosixInputResponse'  client_xslt='/esp/xslt/access_posixinput.xslt'/>
+	<EsdlMethod name='UserQuery' request_type='UserQueryRequest' response_type='UserQueryResponse' />
+	<EsdlMethod name='UserResetPass' request_type='UserResetPassRequest' response_type='UserResetPassResponse'  client_xslt='/esp/xslt/access_resetpass.xslt'/>
+	<EsdlMethod name='UserResetPassInput' request_type='UserResetPassInputRequest' response_type='UserResetPassInputResponse'  client_xslt='/esp/xslt/access_resetpassinput.xslt'/>
+	<EsdlMethod name='UserSudoers' request_type='UserSudoersRequest' response_type='UserSudoersResponse'  client_xslt='/esp/xslt/access_sudoers.xslt'/>
+	<EsdlMethod name='UserSudoersInput' request_type='UserSudoersInputRequest' response_type='UserSudoersInputResponse'  client_xslt='/esp/xslt/access_sudoersinput.xslt'/>
+	<EsdlMethod name='Users' request_type='UserRequest' response_type='UserResponse'  client_xslt='/esp/xslt/access_users.xslt'/>
+		</EsdlService></esxdl>

@@ -1,0 +1,16 @@
+[Unit]
+Description=%i
+After=network.target remote-fs.target 
+
+[Service]
+Type=oneshot
+User=hpcc
+Group=hpcc
+PermissionsStartOnly=true
+PIDFile=/var/run/HPCCSystems/%i.pid
+EnvironmentFile=/var/lib/HPCCSystems/%i.cfg
+ExecStart=/opt/HPCCSystems/sbin/backup.sh 
+RemainAfterExit=yes
+
+[Install]
+DefaultInstance=mybackupnode

@@ -1,0 +1,1 @@
+/usr/bin/cc -g   CMakeFiles/start-stop-daemon.dir/start-stop-daemon.c.o  -o ../../Debug/bin/start-stop-daemon -Wl,-rpath,::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: 

@@ -1,0 +1,502 @@
+<esxdl name="ws_fs">
+	<EsdlEnumType name='DFUWUActions' base_type='string'>
+		<EsdlEnumItem name='Delete' enum='Delete'/>
+		<EsdlEnumItem name='Protect' enum='Protect'/>
+		<EsdlEnumItem name='Unprotect' enum='Unprotect'/>
+		<EsdlEnumItem name='Restore' enum='Restore'/>
+		<EsdlEnumItem name='SetToFailed' enum='SetToFailed'/>
+	</EsdlEnumType>
+	<EsdlStruct name='DFUWorkunit' nil_remove='1'>
+		<EsdlElement name='ID' type='string'/>
+		<EsdlElement name='DFUServerName' type='string' min_ver='1.06'/>
+		<EsdlElement name='ClusterName' type='string'/>
+		<EsdlElement name='JobName' type='string'/>
+		<EsdlElement name='Queue' type='string'/>
+		<EsdlElement name='User' type='string'/>
+		<EsdlElement name='isProtected' type='bool'/>
+		<EsdlElement name='Command' type='int'/>
+		<EsdlElement name='CommandMessage' type='string' min_ver='1.03'/>
+		<EsdlElement name='PercentDone' type='int'/>
+		<EsdlElement name='SecsLeft' type='int'/>
+		<EsdlElement name='ProgressMessage' type='string'/>
+		<EsdlElement name='SummaryMessage' type='string'/>
+		<EsdlElement name='State' type='int'/>
+		<EsdlElement name='SourceLogicalName' type='string'/>
+		<EsdlElement name='SourceIP' type='string'/>
+		<EsdlElement name='SourceFilePath' type='string'/>
+		<EsdlElement name='SourceDali' type='string'/>
+		<EsdlElement name='SourceRecordSize' type='int'/>
+		<EsdlElement name='SourceFormat' type='int'/>
+		<EsdlElement name='RowTag' type='string'/>
+		<EsdlElement name='SourceNumParts' type='int'/>
+		<EsdlElement name='SourceDirectory' type='string'/>
+		<EsdlElement name='DestLogicalName' type='string'/>
+		<EsdlElement name='DestGroupName' type='string'/>
+		<EsdlElement name='DestDirectory' type='string'/>
+		<EsdlElement name='DestIP' type='string'/>
+		<EsdlElement name='DestFilePath' type='string'/>
+		<EsdlElement name='DestFormat' type='int'/>
+		<EsdlElement name='DestNumParts' type='int'/>
+		<EsdlElement name='DestRecordSize' type='int'/>
+		<EsdlElement name='Replicate' type='bool'/>
+		<EsdlElement name='Overwrite' type='bool'/>
+		<EsdlElement name='Compress' type='bool'/>
+		<EsdlElement name='SourceCsvSeparate' type='string' min_ver='1.04'/>
+		<EsdlElement name='SourceCsvQuote' type='string' min_ver='1.04'/>
+		<EsdlElement name='SourceCsvTerminate' type='string' min_ver='1.04'/>
+		<EsdlElement name='SourceCsvEscape' type='string' min_ver='1.05'/>
+		<EsdlElement name='TimeStarted' type='string'/>
+		<EsdlElement name='TimeStopped' type='string'/>
+		<EsdlElement name='StateMessage' type='string'/>
+		<EsdlElement name='MonitorEventName' type='string'/>
+		<EsdlElement name='MonitorSub' type='bool'/>
+		<EsdlElement name='MonitorShotLimit' type='int'/>
+		<EsdlElement name='SourceDiffKeyName' type='string'/>
+		<EsdlElement name='DestDiffKeyName' type='string'/>
+		<EsdlElement name='Archived' type='bool' default='0' min_ver='1.03'/>
+		<EsdlElement name='encrypt' type='string'/>
+		<EsdlElement name='decrypt' type='string'/>
+		<EsdlElement name='failIfNoSourceFile' type='bool' default='0' min_ver='1.08'/>
+		<EsdlElement name='recordStructurePresent' type='bool' default='0' min_ver='1.09'/>
+		<EsdlElement name='quotedTerminator' type='bool' default='1' min_ver='1.10'/>
+		<EsdlElement name='preserveCompression' type='bool' default='1' min_ver='1.12'/>
+		<EsdlElement name='expireDays' type='int' min_ver='1.14'/>
+	</EsdlStruct>
+	<EsdlStruct name='GroupNode' nil_remove='1'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='ClusterType' type='string'/>
+		<EsdlElement name='ReplicateOutputs' type='bool'/>
+	</EsdlStruct>
+	<EsdlStruct name='DFUException'>
+		<EsdlElement name='Code' type='int'/>
+		<EsdlElement name='Message' type='string'/>
+	</EsdlStruct>
+	<EsdlStruct name='DFUActionResult' nil_remove='1'>
+		<EsdlElement name='ID' type='string'/>
+		<EsdlElement name='Action' type='string'/>
+		<EsdlElement name='Result' type='string'/>
+	</EsdlStruct>
+	<EsdlRequest name='DFUWUSearchRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='DFUWUSearchResponse' exceptions_inline='1'>
+		<EsdlArray name='ClusterNames'  type='string' item_tag='ClusterName'/>
+	</EsdlResponse>
+	<EsdlRequest name='GetDFUWorkunits'>
+		<EsdlElement name='Wuid' type='string' min_ver='1.12'/>
+		<EsdlElement name='Owner' type='string'/>
+		<EsdlElement name='Cluster' type='string'/>
+		<EsdlElement name='StateReq' type='string'/>
+		<EsdlElement name='Type' type='string' min_ver='1.03'/>
+		<EsdlElement name='Jobname' type='string' min_ver='1.03'/>
+		<EsdlElement name='PageSize' type='int64'/>
+		<EsdlElement name='CurrentPage' type='int'/>
+		<EsdlElement name='PageStartFrom' type='int64' default='-1' min_ver='1.01'/>
+		<EsdlElement name='Sortby' type='string'/>
+		<EsdlElement name='Descending' type='bool' default='0'/>
+		<EsdlElement name='CacheHint' type='int64' default='-1'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetDFUWorkunitsResponse' exceptions_inline='1' encode='0'>
+		<EsdlArray name='results'  type='DFUWorkunit'/>
+		<EsdlElement name='Type' type='string' min_ver='1.03'/>
+		<EsdlElement name='Owner' type='string'/>
+		<EsdlElement name='Cluster' type='string'/>
+		<EsdlElement name='StateReq' type='string'/>
+		<EsdlElement name='PageSize' type='int64'/>
+		<EsdlElement name='PrevPage' type='int64'/>
+		<EsdlElement name='NextPage' type='int64'/>
+		<EsdlElement name='LastPage' type='int64' default='-1' min_ver='1.01'/>
+		<EsdlElement name='NumWUs' type='int64'/>
+		<EsdlElement name='PageStartFrom' type='int64' default='-1' min_ver='1.01'/>
+		<EsdlElement name='PageEndAt' type='int64' min_ver='1.01'/>
+		<EsdlElement name='First' type='bool' default='1'/>
+		<EsdlElement name='Sortby' type='string'/>
+		<EsdlElement name='Descending' type='bool' default='0'/>
+		<EsdlElement name='BasicQuery' type='string'/>
+		<EsdlElement name='Filters' type='string'/>
+		<EsdlElement name='CacheHint' type='int64' min_ver='1.07'/>
+	</EsdlResponse>
+	<EsdlRequest name='ProgressRequest' exceptions_inline='1'>
+		<EsdlElement name='wuid' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='ProgressResponse' exceptions_inline='1' encode='0'>
+		<EsdlElement name='wuid' type='string'/>
+		<EsdlElement name='PercentDone' type='int'/>
+		<EsdlElement name='SecsLeft' type='int'/>
+		<EsdlElement name='KbPerSecAve' type='int'/>
+		<EsdlElement name='KbPerSec' type='int'/>
+		<EsdlElement name='SlavesDone' type='int'/>
+		<EsdlElement name='TimeTaken' type='string'/>
+		<EsdlElement name='ProgressMessage' type='string'/>
+		<EsdlElement name='SummaryMessage' type='string'/>
+		<EsdlElement name='State' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='GetDFUWorkunit'>
+		<EsdlElement name='wuid' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetDFUWorkunitResponse' exceptions_inline='1'>
+		<EsdlElement name='result' complex_type='DFUWorkunit'/>
+		<EsdlElement name='AutoRefresh' type='int' default='0'/>
+	</EsdlResponse>
+	<EsdlRequest name='CreateDFUWorkunit'>
+		<EsdlElement name='DFUServerQueue' type='string' min_ver='1.14'/>
+	</EsdlRequest>
+	<EsdlResponse name='CreateDFUWorkunitResponse' exceptions_inline='1'>
+		<EsdlElement name='result' complex_type='DFUWorkunit'/>
+	</EsdlResponse>
+	<EsdlRequest name='UpdateDFUWorkunit'>
+		<EsdlElement name='wu' complex_type='DFUWorkunit'/>
+		<EsdlElement name='ClusterOrig' type='string'/>
+		<EsdlElement name='JobNameOrig' type='string'/>
+		<EsdlElement name='isProtectedOrig' type='bool'/>
+		<EsdlElement name='StateOrig' type='int'/>
+	</EsdlRequest>
+	<EsdlResponse name='UpdateDFUWorkunitResponse' exceptions_inline='1'>
+	</EsdlResponse>
+	<EsdlRequest name='DeleteDFUWorkunit'>
+		<EsdlElement name='wuid' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DeleteDFUWorkunitResponse' exceptions_inline='1'>
+		<EsdlElement name='result' type='bool'/>
+	</EsdlResponse>
+	<EsdlRequest name='DeleteDFUWorkunits'>
+		<EsdlArray name='wuids'  type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DeleteDFUWorkunitsResponse' exceptions_inline='1'>
+	</EsdlResponse>
+	<EsdlRequest name='DFUWorkunitsActionRequest'>
+		<EsdlArray name='wuids'  type='string'/>
+		<EsdlEnum name='Type' enum_type='DFUWUActions'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUWorkunitsActionResponse' exceptions_inline='1'>
+		<EsdlElement name='FirstColumn' type='string' default='WUID'/>
+		<EsdlArray name='DFUActionResults'  type='DFUActionResult'/>
+	</EsdlResponse>
+	<EsdlRequest name='SubmitDFUWorkunit'>
+		<EsdlElement name='wuid' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='SubmitDFUWorkunitResponse' exceptions_inline='1'>
+	</EsdlResponse>
+	<EsdlRequest name='AbortDFUWorkunit'>
+		<EsdlElement name='wuid' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='AbortDFUWorkunitResponse' exceptions_inline='1'>
+	</EsdlResponse>
+	<EsdlRequest name='GetDFUExceptions'>
+		<EsdlElement name='wuid' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetDFUExceptionsResponse' exceptions_inline='1'>
+		<EsdlArray name='result'  type='DFUException'/>
+	</EsdlResponse>
+	<EsdlRequest name='SprayFixed' nil_remove='1'>
+		<EsdlElement name='sourceIP' type='string'/>
+		<EsdlElement name='sourcePath' type='string'/>
+		<EsdlElement name='srcxml' type='binary'/>
+		<EsdlElement name='sourceFormat' type='string' min_ver='1.09'/>
+		<EsdlElement name='sourceRecordSize' type='int'/>
+		<EsdlElement name='destGroup' type='string'/>
+		<EsdlElement name='destLogicalName' type='string'/>
+		<EsdlElement name='overwrite' type='bool'/>
+		<EsdlElement name='replicate' type='bool'/>
+		<EsdlElement name='ReplicateOffset' type='int' default='1'/>
+		<EsdlElement name='maxConnections' type='int'/>
+		<EsdlElement name='throttle' type='int'/>
+		<EsdlElement name='transferBufferSize' type='int'/>
+		<EsdlElement name='prefix' type='string'/>
+		<EsdlElement name='nosplit' type='bool' default='0'/>
+		<EsdlElement name='norecover' type='bool' default='0'/>
+		<EsdlElement name='compress' type='bool' default='0'/>
+		<EsdlElement name='push' type='bool' default='0'/>
+		<EsdlElement name='pull' type='bool' default='0'/>
+		<EsdlElement name='encrypt' type='string'/>
+		<EsdlElement name='decrypt' type='string'/>
+		<EsdlElement name='wrap' type='bool' default='0'/>
+		<EsdlElement name='failIfNoSourceFile' type='bool' default='0' min_ver='1.08'/>
+		<EsdlElement name='recordStructurePresent' type='bool' default='0' min_ver='1.09'/>
+		<EsdlElement name='quotedTerminator' type='bool' default='1' min_ver='1.10'/>
+		<EsdlElement name='expireDays' type='int' min_ver='1.14'/>
+		<EsdlElement name='DFUServerQueue' type='string' min_ver='1.14'/>
+	</EsdlRequest>
+	<EsdlResponse name='SprayFixedResponse' exceptions_inline='1'>
+		<EsdlElement name='wuid' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='SprayVariable' nil_remove='1'>
+		<EsdlElement name='sourceIP' type='string'/>
+		<EsdlElement name='sourcePath' type='string'/>
+		<EsdlElement name='srcxml' type='binary'/>
+		<EsdlElement name='sourceMaxRecordSize' type='int'/>
+		<EsdlElement name='sourceFormat' type='int'/>
+		<EsdlElement name='NoSourceCsvSeparator' type='bool' default='0'/>
+		<EsdlElement name='sourceCsvSeparate' type='string'/>
+		<EsdlElement name='sourceCsvTerminate' type='string'/>
+		<EsdlElement name='sourceCsvQuote' type='string'/>
+		<EsdlElement name='sourceCsvEscape' type='string'/>
+		<EsdlElement name='sourceRowTag' type='string'/>
+		<EsdlElement name='destGroup' type='string'/>
+		<EsdlElement name='destLogicalName' type='string'/>
+		<EsdlElement name='overwrite' type='bool'/>
+		<EsdlElement name='replicate' type='bool'/>
+		<EsdlElement name='ReplicateOffset' type='int' default='1'/>
+		<EsdlElement name='maxConnections' type='int'/>
+		<EsdlElement name='throttle' type='int'/>
+		<EsdlElement name='transferBufferSize' type='int'/>
+		<EsdlElement name='prefix' type='string'/>
+		<EsdlElement name='nosplit' type='bool' default='0'/>
+		<EsdlElement name='norecover' type='bool' default='0'/>
+		<EsdlElement name='compress' type='bool' default='0'/>
+		<EsdlElement name='push' type='bool' default='0'/>
+		<EsdlElement name='pull' type='bool' default='0'/>
+		<EsdlElement name='encrypt' type='string'/>
+		<EsdlElement name='decrypt' type='string'/>
+		<EsdlElement name='failIfNoSourceFile' type='bool' default='0' min_ver='1.08'/>
+		<EsdlElement name='recordStructurePresent' type='bool' default='0' min_ver='1.09'/>
+		<EsdlElement name='quotedTerminator' type='bool' default='1' min_ver='1.10'/>
+		<EsdlElement name='sourceRowPath' type='string' min_ver='1.11'/>
+		<EsdlElement name='isJSON' type='bool' default='0' min_ver='1.11'/>
+		<EsdlElement name='expireDays' type='int' min_ver='1.14'/>
+		<EsdlElement name='DFUServerQueue' type='string' min_ver='1.14'/>
+	</EsdlRequest>
+	<EsdlResponse name='SprayResponse' exceptions_inline='1'>
+		<EsdlElement name='wuid' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='Replicate' nil_remove='1'>
+		<EsdlElement name='sourceLogicalName' type='string'/>
+		<EsdlElement name='replicateOffset' type='int' default='1'/>
+		<EsdlElement name='cluster' type='string'/>
+		<EsdlElement name='repeatLast' type='bool' default='0'/>
+		<EsdlElement name='onlyRepeated' type='bool' default='0'/>
+		<EsdlElement name='DFUServerQueue' type='string' min_ver='1.14'/>
+	</EsdlRequest>
+	<EsdlResponse name='ReplicateResponse' exceptions_inline='1'>
+		<EsdlElement name='wuid' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='Despray'>
+		<EsdlElement name='sourceLogicalName' type='string'/>
+		<EsdlElement name='destIP' type='string'/>
+		<EsdlElement name='destPath' type='string'/>
+		<EsdlElement name='dstxml' type='binary'/>
+		<EsdlElement name='overwrite' type='bool'/>
+		<EsdlElement name='maxConnections' type='int'/>
+		<EsdlElement name='throttle' type='int'/>
+		<EsdlElement name='transferBufferSize' type='int'/>
+		<EsdlElement name='splitprefix' type='string'/>
+		<EsdlElement name='norecover' type='bool' default='0'/>
+		<EsdlElement name='wrap' type='bool' default='0'/>
+		<EsdlElement name='multiCopy' type='bool' default='0'/>
+		<EsdlElement name='SingleConnection' type='bool' min_ver='1.02'/>
+		<EsdlElement name='DFUServerQueue' type='string' min_ver='1.14'/>
+		<EsdlElement name='compress' type='bool' default='0'/>
+		<EsdlElement name='encrypt' type='string'/>
+		<EsdlElement name='decrypt' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DesprayResponse' exceptions_inline='1'>
+		<EsdlElement name='wuid' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='Copy' nil_remove='1'>
+		<EsdlElement name='sourceLogicalName' type='string'/>
+		<EsdlElement name='destGroup' type='string'/>
+		<EsdlElement name='destGroupRoxie' type='string'/>
+		<EsdlElement name='destLogicalName' type='string'/>
+		<EsdlElement name='sourceDali' type='string'/>
+		<EsdlElement name='srcusername' type='string'/>
+		<EsdlElement name='srcpassword' type='string'/>
+		<EsdlElement name='overwrite' type='bool'/>
+		<EsdlElement name='replicate' type='bool'/>
+		<EsdlElement name='ReplicateOffset' type='int' default='1'/>
+		<EsdlElement name='maxConnections' type='int'/>
+		<EsdlElement name='throttle' type='int'/>
+		<EsdlElement name='transferBufferSize' type='int'/>
+		<EsdlElement name='nosplit' type='bool'/>
+		<EsdlElement name='norecover' type='bool' default='0'/>
+		<EsdlElement name='compress' type='bool' default='0'/>
+		<EsdlElement name='Wrap' type='bool' default='0'/>
+		<EsdlElement name='Multicopy' type='bool' default='0'/>
+		<EsdlElement name='SourceDiffKeyName' type='string'/>
+		<EsdlElement name='DestDiffKeyName' type='string'/>
+		<EsdlElement name='superCopy' type='bool' default='0'/>
+		<EsdlElement name='push' type='bool' default='0'/>
+		<EsdlElement name='pull' type='bool' default='0'/>
+		<EsdlElement name='ifnewer' type='bool' default='0'/>
+		<EsdlElement name='encrypt' type='string'/>
+		<EsdlElement name='decrypt' type='string'/>
+		<EsdlElement name='preserveCompression' type='bool' default='1' min_ver='1.12'/>
+		<EsdlElement name='DFUServerQueue' type='string' min_ver='1.14'/>
+		<EsdlElement name='ExpireDays' type='int' min_ver='1.17'/>
+	</EsdlRequest>
+	<EsdlResponse name='CopyResponse' exceptions_inline='1'>
+		<EsdlElement name='result' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='EchoDateTime'>
+		<EsdlElement name='dt' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='EchoDateTimeResponse'>
+		<EsdlElement name='result' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='Rename'>
+		<EsdlElement name='srcname' type='string'/>
+		<EsdlElement name='dstname' type='string'/>
+		<EsdlElement name='overwrite' type='bool'/>
+		<EsdlElement name='DFUServerQueue' type='string' min_ver='1.14'/>
+	</EsdlRequest>
+	<EsdlResponse name='RenameResponse' exceptions_inline='1'>
+		<EsdlElement name='wuid' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='DFUWUFileRequest'>
+		<EsdlElement name='Wuid' type='string'/>
+		<EsdlElement name='Type' type='string'/>
+		<EsdlElement name='PlainText' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DFUWUFileResponse' exceptions_inline='1'>
+		<EsdlElement name='file' type='string' http_content='text/xml'/>
+	</EsdlResponse>
+	<EsdlRequest name='FileListRequest'>
+		<EsdlElement name='Netaddr' type='string'/>
+		<EsdlElement name='Path' type='string'/>
+		<EsdlElement name='Mask' type='string'/>
+		<EsdlElement name='OS' type='string'/>
+		<EsdlElement name='DirectoryOnly' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlStruct name='PhysicalFileStruct'>
+		<EsdlElement name='name' type='string'/>
+		<EsdlElement name='isDir' type='bool'/>
+		<EsdlElement name='filesize' type='int64'/>
+		<EsdlElement name='modifiedtime' type='string'/>
+		<EsdlElement name='Path' type='string' min_ver='1.13'/>
+		<EsdlArray name='Files'  type='PhysicalFileStruct' min_ver='1.13'/>
+	</EsdlStruct>
+	<EsdlResponse name='FileListResponse' exceptions_inline='1'>
+		<EsdlElement name='Netaddr' type='string'/>
+		<EsdlElement name='Path' type='string'/>
+		<EsdlElement name='Mask' type='string'/>
+		<EsdlElement name='OS' type='int'/>
+		<EsdlElement name='DirectoryOnly' type='bool' default='0'/>
+		<EsdlElement name='AcceptLanguage' type='string' min_ver='1.10'/>
+		<EsdlArray name='files'  type='PhysicalFileStruct'/>
+	</EsdlResponse>
+	<EsdlRequest name='DropZoneFileSearchRequest' nil_remove='1'>
+		<EsdlElement name='DropZoneName' type='string'/>
+		<EsdlElement name='Server' type='string' min_ver='1.15'/>
+		<EsdlElement name='ECLWatchVisibleOnly' type='bool' default='0' min_ver='1.15'/>
+		<EsdlElement name='NameFilter' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DropZoneFileSearchResponse' exceptions_inline='1'>
+		<EsdlArray name='Files'  type='PhysicalFileStruct'/>
+		<EsdlElement name='Warning' type='string' min_ver='1.16'/>
+	</EsdlResponse>
+	<EsdlRequest name='OpenSaveRequest'>
+		<EsdlElement name='Location' type='string'/>
+		<EsdlElement name='Path' type='string'/>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Type' type='string'/>
+		<EsdlElement name='DateTime' type='string'/>
+		<EsdlElement name='BinaryFile' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='OpenSaveResponse' exceptions_inline='1'>
+		<EsdlElement name='Location' type='string'/>
+		<EsdlElement name='Path' type='string'/>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='Type' type='string'/>
+		<EsdlElement name='DateTime' type='string'/>
+		<EsdlElement name='Viewable' type='bool' default='1'/>
+	</EsdlResponse>
+	<EsdlRequest name='DfuMonitorRequest'>
+		<EsdlElement name='EventName' type='string'/>
+		<EsdlElement name='LogicalName' type='string'/>
+		<EsdlElement name='Ip' type='string'/>
+		<EsdlElement name='Filename' type='string'/>
+		<EsdlElement name='Sub' type='bool'/>
+		<EsdlElement name='ShotLimit' type='int'/>
+	</EsdlRequest>
+	<EsdlResponse name='DfuMonitorResponse' exceptions_inline='1'>
+		<EsdlElement name='wuid' type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='ShowResultRequest'>
+		<EsdlElement name='Result' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='ShowResultResponse' exceptions_inline='1'>
+		<EsdlElement name='Result' type='string'/>
+	</EsdlResponse>
+	<EsdlStruct name='DropZone' nil_remove='1'>
+		<EsdlElement name='Name' type='string'/>
+		<EsdlElement name='NetAddress' type='string'/>
+		<EsdlElement name='Path' type='string'/>
+		<EsdlElement name='Computer' type='string'/>
+		<EsdlElement name='Linux' type='string'/>
+	</EsdlStruct>
+	<EsdlRequest name='DropZoneFilesRequest'>
+		<EsdlElement name='DropZoneName' type='string' min_ver='1.15'/>
+		<EsdlElement name='NetAddress' type='string'/>
+		<EsdlElement name='Path' type='string'/>
+		<EsdlElement name='OS' type='string'/>
+		<EsdlElement name='Subfolder' type='string'/>
+		<EsdlElement name='ECLWatchVisibleOnly' type='bool' default='0' min_ver='1.15'/>
+		<EsdlElement name='DirectoryOnly' type='bool' default='0'/>
+	</EsdlRequest>
+	<EsdlResponse name='DropZoneFilesResponse' nil_remove='1' exceptions_inline='1'>
+		<EsdlElement name='DropZoneName' type='string' min_ver='1.15'/>
+		<EsdlElement name='NetAddress' type='string'/>
+		<EsdlElement name='Path' type='string'/>
+		<EsdlElement name='OS' type='int'/>
+		<EsdlElement name='ECLWatchVisibleOnly' type='bool' min_ver='1.15'/>
+		<EsdlArray name='DropZones'  type='DropZone'/>
+		<EsdlArray name='Files'  type='PhysicalFileStruct'/>
+	</EsdlResponse>
+	<EsdlRequest name='DeleteDropZoneFilesRequest'>
+		<EsdlElement name='DropZoneName' type='string' min_ver='1.15'/>
+		<EsdlElement name='NetAddress' type='string'/>
+		<EsdlElement name='Path' type='string'/>
+		<EsdlElement name='OS' type='string'/>
+		<EsdlArray name='Names'  type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='DeleteDropZoneFilesResponse' nil_remove='1' exceptions_inline='1'>
+		<EsdlArray name='DFUActionResults'  type='DFUActionResult'/>
+	</EsdlResponse>
+	<EsdlResponse name='UploadFilesResponse' exceptions_inline='1'>
+		<EsdlArray name='UploadFileResults'  type='DFUActionResult'/>
+	</EsdlResponse>
+	<EsdlRequest name='GetSprayTargetsRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='GetSprayTargetsResponse' nil_remove='1' exceptions_inline='1'>
+		<EsdlArray name='GroupNodes'  type='GroupNode' item_tag='GroupNode'/>
+	</EsdlResponse>
+	<EsdlRequest name='GetDFUServerQueuesRequest'>
+		<EsdlElement name='DFUServerName' type='string'/>
+	</EsdlRequest>
+	<EsdlResponse name='GetDFUServerQueuesResponse' nil_remove='1' exceptions_inline='1'>
+		<EsdlArray name='Names'  type='string'/>
+	</EsdlResponse>
+	<EsdlRequest name='FileSprayPingRequest'>
+	</EsdlRequest>
+	<EsdlResponse name='FileSprayPingResponse'>
+	</EsdlResponse>
+		<EsdlService name='FileSpray'  exceptions_inline='./smc_xslt/exceptions.xslt' version='1.17' auth_feature='DEFERRED'>
+	<EsdlMethod name='AbortDFUWorkunit' request_type='AbortDFUWorkunit' response_type='AbortDFUWorkunitResponse'  resp_xsl_default='/esp/xslt/dfu_wuid.xslt'/>
+	<EsdlMethod name='Copy' request_type='Copy' response_type='CopyResponse' />
+	<EsdlMethod name='CreateDFUWorkunit' request_type='CreateDFUWorkunit' response_type='CreateDFUWorkunitResponse'  resp_xsl_default='/esp/xslt/dfu_wuid.xslt'/>
+	<EsdlMethod name='DFUWUFile' request_type='DFUWUFileRequest' response_type='DFUWUFileResponse' />
+	<EsdlMethod name='DFUWUSearch' request_type='DFUWUSearchRequest' response_type='DFUWUSearchResponse'  resp_xsl_default='/esp/xslt/dfuwu_search.xslt'/>
+	<EsdlMethod name='DFUWorkunitsAction' request_type='DFUWorkunitsActionRequest' response_type='DFUWorkunitsActionResponse'  resp_xsl_default='/esp/xslt/dfuwuaction_results.xslt'/>
+	<EsdlMethod name='DeleteDFUWorkunit' request_type='DeleteDFUWorkunit' response_type='DeleteDFUWorkunitResponse' />
+	<EsdlMethod name='DeleteDFUWorkunits' request_type='DeleteDFUWorkunits' response_type='DeleteDFUWorkunitsResponse' />
+	<EsdlMethod name='DeleteDropZoneFiles' request_type='DeleteDropZoneFilesRequest' response_type='DFUWorkunitsActionResponse'  resp_xsl_default='/esp/xslt/dfuwuaction_results.xslt'/>
+	<EsdlMethod name='Despray' request_type='Despray' response_type='DesprayResponse' />
+	<EsdlMethod name='DfuMonitor' request_type='DfuMonitorRequest' response_type='DfuMonitorResponse' />
+	<EsdlMethod name='DropZoneFileSearch' request_type='DropZoneFileSearchRequest' response_type='DropZoneFileSearchResponse'  min_ver='1.13'/>
+	<EsdlMethod name='DropZoneFiles' request_type='DropZoneFilesRequest' response_type='DropZoneFilesResponse'  resp_xsl_default='/esp/xslt/dropzonefile.xslt'/>
+	<EsdlMethod name='EchoDateTime' request_type='EchoDateTime' response_type='EchoDateTimeResponse' />
+	<EsdlMethod name='FileList' request_type='FileListRequest' response_type='FileListResponse'  resp_xsl_default='/esp/xslt/dfu_filelist.xslt'/>
+	<EsdlMethod name='GetDFUExceptions' request_type='GetDFUExceptions' response_type='GetDFUExceptionsResponse' />
+	<EsdlMethod name='GetDFUProgress' request_type='ProgressRequest' response_type='ProgressResponse'  resp_xsl_default='/esp/xslt/dfu_progress.xslt'/>
+	<EsdlMethod name='GetDFUServerQueues' request_type='GetDFUServerQueuesRequest' response_type='GetDFUServerQueuesResponse'  min_ver='1.14'/>
+	<EsdlMethod name='GetDFUWorkunit' request_type='GetDFUWorkunit' response_type='GetDFUWorkunitResponse'  resp_xsl_default='/esp/xslt/dfu_wuid.xslt'/>
+	<EsdlMethod name='GetDFUWorkunits' request_type='GetDFUWorkunits' response_type='GetDFUWorkunitsResponse'  resp_xsl_default='/esp/xslt/dfu_workunits.xslt'/>
+	<EsdlMethod name='GetSprayTargets' request_type='GetSprayTargetsRequest' response_type='GetSprayTargetsResponse' />
+	<EsdlMethod name='OpenSave' request_type='OpenSaveRequest' response_type='OpenSaveResponse'  resp_xsl_default='/esp/xslt/opensave.xslt'/>
+	<EsdlMethod name='Ping' request_type='FileSprayPingRequest' response_type='FileSprayPingResponse' />
+	<EsdlMethod name='Rename' request_type='Rename' response_type='RenameResponse' />
+	<EsdlMethod name='Replicate' request_type='Replicate' response_type='ReplicateResponse' />
+	<EsdlMethod name='ShowResult' request_type='ShowResultRequest' response_type='ShowResultResponse'  resp_xsl_default='/esp/xslt/showresult.xslt'/>
+	<EsdlMethod name='SprayFixed' request_type='SprayFixed' response_type='SprayFixedResponse' />
+	<EsdlMethod name='SprayVariable' request_type='SprayVariable' response_type='SprayResponse' />
+	<EsdlMethod name='SubmitDFUWorkunit' request_type='SubmitDFUWorkunit' response_type='SubmitDFUWorkunitResponse'  resp_xsl_default='/esp/xslt/dfu_wuid.xslt'/>
+	<EsdlMethod name='UpdateDFUWorkunit' request_type='UpdateDFUWorkunit' response_type='UpdateDFUWorkunitResponse'  resp_xsl_default='/esp/xslt/dfu_wuid.xslt'/>
+		</EsdlService></esxdl>
