@@ -30,6 +30,27 @@ x               //If X is the required value.
 ```
 
 #Mapping
+| ECL Type | Octave-Type |
+|  :----: | :----: | 
+| Boolean | Logical | 
+| Real | double | 
+| Real4 |  single |
+| Real8 | double |
+| Integer | int64 |
+| Integer1 | int8 |
+| Integer2 | int16 |
+| Integer4 | int32 |
+| Integer8 | int64 |   
+| Unsigned | uint64 |
+| Unsigned1 | uint8 |
+| Unsigned2 | uint16 |
+| Unsigned4 | uint32 |
+| Unsigned8 | uint64 |   
+
+
+
+
+
 
 1.Boolean:
     Boolean type is mapped to logical in octave. If the return type is mismatched, error is generated.
@@ -138,3 +159,9 @@ x               //If X is the required value.
 
     These restrictions are imposed because of the reason that differentiating definitions of dataset or record is complicated at intefacing level. The reason to support matrix inspite of complication is matrices are important mathematical assests, they represent wide range of information and is commonly used in numerical computations. Most of the restrictions are for parameters passing.
 
+Can have only have matrix within the record.
+    There can be a matrix within a dataset.
+    But Indivisual matrix is not allowed
+
+    Parameter restrictions:
+        Can't have matrix within SArray. Can't have dataset defining matrix within Dataset defining SArray.
