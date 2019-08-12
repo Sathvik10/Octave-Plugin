@@ -10,7 +10,7 @@ Octave plugin enables to bring octave queries within ECL. All the queries within
 #### Example: ####
 If the output required is a structure, then the embedded code should always follow the below syntax
 ```
-structure returnStruct():embed(octave)
+structure returnStruct():=embed(octave)
 x.a = 9
 x.b= 'Hello'
 ....
@@ -34,68 +34,46 @@ x               //If X is the required value.
 
 Mapping
 -------
-| ECL Type | Octave-Type |
-|  :----: | :----: |
-| Boolean | Logical |
-| Real | double |
-| Real4 |  single |
-| Real8 | double |
-| Integer | int64 |
-| Integer1 | int8 |
-| Integer2 | int16 |
-| Integer4 | int32 |
-| Integer8 | int64 |  
-| Unsigned | uint64 |
-| Unsigned1 | uint8 |
-| Unsigned2 | uint16 |
-| Unsigned4 | uint32 |
-| Unsigned8 | uint64 |
-| String | String |
-| Utf8 | String |
+| ECL Type | Octave-Type | Notes |
+|  :----: | :----: |:----: |
+| Boolean | Logical | Default Value is false |
+| Real | double | Default Value is 0 |
+| Real4 |  single |  |
+| Real8 | double |  |
+| Integer | int64 | Default Value is 0 |
+| Integer1 | int8 | For types other than standard size 
+| Integer2 | int16 | plugin throws an error |
+| Integer4 | int32 |  |
+| Integer8 | int64 |  |
+| Unsigned | uint64 | Default Value is 0 |
+| Unsigned1 | uint8 |  |
+| Unsigned2 | uint16 |  |
+| Unsigned4 | uint32 |  |
+| Unsigned8 | uint64 |  |
+| String | String | Default Value is an empty string and belongs to char class |
+| Set of Real | double row vector |  |
+| Set of Real4 | double row vector |  |
+| Set of Real8 | double row vector|  |
+| Set of Boolean | logical row vector |  |
+| Set of Integer | int64 row vector |  |
+| Set of Integer1 | int8 row vector |  |
+| Set of Integer2 | int16 row vector |  |
+| Set of Integer4 | int32 row vector |  |
+| Set of Integer8 | int64 row vector |  |
+| Set of Unsigned | uint64 row vector |  |
+| Set of Unsigned1 | uint8 row vector |  |
+| Set of Unsigned2 | uint16 row vector |  |
+| Set of Unsigned4 | uint32 row vector |  |
+| Set of Unsigned8 | uint64 row vector |  |
+| Set of String | char matrix | Additional characters are filled with space character |
+| Set of utf8 | char matrix |  |
+| Record | structure |  |
+| Dataset | struct-array |  |
+| Set Of Record | Unsupported | It implies array of structure which is mapped to Dataset | 
 
-`Octave plugin doesn't support data type and unicode type.`
-
-1.Boolean:   
-   Boolean type is mapped to logical in octave. If the return type is mismatched, error is generated.
-
-2.Real:   
-   Both single and double type in octave are mapped to real in ECL. Real4 parameter is mapped to single and both real and real8 are mapped to double.
-
-3.Signed:  
-   Integer is mapped to int type in octave. If the size of integer is not mentioned, value is mapped to int64 type. Standard sizes 1, 2, 4 and 8 bytes are supported. If any other size is used, plugin throws an exception.
+`Octave plugin doesn't support data type and unicode type. Set of record and set of dataset is not supported`
 
    [Info: To check the type of the binding use octave function class() whose return type is string]
-
-4.Unsigned:  
-   Unsigned is mapped to uint (unsigned integer) type in octave. If the size of unsigned type is not mentioned, value is mapped to uint64 type. Standard size 1, 2, 4, 8 bytes are supported. If any other size is used, plugin throws an exception.
-
-5.String:   
-   String is mapped to single quoted string and belongs to char class
-
-6.UTF8:  
-   UTF8 is mapped to single quoted string and belongs to char class.
-
-7.Set Of:  
-
-* Numerical:   
-   All numerical set of type is mapped to row vectors of corresponding type and size except real. Set of real is mapped to double vector irrespective of size.   
-   real4 ---> double  
-   real8 ---> double
-
-* String:   
-   Set of string is mapped to char matrix, where each string represents each row in the matrix. Same implies for obtaining set of string output. Octave-5.1.0 doesn't have support for string matrix, mapping to char matrix is the suitable choice. Additional spaces are filled by space character.
-
-* Record:    
-   Set of record implies structure array which is mapped to Dataset. There is no support for set of record in octave plugin.
-
-* Dataset:     
-   There is no support for set of dataset in octave plugin.
-
-8.Record:
-   Record is mapped with struct type in octave. Both being data containers resembles in many ways. Additional information about record is given in the next section.
-
-9.Dataset:
-   Dataset is mapped with structure array in octave. Dataset with specific record definition as a template is mapped to numerical matrix. Additional information is given in the next section.
 
 Record, Dataset and Numerical Matrix
 ------------------------------------
